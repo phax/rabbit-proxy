@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.helger.rabbit.filter.HttpFilter;
+import com.helger.rabbit.filter.IHttpFilter;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.util.Config;
 
@@ -18,9 +18,9 @@ import com.helger.rabbit.util.Config;
  */
 class HttpHeaderFilterer
 {
-  private final List <HttpFilter> httpInFilters;
-  private final List <HttpFilter> httpOutFilters;
-  private final List <HttpFilter> connectFilters;
+  private final List <IHttpFilter> httpInFilters;
+  private final List <IHttpFilter> httpOutFilters;
+  private final List <IHttpFilter> connectFilters;
 
   public HttpHeaderFilterer (final String in,
                              final String out,
@@ -40,18 +40,18 @@ class HttpHeaderFilterer
 
   private static interface FilterHandler
   {
-    HttpHeader filter (HttpFilter hf, SocketChannel channel, HttpHeader in, Connection con);
+    HttpHeader filter (IHttpFilter hf, SocketChannel channel, HttpHeader in, Connection con);
   }
 
   private HttpHeader filter (final Connection con,
                              final SocketChannel channel,
                              final HttpHeader in,
-                             final List <HttpFilter> filters,
+                             final List <IHttpFilter> filters,
                              final FilterHandler fh)
   {
     for (int i = 0, s = filters.size (); i < s; i++)
     {
-      final HttpFilter hf = filters.get (i);
+      final IHttpFilter hf = filters.get (i);
       final HttpHeader badresponse = fh.filter (hf, channel, in, con);
       if (badresponse != null)
         return badresponse;
@@ -61,7 +61,7 @@ class HttpHeaderFilterer
 
   private static class InFilterer implements FilterHandler
   {
-    public HttpHeader filter (final HttpFilter hf,
+    public HttpHeader filter (final IHttpFilter hf,
                               final SocketChannel channel,
                               final HttpHeader in,
                               final Connection con)
@@ -72,7 +72,7 @@ class HttpHeaderFilterer
 
   private static class OutFilterer implements FilterHandler
   {
-    public HttpHeader filter (final HttpFilter hf,
+    public HttpHeader filter (final IHttpFilter hf,
                               final SocketChannel channel,
                               final HttpHeader in,
                               final Connection con)
@@ -83,7 +83,7 @@ class HttpHeaderFilterer
 
   private static class ConnectFilterer implements FilterHandler
   {
-    public HttpHeader filter (final HttpFilter hf,
+    public HttpHeader filter (final IHttpFilter hf,
                               final SocketChannel channel,
                               final HttpHeader in,
                               final Connection con)
@@ -141,7 +141,7 @@ class HttpHeaderFilterer
   }
 
   private void loadHttpFilters (final String filters,
-                                final List <HttpFilter> ls,
+                                final List <IHttpFilter> ls,
                                 final Config config,
                                 final HttpProxy proxy)
   {
@@ -155,8 +155,8 @@ class HttpHeaderFilterer
       try
       {
         className = className.trim ();
-        final Class <? extends HttpFilter> cls = proxy.load3rdPartyClass (className, HttpFilter.class);
-        final HttpFilter hf = cls.newInstance ();
+        final Class <? extends IHttpFilter> cls = proxy.load3rdPartyClass (className, IHttpFilter.class);
+        final IHttpFilter hf = cls.newInstance ();
         hf.setup (config.getProperties (className), proxy);
         ls.add (hf);
       }
@@ -175,17 +175,17 @@ class HttpHeaderFilterer
     }
   }
 
-  public List <HttpFilter> getHttpInFilters ()
+  public List <IHttpFilter> getHttpInFilters ()
   {
     return Collections.unmodifiableList (httpInFilters);
   }
 
-  public List <HttpFilter> getHttpOutFilters ()
+  public List <IHttpFilter> getHttpOutFilters ()
   {
     return Collections.unmodifiableList (httpOutFilters);
   }
 
-  public List <HttpFilter> getConnectFilters ()
+  public List <IHttpFilter> getConnectFilters ()
   {
     return Collections.unmodifiableList (connectFilters);
   }

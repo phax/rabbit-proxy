@@ -1,19 +1,19 @@
 package com.helger.rabbit.proxy;
 
-import static com.helger.rabbit.http.StatusCode._200;
-import static com.helger.rabbit.http.StatusCode._206;
-import static com.helger.rabbit.http.StatusCode._304;
-import static com.helger.rabbit.http.StatusCode._400;
-import static com.helger.rabbit.http.StatusCode._401;
-import static com.helger.rabbit.http.StatusCode._403;
-import static com.helger.rabbit.http.StatusCode._404;
-import static com.helger.rabbit.http.StatusCode._407;
-import static com.helger.rabbit.http.StatusCode._412;
-import static com.helger.rabbit.http.StatusCode._414;
-import static com.helger.rabbit.http.StatusCode._416;
-import static com.helger.rabbit.http.StatusCode._417;
-import static com.helger.rabbit.http.StatusCode._500;
-import static com.helger.rabbit.http.StatusCode._504;
+import static com.helger.rabbit.http.EStatusCode._200;
+import static com.helger.rabbit.http.EStatusCode._206;
+import static com.helger.rabbit.http.EStatusCode._304;
+import static com.helger.rabbit.http.EStatusCode._400;
+import static com.helger.rabbit.http.EStatusCode._401;
+import static com.helger.rabbit.http.EStatusCode._403;
+import static com.helger.rabbit.http.EStatusCode._404;
+import static com.helger.rabbit.http.EStatusCode._407;
+import static com.helger.rabbit.http.EStatusCode._412;
+import static com.helger.rabbit.http.EStatusCode._414;
+import static com.helger.rabbit.http.EStatusCode._416;
+import static com.helger.rabbit.http.EStatusCode._417;
+import static com.helger.rabbit.http.EStatusCode._500;
+import static com.helger.rabbit.http.EStatusCode._504;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,7 +29,7 @@ import com.helger.rabbit.html.HtmlEscapeUtils;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.http.HttpHeaderWithContent;
-import com.helger.rabbit.http.StatusCode;
+import com.helger.rabbit.http.EStatusCode;
 import com.helger.rabbit.util.Config;
 
 /**
@@ -82,7 +82,7 @@ class StandardResponseHeaders implements HttpGenerator
    *        the StatusCode to get a header for
    * @return a new HttpHeader.
    */
-  public HttpHeaderWithContent getHeader (final StatusCode sc)
+  public HttpHeaderWithContent getHeader (final EStatusCode sc)
   {
     final HttpHeaderWithContent ret = new HttpHeaderWithContent ();
     ret.setStatusLine (sc.getStatusLine ("HTTP/1.1"));
@@ -200,7 +200,7 @@ class StandardResponseHeaders implements HttpGenerator
     return getAuthorizationHeader (realm, url, _401, "WWW");
   }
 
-  private HttpHeader getAuthorizationHeader (final String realm, final URL url, final StatusCode sc, final String type)
+  private HttpHeader getAuthorizationHeader (final String realm, final URL url, final EStatusCode sc, final String type)
   {
     final HttpHeaderWithContent header = getHeader (sc);
     header.setHeader (type + "-Authenticate", "Basic realm=\"" + realm + "\"");

@@ -7,7 +7,7 @@ package com.helger.rabbit.httpio;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface ResourceSource extends Transferable
+public interface IResourceSource extends Transferable
 {
 
   /**

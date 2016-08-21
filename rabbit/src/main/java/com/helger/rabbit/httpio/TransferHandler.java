@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.nio.channels.SocketChannel;
 
 import com.helger.rabbit.io.Address;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IWriteHandler;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
@@ -21,8 +21,8 @@ public class TransferHandler implements Runnable
   private final INioHandler nioHandler;
   private final Transferable t;
   private final SocketChannel channel;
-  private final TrafficLogger tlFrom;
-  private final TrafficLogger tlTo;
+  private final ITrafficLogger tlFrom;
+  private final ITrafficLogger tlTo;
   private final TransferListener listener;
   private long pos = 0;
   private long count;
@@ -46,8 +46,8 @@ public class TransferHandler implements Runnable
   public TransferHandler (final INioHandler nioHandler,
                           final Transferable t,
                           final SocketChannel channel,
-                          final TrafficLogger tlFrom,
-                          final TrafficLogger tlTo,
+                          final ITrafficLogger tlFrom,
+                          final ITrafficLogger tlTo,
                           final TransferListener listener)
   {
     this.nioHandler = nioHandler;

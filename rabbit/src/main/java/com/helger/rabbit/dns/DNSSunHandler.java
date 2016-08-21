@@ -11,7 +11,7 @@ import com.helger.commons.url.SMap;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class DNSSunHandler implements DNSHandler
+public class DNSSunHandler implements IDNSHandler
 {
   public void setup (final SMap config)
   {

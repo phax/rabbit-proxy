@@ -5,7 +5,7 @@ import java.nio.channels.SocketChannel;
 
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.INioHandler;
 
 /**
@@ -31,7 +31,7 @@ public class ChunkEnder
    */
   public void sendChunkEnding (final SocketChannel channel,
                                final INioHandler nioHandler,
-                               final TrafficLogger tl,
+                               final ITrafficLogger tl,
                                final BlockSentListener bsl)
   {
     final ByteBuffer bb = ByteBuffer.wrap (CHUNK_ENDING);

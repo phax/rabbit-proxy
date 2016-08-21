@@ -1,5 +1,6 @@
 package com.helger.rabbit.httpio;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,14 +8,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.ITaskIdentifier;
-import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
 /**
@@ -22,7 +22,7 @@ import com.helger.rnio.impl.DefaultTaskIdentifier;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class FileResourceSource implements ResourceSource
+public class FileResourceSource implements IResourceSource
 {
   protected FileChannel fc;
 
@@ -31,11 +31,9 @@ public class FileResourceSource implements ResourceSource
   private INioHandler nioHandler;
   protected BufferHandle bufHandle;
 
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
-
   /**
    * Create a new FileResourceSource using the given filename
-   * 
+   *
    * @param filename
    *        the file for this resource
    * @param nioHandler
@@ -54,7 +52,7 @@ public class FileResourceSource implements ResourceSource
 
   /**
    * Create a new FileResourceSource using the given filename
-   * 
+   *
    * @param f
    *        the resource
    * @param nioHandler
@@ -80,7 +78,7 @@ public class FileResourceSource implements ResourceSource
 
   /**
    * FileChannels can be used, will always return true.
-   * 
+   *
    * @return true
    */
   public boolean supportsTransfer ()
@@ -128,7 +126,7 @@ public class FileResourceSource implements ResourceSource
     // Get buffer on selector thread.
     bufHandle.getBuffer ();
     final ITaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName (),
-                                                         "addBlockListener: channel: " + fc);
+                                                          "addBlockListener: channel: " + fc);
     nioHandler.runThreadTask (new ReadBlock (), ti);
   }
 
@@ -176,7 +174,8 @@ public class FileResourceSource implements ResourceSource
 
   public void release ()
   {
-    Closer.close (fc, logger);
+    final Closeable c = fc;
+    StreamHelper.close (c);
     listener = null;
     nioHandler = null;
     bufHandle.possiblyFlush ();

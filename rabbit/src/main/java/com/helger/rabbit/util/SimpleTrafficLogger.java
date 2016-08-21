@@ -5,7 +5,7 @@ package com.helger.rabbit.util;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class SimpleTrafficLogger implements TrafficLogger
+public class SimpleTrafficLogger implements ITrafficLogger
 {
   private long read;
   private long written;
@@ -60,7 +60,7 @@ public class SimpleTrafficLogger implements TrafficLogger
     transferTo = 0;
   }
 
-  public void addTo (final TrafficLogger other)
+  public void addTo (final ITrafficLogger other)
   {
     other.read (read);
     other.write (written);

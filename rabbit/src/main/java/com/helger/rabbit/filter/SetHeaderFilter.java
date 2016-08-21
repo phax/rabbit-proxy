@@ -14,7 +14,7 @@ import com.helger.rabbit.proxy.HttpProxy;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class SetHeaderFilter implements HttpFilter
+public class SetHeaderFilter implements IHttpFilter
 {
   private SMap props;
 

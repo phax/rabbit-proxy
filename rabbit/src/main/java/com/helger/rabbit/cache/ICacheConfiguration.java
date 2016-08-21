@@ -10,7 +10,7 @@ import com.helger.commons.url.SMap;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface CacheConfiguration
+public interface ICacheConfiguration
 {
   /**
    * Get the maximum size for this cache.

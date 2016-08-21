@@ -26,17 +26,17 @@ class NCacheElementBase
 
   /**
    * Get the id of our entry.
-   * 
+   *
    * @return the id of the entry.
    */
-  public long getId ()
+  public long getID ()
   {
     return id;
   }
 
   /**
    * Get the date this object was cached.
-   * 
+   *
    * @return a date.
    */
   public long getCacheTime ()
@@ -46,7 +46,7 @@ class NCacheElementBase
 
   /**
    * Get the expiry-date of our file
-   * 
+   *
    * @return the expiry date of our data
    */
   public long getExpires ()
@@ -56,7 +56,7 @@ class NCacheElementBase
 
   /**
    * Sets the expirydate of our data
-   * 
+   *
    * @param d
    *        the new expiry-date.
    */
@@ -67,7 +67,7 @@ class NCacheElementBase
 
   /**
    * Get the size of our file
-   * 
+   *
    * @return the size of our data
    */
   public long getSize ()
@@ -77,7 +77,7 @@ class NCacheElementBase
 
   /**
    * Set the values, only to be used for externalizing.
-   * 
+   *
    * @param id
    *        the id of this entry
    * @param cachetime

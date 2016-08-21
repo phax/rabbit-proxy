@@ -1,7 +1,7 @@
 package com.helger.rabbit.proxy;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.http.StatusCode;
+import com.helger.rabbit.http.EStatusCode;
 
 /**
  * This class is intended to be used as a template for metapages. It provides
@@ -53,7 +53,7 @@ public class HtmlPage
    *        the StatusCode of the request
    * @return a HTMLHeader.
    */
-  public static String getPageHeader (final Connection con, final StatusCode type)
+  public static String getPageHeader (final Connection con, final EStatusCode type)
   {
     return getPageHeader (con, type.getDescription ());
   }

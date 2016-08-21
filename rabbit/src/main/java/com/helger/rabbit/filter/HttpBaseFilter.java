@@ -29,7 +29,7 @@ import com.helger.rabbit.util.SimpleUserHandler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class HttpBaseFilter implements HttpFilter
+public class HttpBaseFilter implements IHttpFilter
 {
   /** Constant for requests that want an unfiltered resource. */
   public static final String NOPROXY = "http://noproxy.";

@@ -20,7 +20,7 @@ import com.helger.rabbit.util.PatternHelper;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class DontFilterFilter implements HttpFilter
+public class DontFilterFilter implements IHttpFilter
 {
   private Pattern pattern;
   private Pattern uap;

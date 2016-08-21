@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import com.helger.rabbit.dns.DNSHandler;
+import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rabbit.io.InetAddressListener;
 
 /**
@@ -14,7 +14,7 @@ import com.helger.rabbit.io.InetAddressListener;
  */
 public class ResolvRunner implements Runnable
 {
-  private final DNSHandler dnsHandler;
+  private final IDNSHandler dnsHandler;
   private final URL url;
   private final InetAddressListener ial;
 
@@ -28,7 +28,7 @@ public class ResolvRunner implements Runnable
    * @param ial
    *        the listener that will get the callback when the dns lookup is done
    */
-  public ResolvRunner (final DNSHandler dnsHandler, final URL url, final InetAddressListener ial)
+  public ResolvRunner (final IDNSHandler dnsHandler, final URL url, final InetAddressListener ial)
   {
     this.dnsHandler = dnsHandler;
     this.url = url;

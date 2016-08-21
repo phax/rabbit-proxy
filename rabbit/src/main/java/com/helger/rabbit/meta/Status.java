@@ -11,7 +11,7 @@ import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HtmlPage;
 import com.helger.rabbit.proxy.HttpProxy;
 import com.helger.rabbit.proxy.TrafficLoggerHandler;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 
 /**
  * A status page for the proxy.
@@ -100,7 +100,7 @@ public class Status extends BaseMetaHandler
     sb.append ("</table>\n");
   }
 
-  private void appendTL (final StringBuilder sb, final String type, final TrafficLogger tl)
+  private void appendTL (final StringBuilder sb, final String type, final ITrafficLogger tl)
   {
     sb.append ("<tr><td>" + type + "</td>");
     sb.append ("<td align=\"right\">").append (tl.read ()).append ("</td>");

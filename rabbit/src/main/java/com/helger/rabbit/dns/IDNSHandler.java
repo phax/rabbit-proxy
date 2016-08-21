@@ -11,7 +11,7 @@ import com.helger.commons.url.SMap;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface DNSHandler
+public interface IDNSHandler
 {
   /**
    * Do any neccessary setup.

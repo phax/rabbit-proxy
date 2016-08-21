@@ -2,7 +2,7 @@ package com.helger.rabbit.httpio;
 
 import java.net.URL;
 
-import com.helger.rabbit.dns.DNSHandler;
+import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rabbit.io.InetAddressListener;
 import com.helger.rabbit.io.Resolver;
 import com.helger.rnio.INioHandler;
@@ -15,7 +15,7 @@ import com.helger.rnio.impl.DefaultTaskIdentifier;
  */
 public class SimpleResolver implements Resolver
 {
-  private final DNSHandler dnsHandler;
+  private final IDNSHandler dnsHandler;
   private final INioHandler nio;
 
   /**
@@ -26,7 +26,7 @@ public class SimpleResolver implements Resolver
    * @param dnsHandler
    *        the DNSHandler to use for the DNS lookup
    */
-  public SimpleResolver (final INioHandler nio, final DNSHandler dnsHandler)
+  public SimpleResolver (final INioHandler nio, final IDNSHandler dnsHandler)
   {
     this.dnsHandler = dnsHandler;
     this.nio = nio;

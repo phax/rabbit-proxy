@@ -6,12 +6,12 @@ import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.io.BufferHandle;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IReadHandler;
 import com.helger.rnio.IWriteHandler;
-import com.helger.rnio.impl.Closer;
 
 /**
  * A handler that just tunnels data.
@@ -50,10 +50,10 @@ public class Tunnel
   public Tunnel (final INioHandler nioHandler,
                  final SocketChannel from,
                  final BufferHandle fromHandle,
-                 final TrafficLogger fromLogger,
+                 final ITrafficLogger fromLogger,
                  final SocketChannel to,
                  final BufferHandle toHandle,
-                 final TrafficLogger toLogger,
+                 final ITrafficLogger toLogger,
                  final TunnelDoneListener listener)
   {
     if (logger.isLoggable (Level.FINEST))
@@ -80,12 +80,12 @@ public class Tunnel
     private final SocketChannel from;
     private final SocketChannel to;
     private final BufferHandle bh;
-    private final TrafficLogger tl;
+    private final ITrafficLogger tl;
 
     public OneWayTunnel (final SocketChannel from,
                          final SocketChannel to,
                          final BufferHandle bh,
-                         final TrafficLogger tl)
+                         final ITrafficLogger tl)
     {
       this.from = from;
       this.to = to;
@@ -240,8 +240,8 @@ public class Tunnel
     else
     {
       // hmm? no listeners, then close down
-      Closer.close (fromToTo.from, logger);
-      Closer.close (toToFrom.from, logger);
+      StreamHelper.close (fromToTo.from);
+      StreamHelper.close (toToFrom.from);
     }
   }
 }

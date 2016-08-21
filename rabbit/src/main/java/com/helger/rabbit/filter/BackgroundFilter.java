@@ -11,7 +11,7 @@ import com.helger.rabbit.proxy.Connection;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class BackgroundFilter extends SimpleTagFilter
+public class BackgroundFilter extends AbstractSimpleTagFilter
 {
 
   // for the factory part.
@@ -33,7 +33,7 @@ public class BackgroundFilter extends SimpleTagFilter
     super (con, request, response);
   }
 
-  public HtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
+  public AbstractHtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
   {
     return new BackgroundFilter (con, request, response);
   }

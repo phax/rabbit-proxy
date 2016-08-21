@@ -22,10 +22,10 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.cache.Cache;
-import com.helger.rabbit.cache.CacheConfiguration;
-import com.helger.rabbit.cache.CacheEntry;
+import com.helger.rabbit.cache.ICacheConfiguration;
 import com.helger.rabbit.cache.CacheException;
+import com.helger.rabbit.cache.ICache;
+import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.cache.utils.CacheConfigurationBase;
 import com.helger.rabbit.cache.utils.CacheUtils;
 import com.helger.rabbit.io.FileHelper;
@@ -41,7 +41,7 @@ import com.helger.rabbit.io.FileHelper;
  *        the data resource
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class NCache <K, V> implements Cache <K, V>, Runnable
+public class NCache <K, V> implements ICache <K, V>, Runnable
 {
   private static final String DIR = "/tmp/rabbit/cache"; // standard dir.
   private static final String DEFAULT_CLEAN_LOOP = "60"; // 1 minute
@@ -105,7 +105,7 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
     cleaner.start ();
   }
 
-  public CacheConfiguration getCacheConfiguration ()
+  public ICacheConfiguration getCacheConfiguration ()
   {
     return configuration;
   }
@@ -265,7 +265,7 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
     final FiledHook <V> hook = e.getDataHook ();
     if (hook != null)
     {
-      final File entryName = getEntryName (e.getId (), true, "hook");
+      final File entryName = getEntryName (e.getID (), true, "hook");
       if (!entryName.exists ())
         return false;
     }
@@ -280,7 +280,7 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
    *        the key.
    * @return the CacheEntry or null (if not found).
    */
-  public CacheEntry <K, V> getEntry (final K k) throws CacheException
+  public ICacheEntry <K, V> getEntry (final K k) throws CacheException
   {
     final NCacheData <K, V> cacheEntry = getCurrentData (k);
     if (cacheEntry != null && !checkHook (cacheEntry))
@@ -307,7 +307,7 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
    *        the key for the CacheEntry.
    * @return a new CacheEntry initialized for the cache.
    */
-  public CacheEntry <K, V> newEntry (final K k)
+  public ICacheEntry <K, V> newEntry (final K k)
   {
     long newId = 0;
     // allocate the id for the new entry.
@@ -352,7 +352,7 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
    * @param ent
    *        the CacheEntry to store.
    */
-  public void addEntry (final CacheEntry <K, V> ent) throws CacheException
+  public void addEntry (final ICacheEntry <K, V> ent) throws CacheException
   {
     if (ent == null)
       return;
@@ -362,11 +362,11 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
 
   private void addEntry (final NCacheEntry <K, V> ent) throws CacheException
   {
-    File cfile = getEntryName (ent.getId (), false, null);
+    File cfile = getEntryName (ent.getID (), false, null);
     if (!cfile.exists ())
       return;
 
-    final File newName = getEntryName (ent.getId (), true, null);
+    final File newName = getEntryName (ent.getID (), true, null);
     final File cacheDir = newName.getParentFile ();
     synchronized (dirLock)
     {
@@ -416,19 +416,19 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
   /**
    * Signal that a cache entry have changed.
    */
-  public void entryChanged (final CacheEntry <K, V> ent, final K newKey, final V newHook) throws CacheException
+  public void entryChanged (final ICacheEntry <K, V> ent, final K newKey, final V newHook) throws CacheException
   {
     final NCacheData <K, V> data = getCurrentData (ent.getKey ());
     if (data == null)
     {
       Thread.dumpStack ();
-      logger.warning ("Failed to find changed entry so ignoring: " + ent.getId ());
+      logger.warning ("Failed to find changed entry so ignoring: " + ent.getID ());
       return;
     }
     try
     {
       data.updateExpireAndSize (ent);
-      final long id = ent.getId ();
+      final long id = ent.getID ();
       final FiledWithSize <FiledKey <K>> fkws = storeKey (newKey, id);
       data.setKey (fkws.t, fkws.size);
       final FiledWithSize <FiledHook <V>> fhws = storeHook (newHook, id);
@@ -503,7 +503,7 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
     if (r != null)
     {
       // this removes the key => htab.remove can not work..
-      final File entryName = getEntryName (r.getId (), true, null);
+      final File entryName = getEntryName (r.getID (), true, null);
       try
       {
         removeHook (entryName, ".hook");
@@ -874,7 +874,7 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
       key.setCache (this);
       final K keyData = key.getData ();
       final V hook = data.getDataHook ().getData (this, data, getLogger ());
-      return new NCacheEntry<> (data.getId (),
+      return new NCacheEntry<> (data.getID (),
                                 data.getCacheTime (),
                                 data.getExpires (),
                                 data.getSize (),
@@ -889,7 +889,7 @@ public class NCache <K, V> implements Cache <K, V>, Runnable
 
   private NCacheData <K, V> getData (final NCacheEntry <K, V> entry, final File cacheFile) throws CacheException
   {
-    final long id = entry.getId ();
+    final long id = entry.getID ();
     final long size = cacheFile.length ();
     try
     {

@@ -9,14 +9,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.helger.rabbit.util.SimpleTrafficLogger;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IStatisticsHolder;
 import com.helger.rnio.impl.Acceptor;
-import com.helger.rnio.impl.IAcceptorListener;
 import com.helger.rnio.impl.BasicStatisticsHolder;
 import com.helger.rnio.impl.CachingBufferHandler;
+import com.helger.rnio.impl.IAcceptorListener;
 import com.helger.rnio.impl.MultiSelectorNioHandler;
 import com.helger.rnio.impl.SimpleThreadFactory;
 
@@ -30,7 +30,7 @@ public class SimpleWebServer
   private File dir;
   private final int port;
   private final INioHandler nioHandler;
-  private final TrafficLogger trafficLogger = new SimpleTrafficLogger ();
+  private final ITrafficLogger trafficLogger = new SimpleTrafficLogger ();
   private final IBufferHandler bufferHandler = new CachingBufferHandler ();
 
   /**
@@ -156,7 +156,7 @@ public class SimpleWebServer
    * 
    * @return the TrafficLogger in use
    */
-  public TrafficLogger getTrafficLogger ()
+  public ITrafficLogger getTrafficLogger ()
   {
     return trafficLogger;
   }

@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.io.IStorable;
 import com.helger.rabbit.util.StringCache;
 
@@ -36,7 +37,7 @@ public class Header implements IStorable
 
   /**
    * Create a new header
-   * 
+   *
    * @param type
    *        the type of this header
    * @param value
@@ -50,7 +51,7 @@ public class Header implements IStorable
 
   /**
    * Get the type of this header.
-   * 
+   *
    * @return the type of this header
    */
   public String getType ()
@@ -60,7 +61,7 @@ public class Header implements IStorable
 
   /**
    * Get the value of this header.
-   * 
+   *
    * @return the value of this header
    */
   public String getValue ()
@@ -70,7 +71,7 @@ public class Header implements IStorable
 
   /**
    * Set the value of this header to the new value given.
-   * 
+   *
    * @param newValue
    *        the new value
    */
@@ -97,7 +98,7 @@ public class Header implements IStorable
 
   /**
    * Update the value by appending the given string to it.
-   * 
+   *
    * @param s
    *        the String to append to the current value
    */
@@ -109,13 +110,13 @@ public class Header implements IStorable
 
   public void write (final DataOutput out) throws IOException
   {
-    out.writeUTF (type);
-    out.writeUTF (value);
+    StreamHelper.writeSafeUTF (out, type);
+    StreamHelper.writeSafeUTF (out, value);
   }
 
   public void read (final DataInput in) throws IOException
   {
-    type = getCachedString (in.readUTF ());
-    value = getCachedString (in.readUTF ());
+    type = getCachedString (StreamHelper.readSafeUTF (in));
+    value = getCachedString (StreamHelper.readSafeUTF (in));
   }
 }

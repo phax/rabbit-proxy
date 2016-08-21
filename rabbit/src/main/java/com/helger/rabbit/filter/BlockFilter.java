@@ -18,7 +18,7 @@ import com.helger.rabbit.util.PatternHelper;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class BlockFilter implements HttpFilter
+public class BlockFilter implements IHttpFilter
 {
   private Pattern blockPattern;
   private Pattern allowPattern;

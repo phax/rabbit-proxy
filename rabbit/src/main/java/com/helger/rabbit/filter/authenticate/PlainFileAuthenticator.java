@@ -10,7 +10,7 @@ import com.helger.rabbit.util.SimpleUserHandler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class PlainFileAuthenticator implements Authenticator
+public class PlainFileAuthenticator implements IAuthenticator
 {
   private final SimpleUserHandler userHandler;
 

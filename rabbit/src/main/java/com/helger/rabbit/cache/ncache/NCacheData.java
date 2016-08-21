@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.helger.rabbit.cache.CacheEntry;
+import com.helger.rabbit.cache.ICacheEntry;
 
 /**
  * The cached value and metadata
@@ -36,7 +36,7 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
 
   /**
    * Create a new CacheEntry for given key and filename
-   * 
+   *
    * @param id
    *        the identity of this entry
    * @param cachetime
@@ -72,7 +72,7 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
 
   /**
    * Get the size of the key file
-   * 
+   *
    * @return the size in bytes
    */
   public long getKeySize ()
@@ -82,7 +82,7 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
 
   /**
    * Get the size of the hook
-   * 
+   *
    * @return the size in bytes
    */
   public long getHookSize ()
@@ -92,7 +92,7 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
 
   /**
    * Get the key.
-   * 
+   *
    * @return the FiledKey for the key data
    */
   protected FiledKey <K> getKey ()
@@ -102,7 +102,7 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
 
   /**
    * Change the key to the new one.
-   * 
+   *
    * @param key
    *        they new FiledKey
    * @param keySize
@@ -116,7 +116,7 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
 
   /**
    * Get the data hook.
-   * 
+   *
    * @return the FiledHook for the value
    */
   protected FiledHook <V> getDataHook ()
@@ -126,7 +126,7 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
 
   /**
    * Set the real data hook
-   * 
+   *
    * @param datahook
    *        the new hooked data
    * @param hookSize
@@ -141,13 +141,13 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
   /**
    * Update the expire and size fields with the values from the given cache
    * entry
-   * 
+   *
    * @param ne
    *        the CacheEntry to get values from
    */
-  public void updateExpireAndSize (final CacheEntry <K, V> ne)
+  public void updateExpireAndSize (final ICacheEntry <K, V> ne)
   {
-    setValues (getId (), getCacheTime (), ne.getExpires (), ne.getSize ());
+    setValues (getID (), getCacheTime (), ne.getExpires (), ne.getSize ());
   }
 
   /**
@@ -168,7 +168,7 @@ class NCacheData <K, V> extends NCacheElementBase implements Externalizable
    */
   public void writeExternal (final ObjectOutput out) throws IOException
   {
-    out.writeLong (getId ());
+    out.writeLong (getID ());
     out.writeLong (getCacheTime ());
     out.writeLong (getExpires ());
     out.writeLong (getSize ());

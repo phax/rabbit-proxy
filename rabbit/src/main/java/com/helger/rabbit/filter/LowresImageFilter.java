@@ -12,7 +12,7 @@ import com.helger.rabbit.proxy.Connection;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class LowresImageFilter extends SimpleTagFilter
+public class LowresImageFilter extends AbstractSimpleTagFilter
 {
 
   // For the factory.
@@ -34,7 +34,7 @@ public class LowresImageFilter extends SimpleTagFilter
     super (con, request, response);
   }
 
-  public HtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
+  public AbstractHtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
   {
     return new LowresImageFilter (con, request, response);
   }

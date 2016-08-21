@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpHeader;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
 import com.helger.rabbit.proxy.Connection;
@@ -60,7 +60,7 @@ public class GZipHandler extends BaseHandler
                       final TrafficLoggerHandler tlh,
                       final HttpHeader request,
                       final HttpHeader response,
-                      final ResourceSource content,
+                      final IResourceSource content,
                       final boolean mayCache,
                       final boolean mayFilter,
                       final long size,
@@ -99,11 +99,11 @@ public class GZipHandler extends BaseHandler
   }
 
   @Override
-  public Handler getNewInstance (final Connection con,
+  public IHandler getNewInstance (final Connection con,
                                  final TrafficLoggerHandler tlh,
                                  final HttpHeader header,
                                  final HttpHeader webHeader,
-                                 final ResourceSource content,
+                                 final IResourceSource content,
                                  final boolean mayCache,
                                  final boolean mayFilter,
                                  final long size)

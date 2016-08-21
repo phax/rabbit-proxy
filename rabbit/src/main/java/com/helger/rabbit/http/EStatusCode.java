@@ -5,7 +5,7 @@ package com.helger.rabbit.http;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public enum StatusCode
+public enum EStatusCode
 {
   // 10.1 Informational 1xx
   /** 100 Continue */
@@ -102,7 +102,7 @@ public enum StatusCode
   private final int code;
   private final String description;
 
-  private StatusCode (final int code, final String description)
+  private EStatusCode (final int code, final String description)
   {
     this.code = code;
     this.description = description;

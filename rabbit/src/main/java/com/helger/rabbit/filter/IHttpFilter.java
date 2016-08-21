@@ -10,7 +10,7 @@ import com.helger.rabbit.proxy.HttpProxy;
 /**
  * A filter for http headers.
  */
-public interface HttpFilter
+public interface IHttpFilter
 {
 
   /**

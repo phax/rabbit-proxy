@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.HttpHeaderListener;
@@ -16,7 +17,6 @@ import com.helger.rabbit.io.ConnectionHandler;
 import com.helger.rabbit.io.Resolver;
 import com.helger.rabbit.io.WebConnection;
 import com.helger.rabbit.io.WebConnectionListener;
-import com.helger.rnio.impl.Closer;
 
 /**
  * A class that tries to establish a connection to the real server or the next
@@ -339,7 +339,7 @@ public class SWC implements
     if (wc != null)
     {
       con.getNioHandler ().close (wc.getChannel ());
-      Closer.close (wc, logger);
+      StreamHelper.close (wc);
     }
   }
 

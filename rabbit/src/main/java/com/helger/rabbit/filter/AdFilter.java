@@ -19,7 +19,7 @@ import com.helger.rabbit.util.Config;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class AdFilter extends HtmlFilter
+public class AdFilter extends AbstractHtmlFilter
 {
   /** the image we replace ads with */
   private static final String ADREPLACER = "http://$proxy/FileSender/public/NoAd.gif";
@@ -64,7 +64,7 @@ public class AdFilter extends HtmlFilter
     }
   }
 
-  public HtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
+  public AbstractHtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
   {
     return new AdFilter (con, request, response);
   }

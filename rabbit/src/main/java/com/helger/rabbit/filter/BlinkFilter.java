@@ -11,7 +11,7 @@ import com.helger.rabbit.proxy.Connection;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class BlinkFilter extends SimpleTagFilter
+public class BlinkFilter extends AbstractSimpleTagFilter
 {
 
   // For the factory.
@@ -33,7 +33,7 @@ public class BlinkFilter extends SimpleTagFilter
     super (con, request, response);
   }
 
-  public HtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
+  public AbstractHtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
   {
     return new BlinkFilter (con, request, response);
   }

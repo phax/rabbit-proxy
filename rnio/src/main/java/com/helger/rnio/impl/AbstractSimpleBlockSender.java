@@ -37,6 +37,7 @@ import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IWriteHandler;
 
@@ -111,7 +112,7 @@ public abstract class AbstractSimpleBlockSender extends AbstractSocketHandlerBas
   public void handleIOException (final IOException e)
   {
     logger.log (Level.WARNING, "Failed to send data", e);
-    Closer.close (sc, logger);
+    StreamHelper.close (sc);
   }
 
   /**

@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.helger.rabbit.dns.DNSHandler;
+import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.Resolver;
 import com.helger.rnio.INioHandler;
@@ -23,7 +23,7 @@ public class InOutProxyChain implements IProxyChain
 
   public InOutProxyChain (final String insideMatch,
                           final INioHandler nio,
-                          final DNSHandler dnsHandler,
+                          final IDNSHandler dnsHandler,
                           final InetAddress proxy,
                           final int port,
                           final String proxyAuth)

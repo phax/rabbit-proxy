@@ -20,12 +20,12 @@ import java.util.logging.Logger;
 import javax.naming.NamingException;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.cache.Cache;
+import com.helger.rabbit.cache.ICache;
 import com.helger.rabbit.cache.ncache.NCache;
-import com.helger.rabbit.dns.DNSHandler;
+import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rabbit.dns.DNSJavaHandler;
 import com.helger.rabbit.dns.DNSSunHandler;
-import com.helger.rabbit.handler.HandlerFactory;
+import com.helger.rabbit.handler.IHandlerFactory;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.ProxiedProxyChain;
@@ -41,9 +41,9 @@ import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IStatisticsHolder;
 import com.helger.rnio.impl.Acceptor;
-import com.helger.rnio.impl.IAcceptorListener;
 import com.helger.rnio.impl.BasicStatisticsHolder;
 import com.helger.rnio.impl.CachingBufferHandler;
+import com.helger.rnio.impl.IAcceptorListener;
 import com.helger.rnio.impl.MultiSelectorNioHandler;
 import com.helger.rnio.impl.SimpleThreadFactory;
 
@@ -80,7 +80,7 @@ public class HttpProxy
   private static int acceptorId = 0;
 
   /** The dns handler */
-  private DNSHandler dnsHandler;
+  private IDNSHandler dnsHandler;
 
   /** The socket access controller. */
   private SocketAccessController socketAccessController;
@@ -208,7 +208,7 @@ public class HttpProxy
                                                          DNSJavaHandler.class.getName ());
       try
       {
-        final Class <? extends DNSHandler> clz = load3rdPartyClass (dnsHandlerClass, DNSHandler.class);
+        final Class <? extends IDNSHandler> clz = load3rdPartyClass (dnsHandlerClass, IDNSHandler.class);
         dnsHandler = clz.newInstance ();
         dnsHandler.setup (config.getProperties ("dns"));
       }
@@ -601,7 +601,7 @@ public class HttpProxy
    *
    * @return the Cache in use
    */
-  public Cache <HttpHeader, HttpHeader> getCache ()
+  public ICache <HttpHeader, HttpHeader> getCache ()
   {
     return cache;
   }
@@ -666,12 +666,12 @@ public class HttpProxy
     return config;
   }
 
-  HandlerFactory getHandlerFactory (final String mime)
+  IHandlerFactory getHandlerFactory (final String mime)
   {
     return handlerFactoryHandler.getHandlerFactory (mime);
   }
 
-  HandlerFactory getCacheHandlerFactory (final String mime)
+  IHandlerFactory getCacheHandlerFactory (final String mime)
   {
     return handlerFactoryHandler.getCacheHandlerFactory (mime);
   }

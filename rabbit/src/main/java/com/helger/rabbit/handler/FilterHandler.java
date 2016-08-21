@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.filter.HtmlFilter;
-import com.helger.rabbit.filter.HtmlFilterFactory;
+import com.helger.rabbit.filter.AbstractHtmlFilter;
+import com.helger.rabbit.filter.IHtmlFilterFactory;
 import com.helger.rabbit.html.HtmlBlock;
 import com.helger.rabbit.html.HtmlParseException;
 import com.helger.rabbit.html.HtmlParser;
 import com.helger.rabbit.http.HttpHeader;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
 import com.helger.rabbit.proxy.Connection;
@@ -32,12 +32,12 @@ import com.helger.rabbit.zip.GZipUnpacker;
  */
 public class FilterHandler extends GZipHandler
 {
-  private List <HtmlFilterFactory> filterClasses = new ArrayList<> ();
+  private List <IHtmlFilterFactory> filterClasses = new ArrayList<> ();
   private boolean repack = false;
   private String defaultCharSet = null;
   private String overrideCharSet = null;
 
-  private List <HtmlFilter> filters;
+  private List <AbstractHtmlFilter> filters;
   private HtmlParser parser;
   private byte [] restBlock = null;
   private boolean sendingRest = false;
@@ -85,13 +85,13 @@ public class FilterHandler extends GZipHandler
                         final TrafficLoggerHandler tlh,
                         final HttpHeader request,
                         final HttpHeader response,
-                        final ResourceSource content,
+                        final IResourceSource content,
                         final boolean mayCache,
                         final boolean mayFilter,
                         final long size,
                         final boolean compress,
                         final boolean repack,
-                        final List <HtmlFilterFactory> filterClasses)
+                        final List <IHtmlFilterFactory> filterClasses)
   {
     super (con, tlh, request, response, content, mayCache, mayFilter, size, compress);
     this.repack = repack;
@@ -243,11 +243,11 @@ public class FilterHandler extends GZipHandler
   }
 
   @Override
-  public Handler getNewInstance (final Connection con,
+  public IHandler getNewInstance (final Connection con,
                                  final TrafficLoggerHandler tlh,
                                  final HttpHeader header,
                                  final HttpHeader webHeader,
-                                 final ResourceSource content,
+                                 final IResourceSource content,
                                  final boolean mayCache,
                                  final boolean mayFilter,
                                  final long size)
@@ -336,7 +336,7 @@ public class FilterHandler extends GZipHandler
     try
     {
       currentBlock = parser.parse ();
-      for (final HtmlFilter hf : filters)
+      for (final AbstractHtmlFilter hf : filters)
       {
         hf.filterHtml (currentBlock);
         if (!hf.isCacheable ())
@@ -426,14 +426,14 @@ public class FilterHandler extends GZipHandler
    *
    * @return a List of HtmlFilters.
    */
-  private List <HtmlFilter> initFilters ()
+  private List <AbstractHtmlFilter> initFilters ()
   {
     final int fsize = filterClasses.size ();
-    final List <HtmlFilter> fl = new ArrayList<> (fsize);
+    final List <AbstractHtmlFilter> fl = new ArrayList<> (fsize);
 
     for (int i = 0; i < fsize; i++)
     {
-      final HtmlFilterFactory hff = filterClasses.get (i);
+      final IHtmlFilterFactory hff = filterClasses.get (i);
       fl.add (hff.newFilter (con, request, response));
     }
     return fl;
@@ -461,7 +461,7 @@ public class FilterHandler extends GZipHandler
     {
       try
       {
-        final Class <? extends HtmlFilterFactory> cls = proxy.load3rdPartyClass (classname, HtmlFilterFactory.class);
+        final Class <? extends IHtmlFilterFactory> cls = proxy.load3rdPartyClass (classname, IHtmlFilterFactory.class);
         filterClasses.add (cls.newInstance ());
       }
       catch (final ClassNotFoundException e)

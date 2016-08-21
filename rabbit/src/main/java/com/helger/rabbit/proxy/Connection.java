@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.helger.rabbit.cache.Cache;
-import com.helger.rabbit.cache.CacheEntry;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.cache.CacheException;
+import com.helger.rabbit.cache.ICache;
+import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.handler.BaseHandler;
-import com.helger.rabbit.handler.Handler;
+import com.helger.rabbit.handler.IHandler;
 import com.helger.rabbit.handler.MultiPartHandler;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
@@ -29,7 +30,6 @@ import com.helger.rabbit.io.Resolver;
 import com.helger.rabbit.util.Counter;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.ITaskIdentifier;
-import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
 /**
@@ -94,7 +94,7 @@ public class Connection
 
   /**
    * Create a new Connection
-   * 
+   *
    * @param id
    *        the ConnectionId of this connection.
    * @param channel
@@ -262,8 +262,8 @@ public class Connection
       }
 
       final ITaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName () +
-                                                           ".filterAndHandleRequest: ",
-                                                           request.getRequestURI ());
+                                                            ".filterAndHandleRequest: ",
+                                                            request.getRequestURI ());
       getNioHandler ().runThreadTask ( () -> filterAndHandleRequest (), ti);
     }
     catch (final Throwable t)
@@ -355,7 +355,7 @@ public class Connection
     }
   }
 
-  private void checkNoStore (final CacheEntry <HttpHeader, HttpHeader> entry)
+  private void checkNoStore (final ICacheEntry <HttpHeader, HttpHeader> entry)
   {
     if (entry == null)
       return;
@@ -403,7 +403,7 @@ public class Connection
   private void fillInCacheEntries (final RequestHandler rh)
   {
     status = "Handling request - checking cache";
-    final Cache <HttpHeader, HttpHeader> cache = proxy.getCache ();
+    final ICache <HttpHeader, HttpHeader> cache = proxy.getCache ();
     final String method = request.getMethod ();
     try
     {
@@ -466,7 +466,7 @@ public class Connection
 
   /**
    * Fired when setting up a web connection failed.
-   * 
+   *
    * @param rh
    *        the RequestHandler
    * @param cause
@@ -504,7 +504,7 @@ public class Connection
   /**
    * Check if we must tunnel a request. Currently will only check if the
    * Authorization starts with NTLM or Negotiate.
-   * 
+   *
    * @return true if the current request needs to be handled by a tunnel
    */
   protected boolean mustTunnel ()
@@ -516,7 +516,7 @@ public class Connection
   /**
    * Fired when a web connection has been established. The web connection may be
    * to the origin server or to an upstream proxy.
-   * 
+   *
    * @param rh
    *        the RequestHandler for the current request
    */
@@ -618,7 +618,7 @@ public class Connection
 
       setHandlerFactory (rh);
       status = "Handling request - " + rh.getHandlerFactory ().getClass ().getName ();
-      final Handler handler = rh.getHandlerFactory ().getNewInstance (this,
+      final IHandler handler = rh.getHandlerFactory ().getNewInstance (this,
                                                                       tlh,
                                                                       request,
                                                                       rh.getWebHeader (),
@@ -651,7 +651,7 @@ public class Connection
     }
   }
 
-  private void finalFixesOnWebHeader (final RequestHandler rh, final Handler handler)
+  private void finalFixesOnWebHeader (final RequestHandler rh, final IHandler handler)
   {
     if (rh.getWebHeader () == null)
       return;
@@ -884,7 +884,7 @@ public class Connection
 
   /**
    * Send an error (400 Bad Request) to the client.
-   * 
+   *
    * @param status
    *        the status code of the error.
    * @param message
@@ -899,7 +899,7 @@ public class Connection
 
   /**
    * Send an error (400 Bad Request or 504) to the client.
-   * 
+   *
    * @param e
    *        the exception to tell the client.
    */
@@ -940,7 +940,7 @@ public class Connection
 
   /**
    * Get the SocketChannel to the client
-   * 
+   *
    * @return the SocketChannel connected to the client
    */
   public SocketChannel getChannel ()
@@ -966,7 +966,7 @@ public class Connection
 
   private void closeDown ()
   {
-    Closer.close (channel, logger);
+    StreamHelper.close (channel);
     if (!requestHandle.isEmpty ())
     {
       // empty the buffer...
@@ -1019,7 +1019,7 @@ public class Connection
   /**
    * Set keepalive to a new value. Note that keepalive can only be promoted
    * down.
-   * 
+   *
    * @param keepalive
    *        the new keepalive value.
    */
@@ -1030,7 +1030,7 @@ public class Connection
 
   /**
    * Get the keepalive value.
-   * 
+   *
    * @return true if keepalive should be done, false otherwise.
    */
   private boolean getKeepalive ()
@@ -1040,7 +1040,7 @@ public class Connection
 
   /**
    * Get the name of the user that is currently authorized.
-   * 
+   *
    * @return a username, may be null if the user is not know/authorized
    */
   public String getUserName ()
@@ -1050,7 +1050,7 @@ public class Connection
 
   /**
    * Set the name of the currently authenticated user (for basic proxy auth)
-   * 
+   *
    * @param userName
    *        the name of the current user
    */
@@ -1061,7 +1061,7 @@ public class Connection
 
   /**
    * Get the name of the user that is currently authorized.
-   * 
+   *
    * @return a username, may be null if the user is not know/authorized
    */
   public String getPassword ()
@@ -1071,7 +1071,7 @@ public class Connection
 
   /**
    * Set the password of the currently authenticated user (for basic proxy auth)
-   * 
+   *
    * @param password
    *        the password that was used for authentication
    */
@@ -1082,7 +1082,7 @@ public class Connection
 
   /**
    * Get the request line of the request currently being handled
-   * 
+   *
    * @return the request line for the current request
    */
   public String getRequestLine ()
@@ -1092,7 +1092,7 @@ public class Connection
 
   /**
    * Get the current request uri. This will get the uri from the request header.
-   * 
+   *
    * @return the uri of the current request
    */
   public String getRequestURI ()
@@ -1102,7 +1102,7 @@ public class Connection
 
   /**
    * Get debug info for use in 500 error response
-   * 
+   *
    * @return a string with internal state of this connection
    */
   public String getDebugInfo ()
@@ -1146,7 +1146,7 @@ public class Connection
    * Get the http version that the client used. We modify the request header to
    * hold HTTP/1.1 since that is what rabbit uses, but the real client may have
    * sent a 1.0 header.
-   * 
+   *
    * @return the request http version
    */
   public String getRequestVersion ()
@@ -1156,7 +1156,7 @@ public class Connection
 
   /**
    * Get the current status of this request
-   * 
+   *
    * @return the current status
    */
   public String getStatus ()
@@ -1181,7 +1181,7 @@ public class Connection
   /**
    * Get the client resource handler, that is the handler of any content the
    * client is submitting (POSTED data, file uploads etc.)
-   * 
+   *
    * @return the ClientResourceHandler for the current request
    */
   public ClientResourceHandler getClientResourceHandler ()
@@ -1191,7 +1191,7 @@ public class Connection
 
   /**
    * Get the extra information associated with the current request.
-   * 
+   *
    * @return the currently set extra info or null if no such info is set.
    */
   public String getExtraInfo ()
@@ -1201,7 +1201,7 @@ public class Connection
 
   /**
    * Set the extra info.
-   * 
+   *
    * @param info
    *        the new info.
    */
@@ -1212,7 +1212,7 @@ public class Connection
 
   /**
    * Get the time the current request was started.
-   * 
+   *
    * @return the start time for the current request
    */
   public long getStarted ()
@@ -1222,7 +1222,7 @@ public class Connection
 
   /**
    * Set the chunking option.
-   * 
+   *
    * @param b
    *        if true this connection should use chunking.
    */
@@ -1233,7 +1233,7 @@ public class Connection
 
   /**
    * Get the chunking option.
-   * 
+   *
    * @return if this connection is using chunking.
    */
   public boolean getChunking ()
@@ -1243,7 +1243,7 @@ public class Connection
 
   /**
    * Get the state of this request.
-   * 
+   *
    * @return true if this is a metapage request, false otherwise.
    */
   public boolean getMeta ()
@@ -1263,7 +1263,7 @@ public class Connection
   /**
    * Specify if the current resource may be served from our cache. This can only
    * be promoted down..
-   * 
+   *
    * @param useCache
    *        true if we may use the cache for serving this request, false
    *        otherwise.
@@ -1275,7 +1275,7 @@ public class Connection
 
   /**
    * Get the state of this request.
-   * 
+   *
    * @return true if we may use the cache for this request, false otherwise.
    */
   private boolean getMayUseCache ()
@@ -1286,7 +1286,7 @@ public class Connection
   /**
    * Specify if we may cache the response resource. This can only be promoted
    * down.
-   * 
+   *
    * @param cacheAllowed
    *        true if we may cache the response, false otherwise.
    */
@@ -1297,7 +1297,7 @@ public class Connection
 
   /**
    * Get the state of this request.
-   * 
+   *
    * @return true if we may cache the response, false otherwise.
    */
   private boolean getMayCache ()
@@ -1315,7 +1315,7 @@ public class Connection
 
   /**
    * Get the state of the request.
-   * 
+   *
    * @return true if we may filter the response, false otherwise.
    */
   public boolean getMayFilter ()
@@ -1343,7 +1343,7 @@ public class Connection
 
   /**
    * Set the content length of the response.
-   * 
+   *
    * @param contentLength
    *        the new content length.
    */
@@ -1354,7 +1354,7 @@ public class Connection
 
   /**
    * Set the status code for the current request
-   * 
+   *
    * @param statusCode
    *        the new status code
    */
@@ -1397,7 +1397,7 @@ public class Connection
 
   /**
    * Send a request and then close this connection.
-   * 
+   *
    * @param header
    *        the HttpHeader to send before closing down.
    */
@@ -1466,7 +1466,7 @@ public class Connection
   /**
    * Get the HttpGenerator that this connection uses when it needs to generate a
    * custom respons header and resource.
-   * 
+   *
    * @return the current HttpGenerator
    */
   public HttpGenerator getHttpGenerator ()

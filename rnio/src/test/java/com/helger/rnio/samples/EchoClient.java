@@ -43,13 +43,13 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IStatisticsHolder;
-import com.helger.rnio.impl.BasicStatisticsHolder;
-import com.helger.rnio.impl.Closer;
-import com.helger.rnio.impl.MultiSelectorNioHandler;
 import com.helger.rnio.impl.AbstractSimpleBlockReader;
 import com.helger.rnio.impl.AbstractSimpleBlockSender;
+import com.helger.rnio.impl.BasicStatisticsHolder;
+import com.helger.rnio.impl.MultiSelectorNioHandler;
 import com.helger.rnio.impl.SimpleThreadFactory;
 
 /**
@@ -117,7 +117,7 @@ public class EchoClient
   public void shutdown ()
   {
     nioHandler.shutdown ();
-    Closer.close (serverChannel, logger);
+    StreamHelper.close (serverChannel);
     // would want to shutdown inputReaderThread but it will be
     // blocked in BufferedReader.readLine and that one is not
     // inerruptible.

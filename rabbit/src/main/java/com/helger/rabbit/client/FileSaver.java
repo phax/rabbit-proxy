@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.BlockListener;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rnio.ITaskIdentifier;
-import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
 /**
@@ -25,12 +25,12 @@ public class FileSaver implements BlockListener
   private final HttpHeader request;
   private final ClientBase clientBase;
   private final ClientListener listener;
-  private final ResourceSource rs;
+  private final IResourceSource rs;
   private final FileChannel fc;
 
   /**
    * Create a new FileSaver that will write a resource to the given file.
-   * 
+   *
    * @param request
    *        the actual request
    * @param clientBase
@@ -47,7 +47,7 @@ public class FileSaver implements BlockListener
   public FileSaver (final HttpHeader request,
                     final ClientBase clientBase,
                     final ClientListener listener,
-                    final ResourceSource rs,
+                    final IResourceSource rs,
                     final File f) throws IOException
   {
     this.request = request;
@@ -110,6 +110,6 @@ public class FileSaver implements BlockListener
   private void downloadFailed ()
   {
     rs.release ();
-    Closer.close (fc, clientBase.getLogger ());
+    StreamHelper.close (fc);
   }
 }

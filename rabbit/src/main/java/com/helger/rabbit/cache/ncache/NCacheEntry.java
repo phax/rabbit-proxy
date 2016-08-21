@@ -1,6 +1,6 @@
 package com.helger.rabbit.cache.ncache;
 
-import com.helger.rabbit.cache.CacheEntry;
+import com.helger.rabbit.cache.ICacheEntry;
 
 /**
  * A cached object.
@@ -11,7 +11,7 @@ import com.helger.rabbit.cache.CacheEntry;
  *        the value type of this entry
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-class NCacheEntry <K, V> extends NCacheElementBase implements CacheEntry <K, V>
+class NCacheEntry <K, V> extends NCacheElementBase implements ICacheEntry <K, V>
 {
   /** @serial The key for the object usually a URL or a filename. */
   private K key = null;

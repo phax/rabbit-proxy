@@ -17,7 +17,7 @@ import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
 import com.helger.rabbit.util.SimpleTrafficLogger;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IStatisticsHolder;
@@ -34,7 +34,7 @@ import com.helger.rnio.impl.SimpleThreadFactory;
 public class TestHttpHeaderReader
 {
   private final INioHandler nioHandler;
-  private final TrafficLogger trafficLogger = new SimpleTrafficLogger ();
+  private final ITrafficLogger trafficLogger = new SimpleTrafficLogger ();
   private final IBufferHandler bufferHandler = new CachingBufferHandler ();
   private final TestListener listener = new TestListener ();
   private SocketChannel readFrom, writeTo;

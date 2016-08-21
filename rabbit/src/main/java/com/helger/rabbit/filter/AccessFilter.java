@@ -15,16 +15,16 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.util.IPAccess;
-import com.helger.rnio.impl.Closer;
 
 /**
  * This is a class that filters access based on ip address.
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class AccessFilter implements IPAccessFilter
+public class AccessFilter implements IIPAccessFilter
 {
   private List <IPAccess> allowed = new ArrayList<> ();
   private List <IPAccess> denied = new ArrayList<> ();
@@ -75,27 +75,21 @@ public class AccessFilter implements IPAccessFilter
   {
     filename = filename.replace ('/', File.separatorChar);
 
-    FileInputStream is = null;
-    try
+    try (final FileInputStream is = new FileInputStream (filename);
+         final Reader r = new InputStreamReader (is, "UTF-8"))
     {
-      is = new FileInputStream (filename);
-      final Reader r = new InputStreamReader (is, "UTF-8");
       try
       {
         loadAccess (r);
       }
       finally
       {
-        Closer.close (r, logger);
+        StreamHelper.close (r);
       }
     }
     catch (final IOException e)
     {
       logger.log (Level.WARNING, "Accessfile '" + filename + "' not found: no one allowed", e);
-    }
-    finally
-    {
-      Closer.close (is, logger);
     }
   }
 
@@ -109,43 +103,44 @@ public class AccessFilter implements IPAccessFilter
   {
     final List <IPAccess> allowed = new ArrayList<> ();
     final List <IPAccess> denied = new ArrayList<> ();
-    final LineNumberReader br = new LineNumberReader (r);
-    String line;
-    while ((line = br.readLine ()) != null)
+    try (final LineNumberReader br = new LineNumberReader (r))
     {
-      // remove comments....
-      final int index = line.indexOf ('#');
-      if (index >= 0)
-        line = line.substring (0, index);
-      line = line.trim ();
-      if (line.equals (""))
-        continue;
-      boolean accept = true;
-      if (line.charAt (0) == '-')
+      String line;
+      while ((line = br.readLine ()) != null)
       {
-        accept = false;
-        line = line.substring (1);
-      }
-      final StringTokenizer st = new StringTokenizer (line);
-      if (st.countTokens () != 2)
-      {
-        logger.warning ("Bad line in accessconf:" + br.getLineNumber ());
-        continue;
-      }
-      final String low = st.nextToken ();
-      final InetAddress lowip = getInetAddress (low, logger, br);
-      final String high = st.nextToken ();
-      final InetAddress highip = getInetAddress (high, logger, br);
+        // remove comments....
+        final int index = line.indexOf ('#');
+        if (index >= 0)
+          line = line.substring (0, index);
+        line = line.trim ();
+        if (line.equals (""))
+          continue;
+        boolean accept = true;
+        if (line.charAt (0) == '-')
+        {
+          accept = false;
+          line = line.substring (1);
+        }
+        final StringTokenizer st = new StringTokenizer (line);
+        if (st.countTokens () != 2)
+        {
+          logger.warning ("Bad line in accessconf:" + br.getLineNumber ());
+          continue;
+        }
+        final String low = st.nextToken ();
+        final InetAddress lowip = getInetAddress (low, logger, br);
+        final String high = st.nextToken ();
+        final InetAddress highip = getInetAddress (high, logger, br);
 
-      if (lowip != null && highip != null)
-      {
-        if (accept)
-          allowed.add (new IPAccess (lowip, highip));
-        else
-          denied.add (new IPAccess (lowip, highip));
+        if (lowip != null && highip != null)
+        {
+          if (accept)
+            allowed.add (new IPAccess (lowip, highip));
+          else
+            denied.add (new IPAccess (lowip, highip));
+        }
       }
     }
-    br.close ();
     this.allowed = allowed;
     this.denied = denied;
   }

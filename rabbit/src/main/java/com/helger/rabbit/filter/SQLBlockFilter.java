@@ -21,7 +21,7 @@ import com.helger.rabbit.proxy.HttpProxy;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class SQLBlockFilter implements HttpFilter
+public class SQLBlockFilter implements IHttpFilter
 {
   private DataSourceHelper dsh;
   private final Logger logger = Logger.getLogger (getClass ().getName ());
@@ -29,37 +29,15 @@ public class SQLBlockFilter implements HttpFilter
 
   public HttpHeader doHttpInFiltering (final SocketChannel socket, final HttpHeader header, final Connection con)
   {
-    try
+    try (final java.sql.Connection db = dsh.getConnection ();
+         final PreparedStatement ps = db.prepareStatement (dsh.getSelect ()))
     {
-      final java.sql.Connection db = dsh.getConnection ();
-      try
+      final URL u = new URL (header.getRequestURI ());
+      ps.setString (1, u.getHost ());
+      try (final ResultSet rs = ps.executeQuery ())
       {
-        final PreparedStatement ps = db.prepareStatement (dsh.getSelect ());
-        try
-        {
-          final URL u = new URL (header.getRequestURI ());
-          ps.setString (1, u.getHost ());
-          final ResultSet rs = ps.executeQuery ();
-          try
-          {
-            if (rs.next ())
-            {
-              return con.getHttpGenerator ().get403 ();
-            }
-          }
-          finally
-          {
-            rs.close ();
-          }
-        }
-        finally
-        {
-          ps.close ();
-        }
-      }
-      finally
-      {
-        db.close ();
+        if (rs.next ())
+          return con.getHttpGenerator ().get403 ();
       }
     }
     catch (final MalformedURLException e)

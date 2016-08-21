@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.io.BufferHandle;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IReadHandler;
 
@@ -29,7 +29,7 @@ public class HttpHeaderReader extends BaseSocketHandler implements IReadHandler
   private long dataSize = -1; // -1 for unknown.
   private int startParseAt = 0;
 
-  private final TrafficLogger tl;
+  private final ITrafficLogger tl;
 
   /**
    * @param channel
@@ -52,7 +52,7 @@ public class HttpHeaderReader extends BaseSocketHandler implements IReadHandler
   public HttpHeaderReader (final SocketChannel channel,
                            final BufferHandle bh,
                            final INioHandler nioHandler,
-                           final TrafficLogger tl,
+                           final ITrafficLogger tl,
                            final boolean request,
                            final boolean strictHttp,
                            final HttpHeaderListener reader)

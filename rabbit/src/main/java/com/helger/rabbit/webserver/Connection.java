@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.FileResourceSource;
@@ -15,15 +16,14 @@ import com.helger.rabbit.httpio.HttpHeaderListener;
 import com.helger.rabbit.httpio.HttpHeaderReader;
 import com.helger.rabbit.httpio.HttpHeaderSender;
 import com.helger.rabbit.httpio.HttpHeaderSentListener;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.httpio.TransferHandler;
 import com.helger.rabbit.httpio.TransferListener;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rabbit.util.MimeTypeMapper;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.INioHandler;
-import com.helger.rnio.impl.Closer;
 
 /**
  * A connection to a web client.
@@ -36,7 +36,7 @@ public class Connection
   private final SocketChannel sc;
   private BufferHandle clientBufferHandle;
   private boolean timeToClose = false;
-  private ResourceSource resourceSource = null;
+  private IResourceSource resourceSource = null;
 
   private final Logger logger = Logger.getLogger (getClass ().getName ());
 
@@ -77,7 +77,7 @@ public class Connection
 
   private void shutdown ()
   {
-    Closer.close (sc, logger);
+    StreamHelper.close (sc);
   }
 
   private void handleRequest (final HttpHeader header)
@@ -198,7 +198,7 @@ public class Connection
   private void sendResource ()
   {
     final TransferListener transferDoneListener = new TransferDoneListener ();
-    final TrafficLogger tl = sws.getTrafficLogger ();
+    final ITrafficLogger tl = sws.getTrafficLogger ();
     final INioHandler nh = sws.getNioHandler ();
     final TransferHandler th = new TransferHandler (nh, resourceSource, sc, tl, tl, transferDoneListener);
     th.transfer ();

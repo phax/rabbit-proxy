@@ -14,10 +14,9 @@ import com.helger.rabbit.util.StringCache;
  */
 public class HttpHeader extends GeneralHeader
 {
-
   private String method = "";
   private String requestURI = "";
-  private String httpVersion = null;
+  private String httpVersion;
   private int hashCodeValue;
 
   /**
@@ -47,7 +46,7 @@ public class HttpHeader extends GeneralHeader
   /**
    * Convert this header to a byte[]. The header lines are converted to US-ASCII
    * and any content is appended.
-   * 
+   *
    * @return the content of this header
    */
   public byte [] getBytes ()
@@ -68,7 +67,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the statusline of this header (only valid for responses).
-   * 
+   *
    * @return the status of the request.
    */
   public String getStatusLine ()
@@ -78,7 +77,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Set the statusline of this header.
-   * 
+   *
    * @param line
    *        a Status-Line )RFC 2068: 6.1)
    */
@@ -89,7 +88,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the requestline of this header (only valid for requests).
-   * 
+   *
    * @return the request.
    */
   public String getRequestLine ()
@@ -105,7 +104,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Set the requestline of this header
-   * 
+   *
    * @param line
    *        a Request-Line (RFC 2068: 5.1)
    */
@@ -134,7 +133,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Is this request for the head only?
-   * 
+   *
    * @return true if this request is for HEAD, false otherwise
    */
   public boolean isHeadOnlyRequest ()
@@ -144,7 +143,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the request method of this header (only valid for requests).
-   * 
+   *
    * @return the request method.
    */
   public String getMethod ()
@@ -154,7 +153,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Sets the request method of this header
-   * 
+   *
    * @param method
    *        the new requestmethod
    */
@@ -165,7 +164,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Check to see if this header is an SSL header.
-   * 
+   *
    * @return true if this header is an CONNECT request.
    */
   public boolean isSSLRequest ()
@@ -175,7 +174,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the requestURI of this request (only valid for requests).
-   * 
+   *
    * @return the requestURI.
    */
   public String getRequestURI ()
@@ -185,7 +184,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Sets the request URI of this header
-   * 
+   *
    * @param requestURI
    *        the new URI
    */
@@ -197,7 +196,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the HTTP Version of this request (only valid for requests).
-   * 
+   *
    * @return the http version.
    */
   public String getHTTPVersion ()
@@ -207,7 +206,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Set the HTTP Version to use for request.
-   * 
+   *
    * @param version
    *        the version to use.
    */
@@ -218,7 +217,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the HTTP version of the response (only valid for responses).
-   * 
+   *
    * @return the HTTP version.
    */
   public String getResponseHTTPVersion ()
@@ -228,7 +227,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Set the HTTP version for this response.
-   * 
+   *
    * @param httpVersion
    *        the version to use.
    */
@@ -239,7 +238,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the Status code of the response (only valid for responses).
-   * 
+   *
    * @return the status code.
    */
   public String getStatusCode ()
@@ -249,7 +248,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Set the Status code for this response.
-   * 
+   *
    * @param status
    *        the new status code.
    */
@@ -261,7 +260,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the Reason phrase of the response (only valid for responses).
-   * 
+   *
    * @return the reason phrase.
    */
   public String getReasonPhrase ()
@@ -271,7 +270,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Set the reason phrase for this reqponse.
-   * 
+   *
    * @param reason
    *        the new reasonphrase
    */
@@ -283,7 +282,7 @@ public class HttpHeader extends GeneralHeader
   /**
    * Is this request a HTTP/0.9 type request? A 0.9 request doesnt have a full
    * HTTPheader, only a requestline so we need to treat it differently.
-   * 
+   *
    * @return true if the request did not have any http version
    */
   public boolean isDot9Request ()
@@ -293,7 +292,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the hashCode for this header.
-   * 
+   *
    * @return the hash code for this object.
    */
   @Override
@@ -305,7 +304,7 @@ public class HttpHeader extends GeneralHeader
   /**
    * Is this Header equal to the other object? Two HTTPHeaders are assumed equal
    * if the requesURI's are equal.
-   * 
+   *
    * @param o
    *        the Object to compare to.
    * @return true if o and this object are equal, false otherwise.
@@ -324,7 +323,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Try to guess if this header is a request.
-   * 
+   *
    * @return true if this (probably) is a request, false otherwise.
    */
   public boolean isRequest ()
@@ -334,7 +333,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Try to guess if this header is a response.
-   * 
+   *
    * @return true if this (probably) is a response, false otherwise.
    */
   public boolean isResponse ()
@@ -344,7 +343,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Try to guess if this header is a secure thing.
-   * 
+   *
    * @return true if this (probably) is a secure connection.
    */
   public boolean isSecure ()
@@ -354,7 +353,7 @@ public class HttpHeader extends GeneralHeader
 
   /**
    * Get the current content for this request/response.
-   * 
+   *
    * @return the resource associated with this header, may be null
    */
   public byte [] getContent ()

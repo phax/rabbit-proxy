@@ -9,47 +9,46 @@ package com.helger.rabbit.cache;
  *        the data resource
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface CacheEntry <K, V>
+public interface ICacheEntry <K, V>
 {
-
   /**
    * Get the id of the entry.
-   * 
+   *
    * @return the id of the entry.
    */
-  long getId ();
+  long getID ();
 
   /**
    * Get the key were holding data for
-   * 
+   *
    * @return the key object
    */
   K getKey ();
 
   /**
    * Get the date this object was cached.
-   * 
+   *
    * @return a date (millis since the epoch).
    */
   long getCacheTime ();
 
   /**
    * Get the size of our file
-   * 
+   *
    * @return the size of our data
    */
   long getSize ();
 
   /**
    * Get the expiry-date of our file
-   * 
+   *
    * @return the expiry date of our data
    */
   long getExpires ();
 
   /**
    * Sets the expirydate of our data
-   * 
+   *
    * @param d
    *        the new expiry-date.
    */
@@ -57,7 +56,7 @@ public interface CacheEntry <K, V>
 
   /**
    * Get the hooked data.
-   * 
+   *
    * @return the the hooked data.
    */
   V getDataHook ();
@@ -65,7 +64,7 @@ public interface CacheEntry <K, V>
   /**
    * Sets the data hook for this cache object. Since it is not always possible
    * to make the key hold this...
-   * 
+   *
    * @param o
    *        the new data.
    */

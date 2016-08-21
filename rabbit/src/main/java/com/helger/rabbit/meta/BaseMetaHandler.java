@@ -14,7 +14,7 @@ import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HtmlPage;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 
 /**
  * A base class for meta handlers. This meta handler will send a http header
@@ -27,8 +27,8 @@ public abstract class BaseMetaHandler implements MetaHandler, BlockSentListener
   protected HttpHeader request;
   protected SMap htab;
   protected Connection con;
-  protected TrafficLogger tlProxy;
-  protected TrafficLogger tlClient;
+  protected ITrafficLogger tlProxy;
+  protected ITrafficLogger tlClient;
   private boolean first = true;
   protected final Logger logger = Logger.getLogger (getClass ().getName ());
 
@@ -56,8 +56,8 @@ public abstract class BaseMetaHandler implements MetaHandler, BlockSentListener
   public void handle (final HttpHeader request,
                       final SMap htab,
                       final Connection con,
-                      final TrafficLogger tlProxy,
-                      final TrafficLogger tlClient) throws IOException
+                      final ITrafficLogger tlProxy,
+                      final ITrafficLogger tlClient) throws IOException
   {
     this.request = request;
     this.htab = htab;

@@ -1,7 +1,7 @@
 package com.helger.rabbit.meta;
 
-import com.helger.rabbit.cache.Cache;
 import com.helger.rabbit.cache.CacheException;
+import com.helger.rabbit.cache.ICache;
 import com.helger.rabbit.http.HttpHeader;
 
 /**
@@ -31,7 +31,7 @@ public class ClearCache extends BaseMetaHandler
       timeToClean = true;
       return PageCompletion.PAGE_NOT_DONE;
     }
-    final Cache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
+    final ICache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
     try
     {
       cache.clear ();

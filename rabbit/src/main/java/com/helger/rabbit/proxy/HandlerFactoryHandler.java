@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.handler.HandlerFactory;
+import com.helger.rabbit.handler.IHandlerFactory;
 import com.helger.rabbit.util.Config;
 
 /**
@@ -35,9 +35,9 @@ class HandlerFactoryHandler
   {
     public final String mime;
     public final Pattern pattern;
-    public final HandlerFactory factory;
+    public final IHandlerFactory factory;
 
-    public HandlerInfo (final String mime, final HandlerFactory factory)
+    public HandlerInfo (final String mime, final IHandlerFactory factory)
     {
       this.mime = mime;
       this.pattern = Pattern.compile (mime, Pattern.CASE_INSENSITIVE);
@@ -75,7 +75,7 @@ class HandlerFactoryHandler
       return hhandlers;
     for (final String handler : handlersProps.keySet ())
     {
-      HandlerFactory hf;
+      IHandlerFactory hf;
       final String id = handlersProps.get (handler).trim ();
       hf = setupHandler (id, config, handler, proxy);
       hhandlers.add (new HandlerInfo (handler, hf));
@@ -83,19 +83,19 @@ class HandlerFactoryHandler
     return hhandlers;
   }
 
-  private HandlerFactory setupHandler (final String id,
+  private IHandlerFactory setupHandler (final String id,
                                        final Config config,
                                        final String handler,
                                        final HttpProxy proxy)
   {
     String className = id;
-    HandlerFactory hf = null;
+    IHandlerFactory hf = null;
     try
     {
       final int i = id.indexOf ('*');
       if (i >= 0)
         className = id.substring (0, i);
-      final Class <? extends HandlerFactory> cls = proxy.load3rdPartyClass (className, HandlerFactory.class);
+      final Class <? extends IHandlerFactory> cls = proxy.load3rdPartyClass (className, IHandlerFactory.class);
       hf = cls.newInstance ();
       hf.setup (config.getProperties (id), proxy);
     }
@@ -118,7 +118,7 @@ class HandlerFactoryHandler
     return hf;
   }
 
-  HandlerFactory getHandlerFactory (final String mime)
+  IHandlerFactory getHandlerFactory (final String mime)
   {
     for (final HandlerInfo hi : handlers)
     {
@@ -128,7 +128,7 @@ class HandlerFactoryHandler
     return null;
   }
 
-  HandlerFactory getCacheHandlerFactory (final String mime)
+  IHandlerFactory getCacheHandlerFactory (final String mime)
   {
     for (final HandlerInfo hi : cacheHandlers)
     {

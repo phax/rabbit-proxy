@@ -5,7 +5,7 @@ package com.helger.rabbit.util;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface TrafficLogger
+public interface ITrafficLogger
 {
   /**
    * Log a read
@@ -78,5 +78,5 @@ public interface TrafficLogger
    * @param other
    *        the traffic logger to add this statistics
    */
-  void addTo (TrafficLogger other);
+  void addTo (ITrafficLogger other);
 }

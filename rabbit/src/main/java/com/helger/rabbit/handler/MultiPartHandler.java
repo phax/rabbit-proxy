@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.BlockSender;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.MultiPartPipe;
@@ -46,7 +46,7 @@ public class MultiPartHandler extends BaseHandler
                            final TrafficLoggerHandler tlh,
                            final HttpHeader request,
                            final HttpHeader response,
-                           final ResourceSource content)
+                           final IResourceSource content)
   {
     super (con, tlh, request, response, content, false, false, -1);
     con.setChunking (false);
@@ -57,11 +57,11 @@ public class MultiPartHandler extends BaseHandler
   }
 
   @Override
-  public Handler getNewInstance (final Connection con,
+  public IHandler getNewInstance (final Connection con,
                                  final TrafficLoggerHandler tlh,
                                  final HttpHeader header,
                                  final HttpHeader webHeader,
-                                 final ResourceSource content,
+                                 final IResourceSource content,
                                  final boolean mayCache,
                                  final boolean mayFilter,
                                  final long size)

@@ -6,7 +6,7 @@ import com.helger.rabbit.proxy.Connection;
 /**
  * Something that can authenticate users using some kind of database.
  */
-public interface Authenticator
+public interface IAuthenticator
 {
 
   /**

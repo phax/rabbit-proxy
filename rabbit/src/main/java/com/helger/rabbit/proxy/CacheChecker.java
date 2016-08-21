@@ -8,9 +8,9 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.helger.rabbit.cache.Cache;
-import com.helger.rabbit.cache.CacheEntry;
 import com.helger.rabbit.cache.CacheException;
+import com.helger.rabbit.cache.ICache;
+import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 
@@ -58,7 +58,7 @@ class CacheChecker
 
   private HttpHeader checkIfMatch (final Connection con, final HttpHeader header, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     if (entry == null)
       return null;
     final HttpHeader oldresp = rh.getDataHook ();
@@ -179,7 +179,7 @@ class CacheChecker
   private void removeCaches (final HttpHeader request,
                              final HttpHeader webHeader,
                              final String type,
-                             final Cache <HttpHeader, HttpHeader> cache)
+                             final ICache <HttpHeader, HttpHeader> cache)
   {
     final String loc = webHeader.getHeader (type);
     if (loc == null)
@@ -220,7 +220,7 @@ class CacheChecker
 
   private void removeCaches (final HttpHeader request,
                              final HttpHeader webHeader,
-                             final Cache <HttpHeader, HttpHeader> cache)
+                             final ICache <HttpHeader, HttpHeader> cache)
   {
     removeCaches (request, webHeader, "Location", cache);
     removeCaches (request, webHeader, "Content-Location", cache);
@@ -228,7 +228,7 @@ class CacheChecker
 
   void removeOtherStaleCaches (final HttpHeader request,
                                final HttpHeader webHeader,
-                               final Cache <HttpHeader, HttpHeader> cache)
+                               final ICache <HttpHeader, HttpHeader> cache)
   {
     final String method = request.getMethod ();
     final String status = webHeader.getStatusCode ();

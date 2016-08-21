@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.helger.rabbit.cache.Cache;
-import com.helger.rabbit.cache.CacheEntry;
 import com.helger.rabbit.cache.CacheException;
+import com.helger.rabbit.cache.ICache;
+import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 
@@ -35,7 +35,7 @@ class ConditionalChecker
 
   private boolean checkVary (final Connection con, final HttpHeader req, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     if (entry == null)
       return false;
     final HttpHeader resp = rh.getDataHook ();
@@ -78,7 +78,7 @@ class ConditionalChecker
         return setupRevalidation (con, req, rh);
       }
       final Date now = new Date ();
-      final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+      final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
       if (checkMaxAge (cached, "max-age=", entry.getCacheTime (), now) ||
           checkMaxAge (cached, "s-maxage=", entry.getCacheTime (), now))
       {
@@ -115,7 +115,7 @@ class ConditionalChecker
 
   protected boolean checkMaxAge (final Connection con, final HttpHeader req, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     if (entry == null)
       return false;
     final List <String> ccs = req.getHeaders ("Cache-Control");
@@ -140,7 +140,7 @@ class ConditionalChecker
 
   private boolean checkNoCache (final Connection con, final HttpHeader header, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     if (entry == null)
       return false;
     // Only check the response header,
@@ -152,7 +152,7 @@ class ConditionalChecker
 
   private boolean checkQuery (final Connection con, final HttpHeader header, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     if (entry == null)
       return false;
     final String uri = header.getRequestURI ();
@@ -183,7 +183,7 @@ class ConditionalChecker
 
   private boolean checkMinFresh (final Connection con, final HttpHeader header, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     if (entry == null)
       return false;
     final long minFresh = getCacheControlValue (header, "min-fresh=");
@@ -200,7 +200,7 @@ class ConditionalChecker
 
   private boolean checkRevalidation (final Connection con, final HttpHeader header, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     if (entry == null)
       return false;
 
@@ -246,7 +246,7 @@ class ConditionalChecker
   // Return true if we are sending If-None-Match, or If-Modified-Since
   private boolean setupRevalidation (final Connection con, final HttpHeader req, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     con.setMayUseCache (false);
     final String method = req.getMethod ();
     // if we can not filter (noproxy-request) we can not revalidate...
@@ -320,7 +320,7 @@ class ConditionalChecker
                                  final HttpHeader webHeader,
                                  final HttpHeader cachedWebHeader,
                                  final String str,
-                                 final Cache <HttpHeader, HttpHeader> cache) throws CacheException
+                                 final ICache <HttpHeader, HttpHeader> cache) throws CacheException
   {
     final String cln = webHeader.getHeader (str);
     final String clo = cachedWebHeader.getHeader (str);
@@ -361,7 +361,7 @@ class ConditionalChecker
       if (d1 != null && d1.before (d2))
         return false;
     }
-    final Cache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
+    final ICache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
     // check that some headers are equal
     if (rh.getWebHeader ().getStatusCode ().equals ("200"))
       checkStaleHeader (requestHeader, rh.getWebHeader (), cachedWebHeader, "Content-Length", cache);

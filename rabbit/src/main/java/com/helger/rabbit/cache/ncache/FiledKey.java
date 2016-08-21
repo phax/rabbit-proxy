@@ -37,7 +37,7 @@ class FiledKey <K> extends FileData <K>
     setCache (cache);
     hashCode = key.hashCode ();
     this.id = id;
-    return writeData (getFileName (), cache.getKeyFileHandler (), key, logger);
+    return writeData (getFileName (), cache.getKeyFileHandler (), key);
   }
 
   private File getFileName ()
@@ -54,7 +54,7 @@ class FiledKey <K> extends FileData <K>
    */
   public K getData () throws IOException
   {
-    return readData (getFileName (), cache.getKeyFileHandler (), cache.getLogger ());
+    return readData (getFileName (), cache.getKeyFileHandler ());
   }
 
   /**

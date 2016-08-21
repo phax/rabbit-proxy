@@ -13,7 +13,7 @@ import com.helger.rabbit.util.IPAccess;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface IPAccessFilter
+public interface IIPAccessFilter
 {
 
   /**

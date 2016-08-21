@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.filter.authenticate.AuthUserInfo;
-import com.helger.rabbit.filter.authenticate.Authenticator;
+import com.helger.rabbit.filter.authenticate.IAuthenticator;
 import com.helger.rabbit.filter.authenticate.PlainFileAuthenticator;
 import com.helger.rabbit.filter.authenticate.SQLAuthenticator;
 import com.helger.rabbit.http.HttpHeader;
@@ -25,10 +25,10 @@ import com.helger.rabbit.proxy.HttpProxy;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class ProxyAuth implements HttpFilter
+public class ProxyAuth implements IHttpFilter
 {
   private final Logger logger = Logger.getLogger (getClass ().getName ());
-  private Authenticator authenticator;
+  private IAuthenticator authenticator;
   private int cacheTime;
   private boolean oneIpOnly;
   private Pattern noAuthPattern;
@@ -160,7 +160,7 @@ public class ProxyAuth implements HttpFilter
       {
         try
         {
-          final Class <? extends Authenticator> clz = proxy.load3rdPartyClass (authType, Authenticator.class);
+          final Class <? extends IAuthenticator> clz = proxy.load3rdPartyClass (authType, IAuthenticator.class);
           authenticator = clz.newInstance ();
         }
         catch (final ClassNotFoundException e)

@@ -2,7 +2,7 @@ package com.helger.rabbit.handler;
 
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpHeader;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HttpProxy;
 import com.helger.rabbit.proxy.TrafficLoggerHandler;
@@ -12,7 +12,7 @@ import com.helger.rabbit.proxy.TrafficLoggerHandler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface HandlerFactory
+public interface IHandlerFactory
 {
 
   /**
@@ -36,11 +36,11 @@ public interface HandlerFactory
    *        the Size of the data beeing handled (-1 = unknown length).
    * @return the new Handler
    */
-  Handler getNewInstance (Connection connection,
+  IHandler getNewInstance (Connection connection,
                           TrafficLoggerHandler tlh,
                           HttpHeader header,
                           HttpHeader webheader,
-                          ResourceSource content,
+                          IResourceSource content,
                           boolean mayCache,
                           boolean mayFilter,
                           long size);

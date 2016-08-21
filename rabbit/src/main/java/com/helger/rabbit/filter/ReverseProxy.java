@@ -14,7 +14,7 @@ import com.helger.rabbit.proxy.HttpProxy;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class ReverseProxy implements HttpFilter
+public class ReverseProxy implements IHttpFilter
 {
   private String matcher = null;
   private String replacer = null;

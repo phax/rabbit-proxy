@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.util.Config;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 
 /**
  * A class to handle the client traffic loggers.
@@ -53,10 +53,10 @@ class ClientTrafficLoggerHandler
 
   public void logTraffic (final String user,
                           final HttpHeader request,
-                          final TrafficLogger client,
-                          final TrafficLogger network,
-                          final TrafficLogger cache,
-                          final TrafficLogger proxy)
+                          final ITrafficLogger client,
+                          final ITrafficLogger network,
+                          final ITrafficLogger cache,
+                          final ITrafficLogger proxy)
   {
     for (final ClientTrafficLogger ctl : loggers)
     {

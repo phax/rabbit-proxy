@@ -8,7 +8,7 @@ import java.nio.channels.SocketChannel;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.INioHandler;
 
 /**
@@ -41,7 +41,7 @@ public class HttpHeaderSender implements BlockSentListener
    */
   public HttpHeaderSender (final SocketChannel channel,
                            final INioHandler nioHandler,
-                           final TrafficLogger tl,
+                           final ITrafficLogger tl,
                            final HttpHeader header,
                            final boolean fullURI,
                            final HttpHeaderSentListener sender) throws IOException

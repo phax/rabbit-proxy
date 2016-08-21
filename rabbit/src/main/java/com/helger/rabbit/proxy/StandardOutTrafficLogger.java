@@ -2,7 +2,7 @@ package com.helger.rabbit.proxy;
 
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpHeader;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 
 /**
  * A simple ClientTrafficLogger that just writes simple network usage to
@@ -15,10 +15,10 @@ public class StandardOutTrafficLogger implements ClientTrafficLogger
 
   public void logTraffic (final String user,
                           final HttpHeader request,
-                          final TrafficLogger client,
-                          final TrafficLogger network,
-                          final TrafficLogger cache,
-                          final TrafficLogger proxy)
+                          final ITrafficLogger client,
+                          final ITrafficLogger network,
+                          final ITrafficLogger cache,
+                          final ITrafficLogger proxy)
   {
     System.out.println ("user: " +
                         user +

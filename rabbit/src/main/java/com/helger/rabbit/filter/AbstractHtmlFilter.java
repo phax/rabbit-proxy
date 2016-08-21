@@ -9,7 +9,7 @@ import com.helger.rabbit.proxy.Connection;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public abstract class HtmlFilter implements HtmlFilterFactory
+public abstract class AbstractHtmlFilter implements IHtmlFilterFactory
 {
   /** The Connection handling the request. */
   protected Connection con;
@@ -21,7 +21,7 @@ public abstract class HtmlFilter implements HtmlFilterFactory
   /**
    * Create the factory.
    */
-  public HtmlFilter ()
+  public AbstractHtmlFilter ()
   {
     // empty
   }
@@ -36,7 +36,7 @@ public abstract class HtmlFilter implements HtmlFilterFactory
    * @param response
    *        the actual response being sent.
    */
-  public HtmlFilter (final Connection con, final HttpHeader request, final HttpHeader response)
+  public AbstractHtmlFilter (final Connection con, final HttpHeader request, final HttpHeader response)
   {
     this.con = con;
     this.request = request;

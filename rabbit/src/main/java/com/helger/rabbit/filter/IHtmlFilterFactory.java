@@ -8,11 +8,11 @@ import com.helger.rabbit.proxy.Connection;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface HtmlFilterFactory
+public interface IHtmlFilterFactory
 {
   /**
    * Get a new HtmlFilter for the given request, response pair.
-   * 
+   *
    * @param con
    *        the Connection handling the request.
    * @param request
@@ -21,5 +21,5 @@ public interface HtmlFilterFactory
    *        the actual response being sent.
    * @return the new filter
    */
-  public HtmlFilter newFilter (Connection con, HttpHeader request, HttpHeader response);
+  AbstractHtmlFilter newFilter (Connection con, HttpHeader request, HttpHeader response);
 }

@@ -1,9 +1,9 @@
 package com.helger.rabbit.proxy;
 
-import com.helger.rabbit.cache.CacheEntry;
-import com.helger.rabbit.handler.HandlerFactory;
+import com.helger.rabbit.cache.ICacheEntry;
+import com.helger.rabbit.handler.IHandlerFactory;
 import com.helger.rabbit.http.HttpHeader;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rabbit.io.WebConnection;
@@ -18,11 +18,11 @@ class RequestHandler
   private BufferHandle webHandle;
   private final ConditionalChecker cond;
 
-  private ResourceSource content = null;
+  private IResourceSource content = null;
   private HttpHeader webHeader = null;
-  private CacheEntry <HttpHeader, HttpHeader> entry = null;
+  private ICacheEntry <HttpHeader, HttpHeader> entry = null;
   private HttpHeader dataHook = null; // the entrys datahook if any.
-  private HandlerFactory handlerFactory = null;
+  private IHandlerFactory handlerFactory = null;
   private long size = -1;
   private WebConnection wc = null;
   private boolean conditional;
@@ -68,12 +68,12 @@ class RequestHandler
     return cond;
   }
 
-  public synchronized CacheEntry <HttpHeader, HttpHeader> getEntry ()
+  public synchronized ICacheEntry <HttpHeader, HttpHeader> getEntry ()
   {
     return entry;
   }
 
-  public synchronized void setEntry (final CacheEntry <HttpHeader, HttpHeader> entry)
+  public synchronized void setEntry (final ICacheEntry <HttpHeader, HttpHeader> entry)
   {
     this.entry = entry;
   }
@@ -98,22 +98,22 @@ class RequestHandler
     this.conditional = conditional;
   }
 
-  public synchronized ResourceSource getContent ()
+  public synchronized IResourceSource getContent ()
   {
     return content;
   }
 
-  public synchronized void setContent (final ResourceSource content)
+  public synchronized void setContent (final IResourceSource content)
   {
     this.content = content;
   }
 
-  public synchronized HandlerFactory getHandlerFactory ()
+  public synchronized IHandlerFactory getHandlerFactory ()
   {
     return handlerFactory;
   }
 
-  public synchronized void setHandlerFactory (final HandlerFactory handlerFactory)
+  public synchronized void setHandlerFactory (final IHandlerFactory handlerFactory)
   {
     this.handlerFactory = handlerFactory;
   }

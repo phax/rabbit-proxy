@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.helger.rabbit.cache.CacheEntry;
+import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 
@@ -23,7 +23,7 @@ class NotModifiedHandler
    */
   public HttpHeader is304 (final HttpHeader in, final HttpGenerator httpGenerator, final RequestHandler rh)
   {
-    final CacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
+    final ICacheEntry <HttpHeader, HttpHeader> entry = rh.getEntry ();
     if (entry == null)
       return null;
     final HttpHeader oldresp = rh.getDataHook ();

@@ -13,9 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.cache.Cache;
-import com.helger.rabbit.cache.CacheEntry;
 import com.helger.rabbit.cache.CacheException;
+import com.helger.rabbit.cache.ICache;
+import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.http.ContentRangeParser;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
@@ -25,7 +25,7 @@ import com.helger.rabbit.httpio.BlockSentListener;
 import com.helger.rabbit.httpio.ChunkEnder;
 import com.helger.rabbit.httpio.HttpHeaderSender;
 import com.helger.rabbit.httpio.HttpHeaderSentListener;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.httpio.TransferHandler;
 import com.helger.rabbit.httpio.TransferListener;
 import com.helger.rabbit.io.BufferHandle;
@@ -41,7 +41,7 @@ import com.helger.rabbit.proxy.TrafficLoggerHandler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListener, BlockListener, BlockSentListener
+public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentListener, BlockListener, BlockSentListener
 {
   /** The Connection handling the request. */
   protected Connection con;
@@ -52,10 +52,10 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
   /** The actual response. */
   protected HttpHeader response;
   /** The resource */
-  protected ResourceSource content;
+  protected IResourceSource content;
 
   /** The cache entry if available. */
-  protected CacheEntry <HttpHeader, HttpHeader> entry = null;
+  protected ICacheEntry <HttpHeader, HttpHeader> entry = null;
   /** The cache channel. */
   protected WritableByteChannel cacheChannel;
 
@@ -105,7 +105,7 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
                       final TrafficLoggerHandler tlh,
                       final HttpHeader request,
                       final HttpHeader response,
-                      final ResourceSource content,
+                      final IResourceSource content,
                       final boolean mayCache,
                       final boolean mayFilter,
                       final long size)
@@ -122,11 +122,11 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
     this.size = size;
   }
 
-  public Handler getNewInstance (final Connection con,
+  public IHandler getNewInstance (final Connection con,
                                  final TrafficLoggerHandler tlh,
                                  final HttpHeader header,
                                  final HttpHeader webHeader,
-                                 final ResourceSource content,
+                                 final IResourceSource content,
                                  final boolean mayCache,
                                  final boolean mayFilter,
                                  final long size)
@@ -307,8 +307,8 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
   {
     if (entry == null || !mayCache)
       return;
-    final Cache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
-    final File entryName = cache.getEntryName (entry.getId (), false, null);
+    final ICache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
+    final File entryName = cache.getEntryName (entry.getID (), false, null);
     final long filesize = entryName.length ();
     final String cl = response.getHeader ("Content-Length");
     if (cl == null)
@@ -336,7 +336,7 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
    */
   protected boolean mayCacheFromSize ()
   {
-    final Cache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
+    final ICache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
     final long maxSize = cache.getCacheConfiguration ().getMaxSize ();
     return !(maxSize == 0 || (size > 0 && size > maxSize));
   }
@@ -388,9 +388,9 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
     }
   }
 
-  private void updateRange (final CacheEntry <HttpHeader, HttpHeader> old,
+  private void updateRange (final ICacheEntry <HttpHeader, HttpHeader> old,
                             final PartialCacher pc,
-                            final Cache <HttpHeader, HttpHeader> cache) throws CacheException
+                            final ICache <HttpHeader, HttpHeader> cache) throws CacheException
   {
     final HttpHeader oldRequest = old.getKey ();
     final HttpHeader oldResponse = old.getDataHook ();
@@ -425,14 +425,14 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
     }
   }
 
-  private void setupPartial (final CacheEntry <HttpHeader, HttpHeader> oldEntry,
-                             final CacheEntry <HttpHeader, HttpHeader> entry,
+  private void setupPartial (final ICacheEntry <HttpHeader, HttpHeader> oldEntry,
+                             final ICacheEntry <HttpHeader, HttpHeader> entry,
                              final File entryName,
-                             final Cache <HttpHeader, HttpHeader> cache) throws IOException
+                             final ICache <HttpHeader, HttpHeader> cache) throws IOException
   {
     if (oldEntry != null)
     {
-      final File oldName = cache.getEntryName (oldEntry.getId (), true, null);
+      final File oldName = cache.getEntryName (oldEntry.getID (), true, null);
       final PartialCacher pc = new PartialCacher (oldName, response);
       cacheChannel = pc.getChannel ();
       try
@@ -457,7 +457,7 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
   {
     if (mayCache && mayCacheFromSize ())
     {
-      final Cache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
+      final ICache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
       try
       {
         entry = cache.newEntry (request);
@@ -472,10 +472,10 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
         getLogger ().config ("Expiry =< 0 set on entry, will not cache");
         return;
       }
-      final File entryName = cache.getEntryName (entry.getId (), false, null);
+      final File entryName = cache.getEntryName (entry.getID (), false, null);
       if (response.getStatusCode ().equals ("206"))
       {
-        CacheEntry <HttpHeader, HttpHeader> oldEntry = null;
+        ICacheEntry <HttpHeader, HttpHeader> oldEntry = null;
         try
         {
           oldEntry = cache.getEntry (request);
@@ -654,8 +654,8 @@ public class BaseHandler implements Handler, HandlerFactory, HttpHeaderSentListe
       try
       {
         cacheChannel.close ();
-        final Cache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
-        final File entryName = cache.getEntryName (entry.getId (), false, null);
+        final ICache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
+        final File entryName = cache.getEntryName (entry.getID (), false, null);
         deleteFile (entryName);
         entry = null;
       }

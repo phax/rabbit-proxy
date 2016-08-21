@@ -30,7 +30,7 @@ import com.helger.rabbit.util.PatternHelper;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class DontCacheFilter implements HttpFilter
+public class DontCacheFilter implements IHttpFilter
 {
   private Pattern dontCacheUrls;
   private Pattern onlyCacheUrls;

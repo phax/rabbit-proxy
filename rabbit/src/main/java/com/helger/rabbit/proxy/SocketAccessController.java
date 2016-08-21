@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.helger.rabbit.filter.IPAccessFilter;
+import com.helger.rabbit.filter.IIPAccessFilter;
 import com.helger.rabbit.util.Config;
 
 /**
@@ -19,7 +19,7 @@ import com.helger.rabbit.util.Config;
 public class SocketAccessController
 {
   /** the filters, a List of classes (in given order) */
-  private List <IPAccessFilter> accessfilters = new ArrayList <> ();
+  private List <IIPAccessFilter> accessfilters = new ArrayList <> ();
   private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   /**
@@ -40,7 +40,7 @@ public class SocketAccessController
   }
 
   private void loadAccessFilters (final String filters,
-                                  final List <IPAccessFilter> accessfilters,
+                                  final List <IIPAccessFilter> accessfilters,
                                   final Config config,
                                   final HttpProxy proxy)
   {
@@ -51,8 +51,8 @@ public class SocketAccessController
       try
       {
         classname = st.nextToken ().trim ();
-        final Class <? extends IPAccessFilter> cls = proxy.load3rdPartyClass (classname, IPAccessFilter.class);
-        final IPAccessFilter ipf = cls.newInstance ();
+        final Class <? extends IIPAccessFilter> cls = proxy.load3rdPartyClass (classname, IIPAccessFilter.class);
+        final IIPAccessFilter ipf = cls.newInstance ();
         ipf.setup (config.getProperties (classname));
         accessfilters.add (ipf);
       }
@@ -71,7 +71,7 @@ public class SocketAccessController
     }
   }
 
-  private List <IPAccessFilter> getAccessFilters ()
+  private List <IIPAccessFilter> getAccessFilters ()
   {
     return Collections.unmodifiableList (accessfilters);
   }
@@ -85,7 +85,7 @@ public class SocketAccessController
    */
   public boolean checkAccess (final SocketChannel sc)
   {
-    for (final IPAccessFilter filter : getAccessFilters ())
+    for (final IIPAccessFilter filter : getAccessFilters ())
     {
       if (filter.doIPFiltering (sc))
         return true;

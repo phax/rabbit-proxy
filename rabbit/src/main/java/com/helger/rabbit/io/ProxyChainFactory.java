@@ -3,7 +3,7 @@ package com.helger.rabbit.io;
 import java.util.logging.Logger;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.dns.DNSHandler;
+import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rnio.INioHandler;
 
 /**
@@ -26,5 +26,5 @@ public interface ProxyChainFactory
    *        the Logger to log errors to
    * @return the new ProxyChain
    */
-  IProxyChain getProxyChain (SMap props, INioHandler nio, DNSHandler dnsHandler, Logger logger);
+  IProxyChain getProxyChain (SMap props, INioHandler nio, IDNSHandler dnsHandler, Logger logger);
 }

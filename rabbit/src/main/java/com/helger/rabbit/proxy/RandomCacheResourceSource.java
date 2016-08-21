@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import com.helger.rabbit.cache.Cache;
+import com.helger.rabbit.cache.ICache;
 import com.helger.rabbit.http.Header;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.http.MultipartHeader;
@@ -56,7 +56,7 @@ public class RandomCacheResourceSource extends CacheResourceSource
    * @throws IOException
    *         if the cached resource can not be read
    */
-  public RandomCacheResourceSource (final Cache <HttpHeader, HttpHeader> cache,
+  public RandomCacheResourceSource (final ICache <HttpHeader, HttpHeader> cache,
                                     final RequestHandler rh,
                                     final INioHandler tr,
                                     final IBufferHandler bufHandler,

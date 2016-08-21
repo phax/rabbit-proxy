@@ -17,7 +17,7 @@ import com.helger.rabbit.util.Config;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class BodyFilter extends SimpleTagFilter
+public class BodyFilter extends AbstractSimpleTagFilter
 {
   private boolean done = false;
 
@@ -47,7 +47,7 @@ public class BodyFilter extends SimpleTagFilter
     super (con, request, response);
   }
 
-  public HtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
+  public AbstractHtmlFilter newFilter (final Connection con, final HttpHeader request, final HttpHeader response)
   {
     return new BodyFilter (con, request, response);
   }

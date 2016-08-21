@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import com.helger.rabbit.cache.Cache;
+import com.helger.rabbit.cache.ICache;
 
 /**
  * A class to store the cache entrys data hook on file. A Http Header is a big
@@ -23,14 +23,14 @@ class FiledHook <V> extends FileData <V>
     return "hook";
   }
 
-  private <K> File getFileName (final Cache <K, V> cache, final long id)
+  private <K> File getFileName (final ICache <K, V> cache, final long id)
   {
     return cache.getEntryName (id, true, getExtension ());
   }
 
   /**
    * Get the hooked data.
-   * 
+   *
    * @param <K>
    *        the type of the keys used in the cache
    * @param cache
@@ -47,12 +47,12 @@ class FiledHook <V> extends FileData <V>
                         final NCacheData <K, V> entry,
                         final Logger logger) throws IOException
   {
-    return readData (getFileName (cache, entry.getId ()), cache.getHookFileHandler (), logger);
+    return readData (getFileName (cache, entry.getID ()), cache.getHookFileHandler ());
   }
 
   /**
    * Set the hooked data.
-   * 
+   *
    * @param <K>
    *        the type of the keys used in the cache
    * @param cache
@@ -75,6 +75,6 @@ class FiledHook <V> extends FileData <V>
                                 final V hook,
                                 final Logger logger) throws IOException
   {
-    return writeData (getFileName (cache, id), fh, hook, logger);
+    return writeData (getFileName (cache, id), fh, hook);
   }
 }

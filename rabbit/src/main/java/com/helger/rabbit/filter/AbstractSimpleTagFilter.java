@@ -15,11 +15,11 @@ import com.helger.rabbit.proxy.Connection;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public abstract class SimpleTagFilter extends HtmlFilter
+public abstract class AbstractSimpleTagFilter extends AbstractHtmlFilter
 {
 
   // For the factory.
-  public SimpleTagFilter ()
+  public AbstractSimpleTagFilter ()
   {}
 
   /**
@@ -32,7 +32,7 @@ public abstract class SimpleTagFilter extends HtmlFilter
    * @param response
    *        the actual response being sent.
    */
-  public SimpleTagFilter (final Connection con, final HttpHeader request, final HttpHeader response)
+  public AbstractSimpleTagFilter (final Connection con, final HttpHeader request, final HttpHeader response)
   {
     super (con, request, response);
   }

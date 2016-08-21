@@ -6,7 +6,7 @@ package com.helger.rabbit.handler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface Handler
+public interface IHandler
 {
   /**
    * handle a request.

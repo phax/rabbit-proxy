@@ -1,5 +1,6 @@
 package com.helger.rabbit.meta;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
@@ -19,8 +21,7 @@ import com.helger.rabbit.httpio.TransferListener;
 import com.helger.rabbit.httpio.Transferable;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.util.MimeTypeMapper;
-import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.impl.Closer;
+import com.helger.rabbit.util.ITrafficLogger;
 
 /**
  * A file resource handler.
@@ -30,8 +31,8 @@ import com.helger.rnio.impl.Closer;
 public class FileSender implements MetaHandler, HttpHeaderSentListener
 {
   private Connection con;
-  private TrafficLogger tlClient;
-  private TrafficLogger tlProxy;
+  private ITrafficLogger tlClient;
+  private ITrafficLogger tlProxy;
   private FileInputStream fis;
   private FileChannel fc;
   private long length;
@@ -40,8 +41,8 @@ public class FileSender implements MetaHandler, HttpHeaderSentListener
   public void handle (final HttpHeader request,
                       final SMap htab,
                       final Connection con,
-                      final TrafficLogger tlProxy,
-                      final TrafficLogger tlClient) throws IOException
+                      final ITrafficLogger tlProxy,
+                      final ITrafficLogger tlClient) throws IOException
   {
     this.con = con;
     this.tlProxy = tlProxy;
@@ -163,8 +164,10 @@ public class FileSender implements MetaHandler, HttpHeaderSentListener
 
   private void closeFile ()
   {
-    Closer.close (fc, logger);
-    Closer.close (fis, logger);
+    final Closeable c = fc;
+    StreamHelper.close (c);
+    final Closeable c1 = fis;
+    StreamHelper.close (c1);
   }
 
   public void httpHeaderSent ()

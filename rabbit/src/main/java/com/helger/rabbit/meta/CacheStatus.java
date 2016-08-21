@@ -4,9 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.helger.rabbit.cache.Cache;
-import com.helger.rabbit.cache.CacheConfiguration;
-import com.helger.rabbit.cache.CacheEntry;
+import com.helger.rabbit.cache.ICache;
+import com.helger.rabbit.cache.ICacheConfiguration;
+import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.HtmlPage;
 
@@ -34,10 +34,10 @@ public class CacheStatus extends BaseMetaHandler
 
   private void addStatus (final StringBuilder sb)
   {
-    final Cache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
+    final ICache <HttpHeader, HttpHeader> cache = con.getProxy ().getCache ();
     long cursizemb = cache.getCurrentSize ();
     cursizemb /= (1024 * 1024);
-    final CacheConfiguration cc = cache.getCacheConfiguration ();
+    final ICacheConfiguration cc = cache.getCacheConfiguration ();
     long maxsizemb = cc.getMaxSize ();
     maxsizemb /= (1024 * 1024);
     long cachetimeh = cc.getCacheTime ();
@@ -56,7 +56,7 @@ public class CacheStatus extends BaseMetaHandler
     addEntries (sb, cache);
   }
 
-  private void addPartSelection (final StringBuilder sb, final Cache <HttpHeader, HttpHeader> cache)
+  private void addPartSelection (final StringBuilder sb, final ICache <HttpHeader, HttpHeader> cache)
   {
     final long entries = cache.getNumberOfEntries ();
     final long lim = (long) Math.ceil (entries / (double) NUMBER_OF_ENTRIES);
@@ -73,7 +73,7 @@ public class CacheStatus extends BaseMetaHandler
     }
   }
 
-  private void addEntries (final StringBuilder sb, final Cache <HttpHeader, HttpHeader> cache)
+  private void addEntries (final StringBuilder sb, final ICache <HttpHeader, HttpHeader> cache)
   {
     sb.append (HtmlPage.getTableHeader (100, 1));
     sb.append (HtmlPage.getTableTopicRow ());
@@ -97,7 +97,7 @@ public class CacheStatus extends BaseMetaHandler
     int count = 0;
     final DateFormat sdf = new SimpleDateFormat ("yyyyMMdd-HH:mm");
     final Date d = new Date ();
-    for (final CacheEntry <HttpHeader, HttpHeader> lister : cache.getEntries ())
+    for (final ICacheEntry <HttpHeader, HttpHeader> lister : cache.getEntries ())
     {
       count++; // 1-4 5-8
       if (count < start || count > end)
@@ -119,7 +119,7 @@ public class CacheStatus extends BaseMetaHandler
       sb.append ("\" target = cacheview>");
       sb.append (filev).append ("</a></td>");
       sb.append ("<td>");
-      sb.append (cache.getEntryName (lister.getId (), true, null));
+      sb.append (cache.getEntryName (lister.getID (), true, null));
       sb.append ("</td><td align=\"right\">");
       sb.append (lister.getSize ());
       sb.append ("</td><td>").append (sdf.format (d));

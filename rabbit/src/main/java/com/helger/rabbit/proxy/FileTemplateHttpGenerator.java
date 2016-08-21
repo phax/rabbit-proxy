@@ -1,16 +1,16 @@
 package com.helger.rabbit.proxy;
 
-import static com.helger.rabbit.http.StatusCode._400;
-import static com.helger.rabbit.http.StatusCode._401;
-import static com.helger.rabbit.http.StatusCode._403;
-import static com.helger.rabbit.http.StatusCode._404;
-import static com.helger.rabbit.http.StatusCode._407;
-import static com.helger.rabbit.http.StatusCode._412;
-import static com.helger.rabbit.http.StatusCode._414;
-import static com.helger.rabbit.http.StatusCode._416;
-import static com.helger.rabbit.http.StatusCode._417;
-import static com.helger.rabbit.http.StatusCode._500;
-import static com.helger.rabbit.http.StatusCode._504;
+import static com.helger.rabbit.http.EStatusCode._400;
+import static com.helger.rabbit.http.EStatusCode._401;
+import static com.helger.rabbit.http.EStatusCode._403;
+import static com.helger.rabbit.http.EStatusCode._404;
+import static com.helger.rabbit.http.EStatusCode._407;
+import static com.helger.rabbit.http.EStatusCode._412;
+import static com.helger.rabbit.http.EStatusCode._414;
+import static com.helger.rabbit.http.EStatusCode._416;
+import static com.helger.rabbit.http.EStatusCode._417;
+import static com.helger.rabbit.http.EStatusCode._500;
+import static com.helger.rabbit.http.EStatusCode._504;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
 import com.helger.rabbit.html.HtmlBlock;
 import com.helger.rabbit.html.HtmlEscapeUtils;
@@ -32,8 +33,7 @@ import com.helger.rabbit.html.Token;
 import com.helger.rabbit.html.TokenType;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.http.HttpHeaderWithContent;
-import com.helger.rabbit.http.StatusCode;
-import com.helger.rnio.impl.Closer;
+import com.helger.rabbit.http.EStatusCode;
 
 /**
  * A HttpGenerator that creates error pages from file templates.
@@ -52,12 +52,12 @@ class FileTemplateHttpGenerator extends StandardResponseHeaders
     this.templateDir = templateDir;
   }
 
-  private File getFile (final StatusCode sc)
+  private File getFile (final EStatusCode sc)
   {
     return new File (templateDir, Integer.toString (sc.getCode ()));
   }
 
-  private boolean hasFile (final StatusCode sc)
+  private boolean hasFile (final EStatusCode sc)
   {
     return getFile (sc).exists ();
   }
@@ -211,7 +211,7 @@ class FileTemplateHttpGenerator extends StandardResponseHeaders
     return new TemplateData (url.toString (), null, null, null, realm, realmType);
   }
 
-  private HttpHeader getTemplated (final StatusCode sc, final TemplateData td)
+  private HttpHeader getTemplated (final EStatusCode sc, final TemplateData td)
   {
     final HttpHeaderWithContent ret = getHeader (sc);
     if (td.realm != null)
@@ -236,12 +236,12 @@ class FileTemplateHttpGenerator extends StandardResponseHeaders
         }
         finally
         {
-          Closer.close (dis, logger);
+          StreamHelper.close (dis);
         }
       }
       finally
       {
-        Closer.close (fis, logger);
+        StreamHelper.close (fis);
       }
     }
     catch (final HtmlParseException e)

@@ -1,12 +1,14 @@
 package com.helger.rabbit.handler;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.handler.convert.ExternalProcessConverter;
 import com.helger.rabbit.handler.convert.ImageConverter;
@@ -14,7 +16,7 @@ import com.helger.rabbit.handler.convert.JavaImageConverter;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.BlockListener;
 import com.helger.rabbit.httpio.FileResourceSource;
-import com.helger.rabbit.httpio.ResourceSource;
+import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.FileHelper;
 import com.helger.rabbit.io.SimpleBufferHandle;
@@ -24,7 +26,6 @@ import com.helger.rabbit.proxy.TrafficLoggerHandler;
 import com.helger.rabbit.zip.GZipUnpackListener;
 import com.helger.rabbit.zip.GZipUnpacker;
 import com.helger.rnio.ITaskIdentifier;
-import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
 /**
@@ -83,7 +84,7 @@ public class ImageHandler extends BaseHandler
                        final TrafficLoggerHandler tlh,
                        final HttpHeader request,
                        final HttpHeader response,
-                       final ResourceSource content,
+                       final IResourceSource content,
                        final boolean mayCache,
                        final boolean mayFilter,
                        final long size,
@@ -103,11 +104,11 @@ public class ImageHandler extends BaseHandler
   }
 
   @Override
-  public Handler getNewInstance (final Connection con,
+  public IHandler getNewInstance (final Connection con,
                                  final TrafficLoggerHandler tlh,
                                  final HttpHeader header,
                                  final HttpHeader webHeader,
-                                 final ResourceSource content,
+                                 final IResourceSource content,
                                  final boolean mayCache,
                                  final boolean mayFilter,
                                  final long size)
@@ -413,7 +414,7 @@ public class ImageHandler extends BaseHandler
   private void convertAndGetBest () throws IOException
   {
     final HttpProxy proxy = con.getProxy ();
-    final File imageFile = proxy.getCache ().getEntryName (entry.getId (), false, null);
+    final File imageFile = proxy.getCache ().getEntryName (entry.getID (), false, null);
     final String imageName = imageFile.getName ();
 
     if (getLogger ().isLoggable (Level.FINER))
@@ -557,7 +558,8 @@ public class ImageHandler extends BaseHandler
       }
       finally
       {
-        Closer.close (br, getLogger ());
+        final Closeable c = br;
+        StreamHelper.close (c);
       }
     }
     return ctype;

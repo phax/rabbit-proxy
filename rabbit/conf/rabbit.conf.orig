@@ -4,7 +4,7 @@
 # merged into one.
 
 
-[rabbit.proxy.HttpProxy]
+[com.helger.rabbit.proxy.HttpProxy]
 # This section holds the basic stuff needed for the proxy.
 
 # Here you can specify an ip that will be used for incomming 
@@ -41,7 +41,7 @@ proxyauth=
 # you can specify a ProxyChainFactory class and use that instead.
 # If you want to connect directly to inside net and to use a proxy
 # when you connect to then internet you can use
-# proxy_chain_factory=rabbit.httpio.InOutProxyChainFactory
+# proxy_chain_factory=com.helger.rabbit.httpio.InOutProxyChainFactory
 proxy_chain_factory=
 
 # This is the small logo to use.
@@ -67,10 +67,10 @@ StrictHTTP=false
 #
 # The factory will have the setup method called with the properties
 # of the section for the class name of the factory
-http_generator_factory=rabbit.proxy.StandardHttpGeneratorFactory
+http_generator_factory=com.helger.rabbit.proxy.StandardHttpGeneratorFactory
 # Use this one if you want to configure the error pages yourself
 # but then you have to see the configuration for the factory below as well
-#http_generator_factory=rabbit.proxy.FileTemplateHttpGeneratorFactory
+#http_generator_factory=com.helger.rabbit.proxy.FileTemplateHttpGeneratorFactory
 
 # Set this to true if you want to enable TCP_NODELAY for all client connections
 # (web browsers), see the same setting for the ConnectionHandler for
@@ -102,7 +102,7 @@ error_log_level=INFO
 # Use this if you want to log how much traffic each client
 # generates.
 # Must be instances of rabbit.proxy.ClientTrafficLogger, separate by ",".
-#traffic_loggers=rabbit.proxy.StandardOutTrafficLogger
+#traffic_loggers=com.helger.rabbit.proxy.StandardOutTrafficLogger
 
 [data_sources]
 # Specify the DataSource configuration here, one resource for each
@@ -116,10 +116,10 @@ resources=
 # DNSJavaHandler is fully threaded but may fail on some machines.
 # DNSSunHandler should work for more people, but is not threaded.
 # If you are on windows then the Sun-version will always be used.
-dnsHandler=rabbit.dns.DNSJavaHandler
-#dnsHandler=rabbit.dns.DNSSunHandler
+dnsHandler=com.helger.rabbit.dns.DNSJavaHandler
+#dnsHandler=com.helger.rabbit.dns.DNSSunHandler
 
-[rabbit.dns.DNSJavaHandler]
+[com.helger.rabbit.dns.DNSJavaHandler]
 # How long should dns entries be cached. 
 # Time is in hours.
 # Both positive and negative entries are cached this long.
@@ -127,7 +127,7 @@ dnsHandler=rabbit.dns.DNSJavaHandler
 dnscachetime=8
 
 
-[rabbit.io.ConnectionHandler]
+[com.helger.rabbit.io.ConnectionHandler]
 # This section sets up the connection handler.
 
 # The maximal time to keepalive toward external hosts.
@@ -154,11 +154,11 @@ usepipelining=false
 use_tcp_no_delay=true
 
 
-[rabbit.proxy.StandardHttpGeneratorFactory]
+[com.helger.rabbit.proxy.StandardHttpGeneratorFactory]
 # No parameters
 
 
-[rabbit.proxy.FileTemplateHttpGeneratorFactory]
+[com.helger.rabbit.proxy.FileTemplateHttpGeneratorFactory]
 error_pages=htdocs/error_pages
 
 
@@ -169,31 +169,31 @@ error_pages=htdocs/error_pages
 
 # Handle images by conversion to low quality jpegs.
 # yes, some sites send charsets for images, silly, but handle it
-image/gif(;(charset\=.*)?)?=rabbit.handler.ImageHandler*gif
-image/p?jpeg(;(charset\=.*)?)?=rabbit.handler.ImageHandler*jpeg
-image/png(;(charset\=.*)?)?=rabbit.handler.ImageHandler*png
+image/gif(;(charset\=.*)?)?=com.helger.rabbit.handler.ImageHandler*gif
+image/p?jpeg(;(charset\=.*)?)?=com.helger.rabbit.handler.ImageHandler*jpeg
+image/png(;(charset\=.*)?)?=com.helger.rabbit.handler.ImageHandler*png
 
 # Filter these streams.
 # The configuration of FilterHandler is later in this file.
-text/html(;(charset\=.*)?)?=rabbit.handler.FilterHandler
+text/html(;(charset\=.*)?)?=com.helger.rabbit.handler.FilterHandler
 
 # Use this if you only want compression
-#text/html=rabbit.handler.GZipHandler
-#text/html(;charset\=.*?)?=rabbit.handler.GZipHandler
+#text/html=com.helger.rabbit.handler.GZipHandler
+#text/html(;charset\=.*?)?=com.helger.rabbit.handler.GZipHandler
 
 # Seems Netscape and IE have problems with this one although 
 # they both say it is ok, disabled for now....
-#application/x-javascript=rabbit.handler.GZipHandler
-#text/javascript=rabbit.handler.GZipHandler
+#application/x-javascript=com.helger.rabbit.handler.GZipHandler
+#text/javascript=com.helger.rabbit.handler.GZipHandler
 
 # Compress these streams.
-text/plain(;(charset\=.*)?)?=rabbit.handler.GZipHandler
+text/plain(;(charset\=.*)?)?=com.helger.rabbit.handler.GZipHandler
 
 # you may want to compress theese, more testing needed. 
-text/xml(;(charset\=.*)?)?=rabbit.handler.GZipHandler
-application/xml(;(charset\=.*)?)?=rabbit.handler.GZipHandler
-application/postscript(;(charset\=.*)?)?=rabbit.handler.GZipHandler
-text/css(;(charset\=.*)?)?=rabbit.handler.GZipHandler
+text/xml(;(charset\=.*)?)?=com.helger.rabbit.handler.GZipHandler
+application/xml(;(charset\=.*)?)?=com.helger.rabbit.handler.GZipHandler
+application/postscript(;(charset\=.*)?)?=com.helger.rabbit.handler.GZipHandler
+text/css(;(charset\=.*)?)?=com.helger.rabbit.handler.GZipHandler
 
 [CacheHandlers]
 # This section sets up the content handlers for the resourses in the
@@ -205,26 +205,26 @@ text/css(;(charset\=.*)?)?=rabbit.handler.GZipHandler
 # modified page to the cache.
 
 # Handle images by conversion to low quality jpegs.
-#image/gif=rabbit.handler.ImageHandler
-#image/jpeg=rabbit.handler.ImageHandler
-#image/png=rabbit.handler.ImageHandler
+#image/gif=com.helger.rabbit.handler.ImageHandler
+#image/jpeg=com.helger.rabbit.handler.ImageHandler
+#image/png=com.helger.rabbit.handler.ImageHandler
 
 
 # Filter these streams.
-#text/html(;(charset\=.*)?)?=rabbit.handler.FilterHandler
+#text/html(;(charset\=.*)?)?=com.helger.rabbit.handler.FilterHandler
 
 # Seems Netscape and IE have problems with this one although 
 # they both say it is ok, disabled for now....
-#application/x-javascript(;(charset\=.*)?)?=rabbit.handler.FilterHandler
+#application/x-javascript(;(charset\=.*)?)?=com.helger.rabbit.handler.FilterHandler
 
 # Compress these streams.
-#text/plain(;(charset\=.*)?)?=rabbit.handler.GZipHandler
+#text/plain(;(charset\=.*)?)?=com.helger.rabbit.handler.GZipHandler
 
-[rabbit.cache.ncache.NCache]
+[com.helger.rabbit.cache.ncache.NCache]
 # This section sets up the cache.
 
 # The base directory for the cache.
-directory=/tmp/rcache
+directory=/tmp/rabbit-cache
 
 # The time in hours to cache files, unless specified otherwise (in the
 # http header that is).
@@ -247,7 +247,7 @@ cleanloop=60
 
 # Accessfilters are based on the socket only.
 # All filters here must implement the IPAccessFilter interface.
-accessfilters=rabbit.filter.AccessFilter
+accessfilters=com.helger.rabbit.filter.AccessFilter
 
 # Here we filter the HTTP header, these filters should have an 
 # public static HTTPHeader doHTTPInFiltering (Socket, HTTPHeader,
@@ -263,7 +263,7 @@ accessfilters=rabbit.filter.AccessFilter
 # DontCacheFilter  stop the proxy from cacheing certain pages.
 # BlockFilter      Dont allow access to certain pages.
 # HttpSnoop        Print the Http headers out on System.out.
-# ProxyAuth	   Perform proxy authentication on all users, backend is some type of db
+# ProxyAuth    Perform proxy authentication on all users, backend is some type of db
 #                  This filter needs to be after HttpBaseFilter to work correctly.
 # ReverseProxy     Transform requests to "/some/page" into "http://some.host/some/page" 
 #                  If you use the reverse proxy option, you probably 
@@ -276,25 +276,25 @@ accessfilters=rabbit.filter.AccessFilter
 #                  access to a set of hosts
 #
 # by default we use a few filters, 
-httpinfilters=rabbit.filter.HttpBaseFilter,rabbit.filter.DontFilterFilter,rabbit.filter.BlockFilter,rabbit.filter.RevalidateFilter
+httpinfilters=com.helger.rabbit.filter.HttpBaseFilter,com.helger.rabbit.filter.DontFilterFilter,com.helger.rabbit.filter.BlockFilter,com.helger.rabbit.filter.RevalidateFilter
 # just the basic filter
-#httpinfilters=rabbit.filter.HttpBaseFilter
+#httpinfilters=com.helger.filter.HttpBaseFilter
 # an example if you want to log traffic that rabbit reads
-#httpinfilters=rabbit.filter.HttpSnoop,rabbit.filter.HttpBaseFilter,rabbit.filter.DontFilterFilter
+#httpinfilters=com.helger.rabbit.filter.HttpSnoop,com.helger.rabbit.filter.HttpBaseFilter,com.helger.rabbit.filter.DontFilterFilter
 
 # This works as the httpinfilters except that the method is called
 # doHTTPOutFiltering instead
 # The available filters are the same as for httpinfilters but they
 # need not be.
-httpoutfilters=rabbit.filter.HttpBaseFilter
+httpoutfilters=com.helger.rabbit.filter.HttpBaseFilter
 # to see what rabbit writes to the client
-#httpoutfilters=rabbit.filter.HttpBaseFilter,rabbit.filter.HttpSnoop
+#httpoutfilters=com.helger.rabbit.filter.HttpBaseFilter,com.helger.rabbit.filter.HttpSnoop
 # to see what rabbit gets from the real server
-#httpoutfilters=rabbit.filter.HttpSnoop,rabbit.filter.HttpBaseFilter
+#httpoutfilters=com.helger.rabbit.filter.HttpSnoop,com.helger.rabbit.filter.HttpBaseFilter
 
 # The filters to run on CONNECT requests.
 # Typically not used, but can be nice for snooping or authentication controls.
-#connectfilters=rabbit.filter.HttpBaseFilter,rabbit.filter.ProxyAuth
+#connectfilters=com.helger.rabbit.filter.HttpBaseFilter,com.helger.rabbit.filter.ProxyAuth
 
 
 [sslhandler]
@@ -307,14 +307,14 @@ allowSSL=443,444,8443  # allow to these ports.
 #allowSSL=no
 
 
-[rabbit.filter.AccessFilter]
+[com.helger.rabbit.filter.AccessFilter]
 # This is a filter to allow simple accesscontrol.
 
 # this file store the available ip-ranges that can use the proxy.
 accessfile=conf/access
 
 
-[rabbit.filter.HttpBaseFilter]
+[com.helger.rabbit.filter.HttpBaseFilter]
 # This is a basic filter (which _SHOULD_ be used). Basically RabbIT
 # is depending on this filter being used.
 
@@ -332,7 +332,7 @@ userfile=conf/users
 cookieid=false
 
 
-[rabbit.filter.DontFilterFilter]
+[com.helger.rabbit.filter.DontFilterFilter]
 # This filter stops filtering certain pages that otherwise would be
 # handled in a strange way (due to strange HTML that we parse
 # (in)correctly). 
@@ -347,7 +347,7 @@ dontFilterURLmatching=(login\.passport\.com|\.jar|\.js(\?|$)|www\.ureach\.com|(m
 dontFilterAgentsMatching=Java
 
 
-[rabbit.filter.DontCacheFilter]
+[com.helger.rabbit.filter.DontCacheFilter]
 # This filter stops cacheing of certain pages. It could be good for never
 # cacheing chat sites that dont send correct cache-control directives.
 # this filter is not enabled by default, add it to 
@@ -384,7 +384,7 @@ dontFilterAgentsMatching=Java
 #onlyCacheMimematching=image
 
 
-[rabbit.filter.BlockFilter]
+[com.helger.rabbit.filter.BlockFilter]
 # This is a filter that blocks access to resources.
 
 # return a 403 forbidden for these requests.
@@ -394,7 +394,7 @@ blockURLmatching=(\.sex\.|[-.]ad([sx]?)\.|/ad\.|adserving\.|ad101com-|pagead/img
 #allowURLmatching=(www\.)?somesite.com/
 
 
-[rabbit.filter.SQLBlockFilter]
+[com.helger.rabbit.filter.SQLBlockFilter]
 # return a 403 forbidden for the requests that have a host found in 
 # a database
 # The resource must match a loaded resource
@@ -404,7 +404,7 @@ password=
 select=select 1 from bad_hosts where hostname = ?
 
 
-[rabbit.filter.HttpSnoop]
+[com.helger.rabbit.filter.HttpSnoop]
 # mode can be one of NORMAL, REQUEST_LINE, FULL
 # mode defaults to NORMAL if not specified
 # NORMAL: log full request/response header
@@ -412,7 +412,7 @@ select=select 1 from bad_hosts where hostname = ?
 # FULL: log full request/response header and any request body
 #mode=NORMAL
 
-[rabbit.filter.ProxyAuth]
+[com.helger.rabbit.filter.ProxyAuth]
 # This filter is not enabled by default, add it to 
 # httpinfilters if you want it.
 
@@ -443,7 +443,7 @@ password=
 # The select to use, you have to have one '?' for the username
 select=select password from rabbit_users where username=?
 
-[rabbit.filter.ReverseProxy]
+[com.helger.rabbit.filter.ReverseProxy]
 # This filter is not enabled by default, add it to 
 # httpinfilters if you want it.
 # This Filter makes rabbit work as an accellerator for one web site.
@@ -459,12 +459,12 @@ deny=^http(s?)://.*
 allowMeta=true
 
 
-[rabbit.filter.NoGZipEncoding]
+[com.helger.rabbit.filter.NoGZipEncoding]
 # setting this to false is the same thing as removing the 
 # filter (at least for now)
 remove=true
 
-[rabbit.filter.RevalidateFilter]
+[com.helger.rabbit.filter.RevalidateFilter]
 # setting this to true will force rabbit to re-validate all resources
 alwaysrevalidate=false
 
@@ -472,7 +472,7 @@ alwaysrevalidate=false
 revalidate=freshmeat.net/$|slashdot.org/$|http://www/$|newsforge.com/$
 
 
-[rabbit.filter.SetHeaderFilter]
+[com.helger.rabbit.filter.SetHeaderFilter]
 # set fix request or response headers 
 #request.foo=bar
 #request.bar=baz
@@ -480,14 +480,14 @@ revalidate=freshmeat.net/$|slashdot.org/$|http://www/$|newsforge.com/$
 #response.uonkl=97714
 
 
-[rabbit.handler.GZipHandler]
+[com.helger.rabbit.handler.GZipHandler]
 # Should we compress data streams? 
 # valid values are "false" and everything else is considered true
 compress=true
 #compress=false
 
 
-[rabbit.handler.ImageHandler*jpeg]
+[com.helger.rabbit.handler.ImageHandler*jpeg]
 # This handler converts images into low quality jpegs instead of high
 # quality gifs/pngs.
 
@@ -513,21 +513,21 @@ min_size=2000
 # Fallback for java based converter
 quality=0.1
 
-[rabbit.handler.ImageHandler*gif]
+[com.helger.rabbit.handler.ImageHandler*gif]
 # use graphicsmagick
 convert=/usr/bin/gm
 convertargs=convert -quality 10 -flatten $filename +profile "*" jpeg:$filename.c
 min_size=2000
 quality=0.1
 
-[rabbit.handler.ImageHandler*png]
+[com.helger.rabbit.handler.ImageHandler*png]
 # use graphicsmagick
 convert=/usr/bin/gm
 convertargs=convert -quality 10 -flatten $filename +profile "*" jpeg:$filename.c
 min_size=2000
 quality=0.1
 
-[rabbit.handler.FilterHandler]
+[com.helger.rabbit.handler.FilterHandler]
 # This is the basic HTML page filter. It uses a few other HTMLFilters.
 # Note! if this filter is to compress the pages sent you need to set
 # compress value to true (which is default).
@@ -538,9 +538,9 @@ quality=0.1
 # AdFilter          This filter removes advertising from pages.
 # BlinkFilter       This filter removes the <blink> tags.
 # LowresImageFilter This filter removes the lowres-attributes from <img> tags.
-filters=rabbit.filter.BodyFilter,rabbit.filter.BackgroundFilter,rabbit.filter.AdFilter,rabbit.filter.BlinkFilter,rabbit.filter.LowresImageFilter
+filters=com.helger.rabbit.filter.BodyFilter,com.helger.rabbit.filter.BackgroundFilter,com.helger.rabbit.filter.AdFilter,com.helger.rabbit.filter.BlinkFilter,com.helger.rabbit.filter.LowresImageFilter
 # A filter that destroys content a bit less than the above
-# filters=rabbit.filter.AdFilter,rabbit.filter.BlinkFilter,rabbit.filter.LowresImageFilter
+# filters=com.helger.rabbit.filter.AdFilter,com.helger.rabbit.filter.BlinkFilter,com.helger.rabbit.filter.LowresImageFilter
 
 # Should we compress data streams? 
 # valid values are "false" and everything else is considered true
@@ -556,7 +556,7 @@ repack=false
 #overrideCharSet=UTF-8
 
 
-[rabbit.filter.BodyFilter]
+[com.helger.rabbit.filter.BodyFilter]
 # A Filter to insert a noproxy link at the start of each page.
 
 # This text before the link
@@ -569,12 +569,12 @@ unfilteredlink=true
 link=unfiltered page
 
 
-[rabbit.filter.BackgroundFilter]
+[com.helger.rabbit.filter.BackgroundFilter]
 # A Filter to remove background images.
 # This filter has no configuration options.
 
 
-[rabbit.filter.AdFilter]
+[com.helger.rabbit.filter.AdFilter]
 # A filter to remove advertising from pages.
 
 # The list of evils. A regexp.
@@ -585,7 +585,7 @@ adlinks=[/.]((c|net|ns|surf|page|imag)?ad([svq]|fu|srv|[sz]erver|log|bannercente
 adreplacer=http://$proxy/FileSender/public/NoAd.gif
 
 
-[rabbit.filter.LowresImageFilter]
+[com.helger.rabbit.filter.LowresImageFilter]
 # A filter that removes the lowres attributes from the img-tags.
 # This filter (currently) has no configuration options.
 

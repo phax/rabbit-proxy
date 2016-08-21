@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.dns.DNSHandler;
+import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.ProxyChainFactory;
 import com.helger.rnio.INioHandler;
@@ -19,7 +19,7 @@ public class InOutProxyChainFactory implements ProxyChainFactory
 {
   public IProxyChain getProxyChain (final SMap props,
                                    final INioHandler nio,
-                                   final DNSHandler dnsHandler,
+                                   final IDNSHandler dnsHandler,
                                    final Logger logger)
   {
     final String insideMatch = props.get ("inside_match");

@@ -14,7 +14,7 @@ import com.helger.rabbit.proxy.HttpProxy;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class NoGZipEncoding implements HttpFilter
+public class NoGZipEncoding implements IHttpFilter
 {
   private boolean remove = true;
 

@@ -32,8 +32,8 @@
 package com.helger.rnio.impl;
 
 import java.nio.channels.SelectableChannel;
-import java.util.logging.Logger;
 
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.ISocketChannelHandler;
 
@@ -52,8 +52,6 @@ public abstract class AbstractSocketHandlerBase <T extends SelectableChannel> im
   public final INioHandler nioHandler;
   /** The timeout for the current operation */
   public final Long timeout;
-
-  private final Logger logger = Logger.getLogger ("org.khelekore.rnio");
 
   /**
    * @param sc
@@ -106,6 +104,6 @@ public abstract class AbstractSocketHandlerBase <T extends SelectableChannel> im
 
   public void closed ()
   {
-    Closer.close (sc, logger);
+    StreamHelper.close (sc);
   }
 }

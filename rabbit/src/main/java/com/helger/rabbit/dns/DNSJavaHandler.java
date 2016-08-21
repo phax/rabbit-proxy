@@ -17,7 +17,7 @@ import com.helger.commons.url.SMap;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class DNSJavaHandler implements DNSHandler
+public class DNSJavaHandler implements IDNSHandler
 {
   private final Logger logger = Logger.getLogger (getClass ().getName ());
 

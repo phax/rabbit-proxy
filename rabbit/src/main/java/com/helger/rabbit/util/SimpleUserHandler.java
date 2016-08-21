@@ -1,6 +1,7 @@
 package com.helger.rabbit.util;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.helger.rnio.impl.Closer;
+import com.helger.commons.io.stream.StreamHelper;
 
 /**
  * This is a class that handles users authentication using a simple text file.
@@ -22,13 +23,13 @@ import com.helger.rnio.impl.Closer;
 public class SimpleUserHandler
 {
   private String userFile = null;
-  private Map <String, String> users = new HashMap <> ();
+  private Map <String, String> users = new HashMap<> ();
   private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   /**
    * Set the file to use for users, will read the files. Will discard any
    * previous loaded users.
-   * 
+   *
    * @param userFile
    *        the filename to read the users from.
    */
@@ -52,13 +53,14 @@ public class SimpleUserHandler
     }
     finally
     {
-      Closer.close (fr, logger);
+      final Closeable c = fr;
+      StreamHelper.close (c);
     }
   }
 
   /**
    * Load the users from the given Reader.
-   * 
+   *
    * @param r
    *        the Reader with the users.
    * @return a Map with usernames and passwords
@@ -69,7 +71,7 @@ public class SimpleUserHandler
   {
     final BufferedReader br = new BufferedReader (r);
     String line;
-    final Map <String, String> u = new HashMap <> ();
+    final Map <String, String> u = new HashMap<> ();
     while ((line = br.readLine ()) != null)
     {
       final String [] creds = line.split ("[: \n\t]");
@@ -84,7 +86,7 @@ public class SimpleUserHandler
 
   /**
    * Saves the users from the given Reader.
-   * 
+   *
    * @param r
    *        the Reader with the users.
    * @throws IOException
@@ -95,27 +97,18 @@ public class SimpleUserHandler
     if (userFile == null)
       return;
     final BufferedReader br = new BufferedReader (r);
-    PrintWriter fw = null;
-    try
+    try (PrintWriter fw = new PrintWriter (new FileWriter (userFile)))
     {
-      fw = new PrintWriter (new FileWriter (userFile));
       String line;
       while ((line = br.readLine ()) != null)
         fw.println (line);
       fw.flush ();
     }
-    finally
-    {
-      if (fw != null)
-      {
-        fw.close ();
-      }
-    }
   }
 
   /**
    * Return the hash of users.
-   * 
+   *
    * @return the Map of usernames to passwords
    */
   public Map <String, String> getUsers ()
@@ -125,7 +118,7 @@ public class SimpleUserHandler
 
   /**
    * Set the usernames and passwords to use for authentication.
-   * 
+   *
    * @param users
    *        the new set of usernames and passwords
    */
@@ -136,7 +129,7 @@ public class SimpleUserHandler
 
   /**
    * Check if a user/password combination is valid.
-   * 
+   *
    * @param username
    *        the username.
    * @param password
@@ -148,6 +141,6 @@ public class SimpleUserHandler
     if (username == null)
       return false;
     final String pass = users.get (username);
-    return (pass != null && password != null && pass.equals (password));
+    return pass != null && password != null && pass.equals (password);
   }
 }

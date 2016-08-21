@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  *        the data resource
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface Cache <K, V>
+public interface ICache <K, V>
 {
 
   /**
@@ -30,39 +30,39 @@ public interface Cache <K, V>
 
   /**
    * Get the cache configuration for this cache.
-   * 
+   *
    * @return the current configuration of the cache
    */
-  public CacheConfiguration getCacheConfiguration ();
+  ICacheConfiguration getCacheConfiguration ();
 
   /**
    * Get the current size of the cache
-   * 
+   *
    * @return the current size of the cache in bytes.
    */
   long getCurrentSize ();
 
   /**
    * Get the current number of entries in the cache.
-   * 
+   *
    * @return the current number of entries in the cache.
    */
   long getNumberOfEntries ();
 
   /**
    * Get the CacheEntry assosiated with given object.
-   * 
+   *
    * @param k
    *        the key.
    * @return the NCacheEntry or null (if not found).
    * @throws CacheException
    *         upon failure to get the key
    */
-  CacheEntry <K, V> getEntry (K k) throws CacheException;
+  ICacheEntry <K, V> getEntry (K k) throws CacheException;
 
   /**
    * Get the file name for a cache entry.
-   * 
+   *
    * @param id
    *        the id of the cache entry
    * @param real
@@ -76,28 +76,28 @@ public interface Cache <K, V>
 
   /**
    * Reserve space for a CacheEntry with key o.
-   * 
+   *
    * @param k
    *        the key for the CacheEntry.
    * @return a new CacheEntry initialized for the cache.
    * @throws CacheException
    *         upon failure to reserve a new entry.
    */
-  CacheEntry <K, V> newEntry (K k) throws CacheException;
+  ICacheEntry <K, V> newEntry (K k) throws CacheException;
 
   /**
    * Insert a CacheEntry into the cache.
-   * 
+   *
    * @param ent
    *        the CacheEntry to store.
    * @throws CacheException
    *         if adding the entry fails
    */
-  void addEntry (CacheEntry <K, V> ent) throws CacheException;
+  void addEntry (ICacheEntry <K, V> ent) throws CacheException;
 
   /**
    * Signal that a cache entry have changed.
-   * 
+   *
    * @param ent
    *        the CacheEntry that changed
    * @param newKey
@@ -107,11 +107,11 @@ public interface Cache <K, V>
    * @throws CacheException
    *         if updating the cache fails
    */
-  void entryChanged (CacheEntry <K, V> ent, K newKey, V newValue) throws CacheException;
+  void entryChanged (ICacheEntry <K, V> ent, K newKey, V newValue) throws CacheException;
 
   /**
    * Remove the Entry with key o from the cache.
-   * 
+   *
    * @param k
    *        the key for the CacheEntry.
    * @throws CacheException
@@ -121,7 +121,7 @@ public interface Cache <K, V>
 
   /**
    * Clear the Cache from files.
-   * 
+   *
    * @throws CacheException
    *         if the clear operation failed
    */
@@ -129,10 +129,10 @@ public interface Cache <K, V>
 
   /**
    * Get the CacheEntries in the cache.
-   * 
+   *
    * @return an Enumeration of the CacheEntries.
    */
-  Iterable <? extends CacheEntry <K, V>> getEntries ();
+  Iterable <? extends ICacheEntry <K, V>> getEntries ();
 
   /**
    * Make sure that the cache is written to the disk.
@@ -141,7 +141,7 @@ public interface Cache <K, V>
 
   /**
    * Get the logger of this cache
-   * 
+   *
    * @return the Logger used by the cache
    */
   Logger getLogger ();

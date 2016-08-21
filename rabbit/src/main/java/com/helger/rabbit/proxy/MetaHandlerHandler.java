@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.meta.MetaHandler;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 
 class MetaHandlerHandler
 {
@@ -33,8 +33,8 @@ class MetaHandlerHandler
    */
   public void handleMeta (final Connection con,
                           final HttpHeader header,
-                          final TrafficLogger tlProxy,
-                          final TrafficLogger tlClient) throws IOException
+                          final ITrafficLogger tlProxy,
+                          final ITrafficLogger tlClient) throws IOException
   {
     con.getCounter ().inc ("Meta pages requested");
     URL url;
@@ -64,7 +64,7 @@ class MetaHandlerHandler
     {
       final String fc = file.substring (index + 1);
       file = file.substring (0, index);
-      htab.put ("argstring", fc);
+      htab.add ("argstring", fc);
     }
     String error = null;
     try
@@ -75,7 +75,7 @@ class MetaHandlerHandler
         return;
       }
       if (file.indexOf (".") < 0)
-        file = "rabbit.meta." + file;
+        file = "com.helger.rabbit.meta." + file;
 
       final Class <? extends MetaHandler> cls = con.getProxy ().load3rdPartyClass (file, MetaHandler.class);
       MetaHandler mh;
@@ -140,7 +140,7 @@ class MetaHandlerHandler
         {
           if (key != null)
           {
-            htab.put (key, "");
+            htab.add (key, "");
             key = null;
           }
         }
@@ -160,7 +160,7 @@ class MetaHandlerHandler
               final Logger log = Logger.getLogger (getClass ().getName ());
               log.log (Level.WARNING, "Failed to get utf-8", e);
             }
-            htab.put (key, next);
+            htab.add (key, next);
             key = null;
           }
     }

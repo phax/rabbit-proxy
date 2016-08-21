@@ -7,7 +7,7 @@ import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 
 import com.helger.rabbit.io.BufferHandle;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IWriteHandler;
 
@@ -21,7 +21,7 @@ public class BlockSender extends BaseSocketHandler implements IWriteHandler
   private ByteBuffer chunkBuffer;
   private final ByteBuffer end;
   private final ByteBuffer [] buffers;
-  private final TrafficLogger tl;
+  private final ITrafficLogger tl;
   private final BlockSentListener sender;
 
   /**
@@ -42,7 +42,7 @@ public class BlockSender extends BaseSocketHandler implements IWriteHandler
    */
   public BlockSender (final SocketChannel channel,
                       final INioHandler nioHandler,
-                      final TrafficLogger tl,
+                      final ITrafficLogger tl,
                       final BufferHandle bufHandle,
                       final boolean chunking,
                       final BlockSentListener sender)

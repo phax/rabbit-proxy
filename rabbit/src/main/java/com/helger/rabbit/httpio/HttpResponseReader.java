@@ -6,7 +6,7 @@ import java.nio.channels.SocketChannel;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 
@@ -20,7 +20,7 @@ public class HttpResponseReader implements HttpHeaderSentListener, HttpHeaderLis
 
   private final SocketChannel channel;
   private final INioHandler nioHandler;
-  private final TrafficLogger tl;
+  private final ITrafficLogger tl;
   private final IBufferHandler bufHandler;
   private final boolean strictHttp;
   private final HttpResponseListener listener;
@@ -51,7 +51,7 @@ public class HttpResponseReader implements HttpHeaderSentListener, HttpHeaderLis
    */
   public HttpResponseReader (final SocketChannel channel,
                              final INioHandler nioHandler,
-                             final TrafficLogger tl,
+                             final ITrafficLogger tl,
                              final IBufferHandler bufHandler,
                              final HttpHeader header,
                              final boolean fullURI,

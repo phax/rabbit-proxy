@@ -15,27 +15,27 @@ import com.helger.rabbit.proxy.HttpProxy;
 /**
  * This is a class that prints the Http headers on the standard out stream.
  */
-public class HttpSnoop implements HttpFilter
+public class HttpSnoop implements IHttpFilter
 {
-  private enum SnoopMode
+  private enum ESnoopMode
   {
     NORMAL,
     REQUEST_LINE,
     FULL
   }
 
-  private SnoopMode mode;
+  private ESnoopMode mode;
 
   public HttpHeader doHttpInFiltering (final SocketChannel socket, final HttpHeader header, final Connection con)
   {
-    if (mode == SnoopMode.REQUEST_LINE)
+    if (mode == ESnoopMode.REQUEST_LINE)
     {
       System.out.println (con.getRequestLine ());
     }
     else
     {
       System.out.print (header.toString ());
-      if (mode == SnoopMode.FULL)
+      if (mode == ESnoopMode.FULL)
       {
         final ClientResourceHandler crh = con.getClientResourceHandler ();
         if (crh != null)
@@ -77,7 +77,7 @@ public class HttpSnoop implements HttpFilter
 
   public HttpHeader doHttpOutFiltering (final SocketChannel socket, final HttpHeader header, final Connection con)
   {
-    if (mode == SnoopMode.REQUEST_LINE)
+    if (mode == ESnoopMode.REQUEST_LINE)
     {
       System.out.println (con.getRequestLine () + "\n" + header.getStatusLine ());
     }
@@ -90,7 +90,7 @@ public class HttpSnoop implements HttpFilter
 
   public HttpHeader doConnectFiltering (final SocketChannel socket, final HttpHeader header, final Connection con)
   {
-    if (mode == SnoopMode.REQUEST_LINE)
+    if (mode == ESnoopMode.REQUEST_LINE)
     {
       System.out.println (con.getRequestLine ());
     }
@@ -111,6 +111,6 @@ public class HttpSnoop implements HttpFilter
   {
     String smo = properties.getOrDefault ("mode", "NORMAL");
     smo = smo.toUpperCase ();
-    mode = SnoopMode.valueOf (smo);
+    mode = ESnoopMode.valueOf (smo);
   }
 }

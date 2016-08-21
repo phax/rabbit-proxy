@@ -1,5 +1,6 @@
 package com.helger.rabbit.proxy;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
@@ -7,6 +8,7 @@ import java.util.logging.Logger;
 
 import com.helger.commons.base64.Base64;
 import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.HttpHeaderSender;
 import com.helger.rabbit.httpio.HttpHeaderSentListener;
@@ -18,7 +20,6 @@ import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.Resolver;
 import com.helger.rabbit.io.WebConnection;
 import com.helger.rabbit.io.WebConnectionListener;
-import com.helger.rnio.impl.Closer;
 
 /**
  * A handler that shuttles ssl traffic
@@ -167,7 +168,8 @@ public class SSLHandler implements TunnelDoneListener
       bh.possiblyFlush ();
     if (sbh != null)
       sbh.possiblyFlush ();
-    Closer.close (wc, logger);
+    final Closeable c = wc;
+    StreamHelper.close (c);
     wc = null;
     con.logAndClose ();
   }
@@ -303,7 +305,8 @@ public class SSLHandler implements TunnelDoneListener
     if (wc != null)
     {
       con.logAndClose ();
-      Closer.close (wc, logger);
+      final Closeable c = wc;
+      StreamHelper.close (c);
     }
     wc = null;
   }

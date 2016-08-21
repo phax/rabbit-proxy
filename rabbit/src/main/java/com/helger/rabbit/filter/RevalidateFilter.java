@@ -16,7 +16,7 @@ import com.helger.rabbit.proxy.HttpProxy;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class RevalidateFilter implements HttpFilter
+public class RevalidateFilter implements IHttpFilter
 {
   private boolean alwaysRevalidate = false;
   private Pattern revalidatePattern = null;

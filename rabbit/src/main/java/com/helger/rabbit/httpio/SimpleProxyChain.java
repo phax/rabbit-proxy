@@ -1,6 +1,6 @@
 package com.helger.rabbit.httpio;
 
-import com.helger.rabbit.dns.DNSHandler;
+import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.Resolver;
 import com.helger.rnio.INioHandler;
@@ -23,7 +23,7 @@ public class SimpleProxyChain implements IProxyChain
    * @param dnsHandler
    *        the DNSHandler to use for DNS lookups
    */
-  public SimpleProxyChain (final INioHandler nio, final DNSHandler dnsHandler)
+  public SimpleProxyChain (final INioHandler nio, final IDNSHandler dnsHandler)
   {
     resolver = new SimpleResolver (nio, dnsHandler);
   }

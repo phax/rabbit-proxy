@@ -19,7 +19,7 @@ import com.helger.rabbit.io.WebConnection;
 import com.helger.rabbit.io.WebConnectionListener;
 import com.helger.rabbit.util.Counter;
 import com.helger.rabbit.util.SimpleTrafficLogger;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IStatisticsHolder;
@@ -38,7 +38,7 @@ public class ClientBase
   private final Logger logger = Logger.getLogger (getClass ().getName ());
   private final ConnectionHandler connectionHandler;
   private final INioHandler nioHandler;
-  private final TrafficLogger trafficLogger = new SimpleTrafficLogger ();
+  private final ITrafficLogger trafficLogger = new SimpleTrafficLogger ();
   private final IBufferHandler bufHandler;
 
   /**

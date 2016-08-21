@@ -2,7 +2,7 @@ package com.helger.rabbit.proxy;
 
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpHeader;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 
 /**
  * A logger that gets notified about client traffic usage.
@@ -29,10 +29,10 @@ public interface ClientTrafficLogger
    */
   void logTraffic (String user,
                    HttpHeader request,
-                   TrafficLogger client,
-                   TrafficLogger network,
-                   TrafficLogger cache,
-                   TrafficLogger proxy);
+                   ITrafficLogger client,
+                   ITrafficLogger network,
+                   ITrafficLogger cache,
+                   ITrafficLogger proxy);
 
   /**
    * Setup this logger

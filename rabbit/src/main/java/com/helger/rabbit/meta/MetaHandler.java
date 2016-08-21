@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.Connection;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 
 /**
  * The specification for dynamic status information handlers in the proxy.
@@ -34,6 +34,6 @@ public interface MetaHandler
   void handle (HttpHeader request,
                SMap htab,
                Connection con,
-               TrafficLogger tlProxy,
-               TrafficLogger tlClient) throws IOException;
+               ITrafficLogger tlProxy,
+               ITrafficLogger tlClient) throws IOException;
 }

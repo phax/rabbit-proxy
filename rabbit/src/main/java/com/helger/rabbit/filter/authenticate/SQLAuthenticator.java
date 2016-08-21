@@ -25,7 +25,7 @@ import com.helger.rabbit.http.HttpHeader;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class SQLAuthenticator implements Authenticator
+public class SQLAuthenticator implements IAuthenticator
 {
 
   private final DataSourceHelper dsh;
@@ -60,17 +60,12 @@ public class SQLAuthenticator implements Authenticator
   {
     try
     {
-      final Connection db = dsh.getConnection ();
-      try
+      try (final Connection db = dsh.getConnection ())
       {
         final String pwd = getDbPassword (db, user);
         if (pwd == null)
           return false;
         return pwd.equals (token);
-      }
-      finally
-      {
-        db.close ();
       }
     }
     catch (final SQLException e)
@@ -82,26 +77,14 @@ public class SQLAuthenticator implements Authenticator
 
   private String getDbPassword (final Connection db, final String username) throws SQLException
   {
-    final PreparedStatement ps = db.prepareStatement (dsh.getSelect ());
-    try
+    try (final PreparedStatement ps = db.prepareStatement (dsh.getSelect ()))
     {
       ps.setString (1, username);
-      final ResultSet rs = ps.executeQuery ();
-      try
+      try (final ResultSet rs = ps.executeQuery ())
       {
         if (rs.next ())
-        {
           return rs.getString (1);
-        }
       }
-      finally
-      {
-        rs.close ();
-      }
-    }
-    finally
-    {
-      ps.close ();
     }
     return null;
   }

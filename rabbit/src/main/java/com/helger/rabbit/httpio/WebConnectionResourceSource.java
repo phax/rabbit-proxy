@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.ConnectionHandler;
 import com.helger.rabbit.io.WebConnection;
-import com.helger.rabbit.util.TrafficLogger;
+import com.helger.rabbit.util.ITrafficLogger;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IReadHandler;
 
@@ -17,13 +17,13 @@ import com.helger.rnio.IReadHandler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class WebConnectionResourceSource implements ResourceSource, IReadHandler, ChunkDataFeeder
+public class WebConnectionResourceSource implements IResourceSource, IReadHandler, ChunkDataFeeder
 {
   private final ConnectionHandler con;
   private final INioHandler nioHandler;
   private final WebConnection wc;
   private final BufferHandle bufHandle;
-  private final TrafficLogger tl;
+  private final ITrafficLogger tl;
   private BlockListener listener;
   private final boolean isChunked;
   private final long dataSize;
@@ -58,7 +58,7 @@ public class WebConnectionResourceSource implements ResourceSource, IReadHandler
                                       final INioHandler nioHandler,
                                       final WebConnection wc,
                                       final BufferHandle bufHandle,
-                                      final TrafficLogger tl,
+                                      final ITrafficLogger tl,
                                       final boolean isChunked,
                                       final long dataSize,
                                       final boolean strictHttp)

@@ -3,14 +3,14 @@ package com.helger.rabbit.cache.utils;
 import java.util.logging.Logger;
 
 import com.helger.commons.url.SMap;
-import com.helger.rabbit.cache.CacheConfiguration;
+import com.helger.rabbit.cache.ICacheConfiguration;
 
 /**
  * A base implementation of cache configuration.
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public abstract class CacheConfigurationBase implements CacheConfiguration
+public abstract class CacheConfigurationBase implements ICacheConfiguration
 {
   private long maxSize = 0;
   private long cacheTime = 0;
