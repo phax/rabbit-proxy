@@ -1,0 +1,13 @@
+classes/*
+.allclasses.txt
+.classes_to_compile
+.deps
+.packagelist
+jars/rabbit4.jar
+htdocs/javadoc/*
+logs/*
+run_rabbit
+*~
+dist/*
+/bin/
+/target/

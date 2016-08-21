@@ -1,0 +1,95 @@
+package com.helger.rabbit.proxy;
+
+import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.helger.rabbit.filter.IPAccessFilter;
+import com.helger.rabbit.util.Config;
+
+/**
+ * An access controller based on socket channels.
+ *
+ * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
+ */
+public class SocketAccessController
+{
+  /** the filters, a List of classes (in given order) */
+  private List <IPAccessFilter> accessfilters = new ArrayList <> ();
+  private final Logger logger = Logger.getLogger (getClass ().getName ());
+
+  /**
+   * Create a new SocketAccessController that will use a list of internal
+   * filters.
+   * 
+   * @param filters
+   *        a comma separated list of filters to use
+   * @param config
+   *        the Config to get the internal filters properties from
+   * @param proxy
+   *        the HttpProxy using this access controller
+   */
+  public SocketAccessController (final String filters, final Config config, final HttpProxy proxy)
+  {
+    accessfilters = new ArrayList <> ();
+    loadAccessFilters (filters, accessfilters, config, proxy);
+  }
+
+  private void loadAccessFilters (final String filters,
+                                  final List <IPAccessFilter> accessfilters,
+                                  final Config config,
+                                  final HttpProxy proxy)
+  {
+    final StringTokenizer st = new StringTokenizer (filters, ",");
+    String classname = "";
+    while (st.hasMoreElements ())
+    {
+      try
+      {
+        classname = st.nextToken ().trim ();
+        final Class <? extends IPAccessFilter> cls = proxy.load3rdPartyClass (classname, IPAccessFilter.class);
+        final IPAccessFilter ipf = cls.newInstance ();
+        ipf.setup (config.getProperties (classname));
+        accessfilters.add (ipf);
+      }
+      catch (final ClassNotFoundException ex)
+      {
+        logger.log (Level.WARNING, "Could not load class: '" + classname + "'", ex);
+      }
+      catch (final InstantiationException ex)
+      {
+        logger.log (Level.WARNING, "Could not instansiate: '" + classname + "'", ex);
+      }
+      catch (final IllegalAccessException ex)
+      {
+        logger.log (Level.WARNING, "Could not instansiate: '" + classname + "'", ex);
+      }
+    }
+  }
+
+  private List <IPAccessFilter> getAccessFilters ()
+  {
+    return Collections.unmodifiableList (accessfilters);
+  }
+
+  /**
+   * Check if the given channel is allowed access.
+   * 
+   * @param sc
+   *        the channel to check
+   * @return true if the channel is allowed access, false otherwise
+   */
+  public boolean checkAccess (final SocketChannel sc)
+  {
+    for (final IPAccessFilter filter : getAccessFilters ())
+    {
+      if (filter.doIPFiltering (sc))
+        return true;
+    }
+    return false;
+  }
+}
