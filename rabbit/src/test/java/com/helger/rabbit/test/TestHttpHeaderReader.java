@@ -18,9 +18,9 @@ import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
 import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.StatisticsHolder;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IStatisticsHolder;
 import com.helger.rnio.impl.BasicStatisticsHolder;
 import com.helger.rnio.impl.CachingBufferHandler;
 import com.helger.rnio.impl.MultiSelectorNioHandler;
@@ -33,9 +33,9 @@ import com.helger.rnio.impl.SimpleThreadFactory;
  */
 public class TestHttpHeaderReader
 {
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
   private final TrafficLogger trafficLogger = new SimpleTrafficLogger ();
-  private final BufferHandler bufferHandler = new CachingBufferHandler ();
+  private final IBufferHandler bufferHandler = new CachingBufferHandler ();
   private final TestListener listener = new TestListener ();
   private SocketChannel readFrom, writeTo;
   private final int PORT = 9966;
@@ -65,7 +65,7 @@ public class TestHttpHeaderReader
   private TestHttpHeaderReader () throws IOException
   {
     final ExecutorService es = Executors.newCachedThreadPool ();
-    final StatisticsHolder sh = new BasicStatisticsHolder ();
+    final IStatisticsHolder sh = new BasicStatisticsHolder ();
     nioHandler = new MultiSelectorNioHandler (es, sh, 1, Long.valueOf (15000L));
   }
 

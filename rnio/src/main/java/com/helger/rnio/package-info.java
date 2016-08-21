@@ -32,7 +32,7 @@
 /**
  * The basic interfaces for rnio.
  * <p>
- * The main class here is the {@link com.helger.rnio.NioHandler}.
+ * The main class here is the {@link com.helger.rnio.INioHandler}.
  *
  * @since 1.0
  */

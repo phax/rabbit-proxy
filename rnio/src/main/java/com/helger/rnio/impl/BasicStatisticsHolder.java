@@ -37,8 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.helger.rnio.StatisticsHolder;
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.IStatisticsHolder;
+import com.helger.rnio.ITaskIdentifier;
 import com.helger.rnio.statistics.CompletionEntry;
 import com.helger.rnio.statistics.TotalTimeSpent;
 
@@ -47,13 +47,13 @@ import com.helger.rnio.statistics.TotalTimeSpent;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class BasicStatisticsHolder implements StatisticsHolder
+public class BasicStatisticsHolder implements IStatisticsHolder
 {
   // Map is group id to TaskIdentifier
-  private final Map <String, List <TaskIdentifier>> pendingTasks = new HashMap<> ();
+  private final Map <String, List <ITaskIdentifier>> pendingTasks = new HashMap<> ();
 
   // Map is group id to TaskIdentifier
-  private final Map <String, List <TaskIdentifier>> runningTasks = new HashMap<> ();
+  private final Map <String, List <ITaskIdentifier>> runningTasks = new HashMap<> ();
 
   private final int maxLatest = 10;
   // Map is group id to CompletionEntry
@@ -76,32 +76,32 @@ public class BasicStatisticsHolder implements StatisticsHolder
     return ls;
   }
 
-  private void addTask (final TaskIdentifier ti, final Map <String, List <TaskIdentifier>> tasks)
+  private void addTask (final ITaskIdentifier ti, final Map <String, List <ITaskIdentifier>> tasks)
   {
     getList (ti.getGroupId (), tasks).add (ti);
   }
 
-  private void removeTask (final TaskIdentifier ti, final Map <String, List <TaskIdentifier>> tasks)
+  private void removeTask (final ITaskIdentifier ti, final Map <String, List <ITaskIdentifier>> tasks)
   {
-    final List <TaskIdentifier> ls = tasks.get (ti.getGroupId ());
+    final List <ITaskIdentifier> ls = tasks.get (ti.getGroupId ());
     if (ls == null)
       throw new NullPointerException ("No pending taks for group: " + ti.getGroupId ());
     if (!ls.remove (ti))
       throw new IllegalArgumentException ("Given task was not pending: " + ti);
   }
 
-  public synchronized void addPendingTask (final TaskIdentifier ti)
+  public synchronized void addPendingTask (final ITaskIdentifier ti)
   {
     addTask (ti, pendingTasks);
   }
 
-  public synchronized void changeTaskStatusToRunning (final TaskIdentifier ti)
+  public synchronized void changeTaskStatusToRunning (final ITaskIdentifier ti)
   {
     removeTask (ti, pendingTasks);
     addTask (ti, runningTasks);
   }
 
-  public synchronized void changeTaskStatusToFinished (final TaskIdentifier ti,
+  public synchronized void changeTaskStatusToFinished (final ITaskIdentifier ti,
                                                        final boolean wasOk,
                                                        final long timeSpent)
   {
@@ -173,12 +173,12 @@ public class BasicStatisticsHolder implements StatisticsHolder
     return ret;
   }
 
-  public synchronized Map <String, List <TaskIdentifier>> getPendingTasks ()
+  public synchronized Map <String, List <ITaskIdentifier>> getPendingTasks ()
   {
     return copy (pendingTasks);
   }
 
-  public synchronized Map <String, List <TaskIdentifier>> getRunningTasks ()
+  public synchronized Map <String, List <ITaskIdentifier>> getRunningTasks ()
   {
     return copy (runningTasks);
   }

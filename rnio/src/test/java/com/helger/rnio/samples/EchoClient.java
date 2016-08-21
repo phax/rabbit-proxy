@@ -43,13 +43,13 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.StatisticsHolder;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IStatisticsHolder;
 import com.helger.rnio.impl.BasicStatisticsHolder;
 import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.MultiSelectorNioHandler;
-import com.helger.rnio.impl.SimpleBlockReader;
-import com.helger.rnio.impl.SimpleBlockSender;
+import com.helger.rnio.impl.AbstractSimpleBlockReader;
+import com.helger.rnio.impl.AbstractSimpleBlockSender;
 import com.helger.rnio.impl.SimpleThreadFactory;
 
 /**
@@ -62,7 +62,7 @@ public class EchoClient
   private final BufferedReader input;
   private final PrintWriter output;
   private final SocketChannel serverChannel;
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
   private final Thread inputReaderThread;
   private final Logger logger = Logger.getLogger ("org.khelekore.rnio.echoserver");
 
@@ -95,7 +95,7 @@ public class EchoClient
     inputReaderThread = new Thread (new InputReader ());
 
     final ExecutorService es = Executors.newCachedThreadPool ();
-    final StatisticsHolder stats = new BasicStatisticsHolder ();
+    final IStatisticsHolder stats = new BasicStatisticsHolder ();
     final Long timeout = Long.valueOf (15000);
     nioHandler = new MultiSelectorNioHandler (es, stats, 1, timeout);
   }
@@ -123,9 +123,9 @@ public class EchoClient
     // inerruptible.
   }
 
-  private class ServerReader extends SimpleBlockReader
+  private class ServerReader extends AbstractSimpleBlockReader
   {
-    public ServerReader (final SocketChannel sc, final NioHandler nioHandler)
+    public ServerReader (final SocketChannel sc, final INioHandler nioHandler)
     {
       super (sc, nioHandler, null);
     }
@@ -147,9 +147,9 @@ public class EchoClient
     }
   }
 
-  private class Sender extends SimpleBlockSender
+  private class Sender extends AbstractSimpleBlockSender
   {
-    public Sender (final NioHandler nioHandler, final ByteBuffer buf)
+    public Sender (final INioHandler nioHandler, final ByteBuffer buf)
     {
       super (serverChannel, nioHandler, buf, null);
     }

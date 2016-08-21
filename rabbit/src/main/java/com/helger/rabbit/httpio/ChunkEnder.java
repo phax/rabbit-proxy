@@ -6,7 +6,7 @@ import java.nio.channels.SocketChannel;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A class that sends the chunk ending (with an empty footer).
@@ -30,7 +30,7 @@ public class ChunkEnder
    *        the listener that will be notified when the sending is complete
    */
   public void sendChunkEnding (final SocketChannel channel,
-                               final NioHandler nioHandler,
+                               final INioHandler nioHandler,
                                final TrafficLogger tl,
                                final BlockSentListener bsl)
   {

@@ -6,8 +6,8 @@ import java.nio.channels.SocketChannel;
 
 import com.helger.rabbit.io.Address;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.WriteHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IWriteHandler;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
 /**
@@ -18,7 +18,7 @@ import com.helger.rnio.impl.DefaultTaskIdentifier;
  */
 public class TransferHandler implements Runnable
 {
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
   private final Transferable t;
   private final SocketChannel channel;
   private final TrafficLogger tlFrom;
@@ -43,7 +43,7 @@ public class TransferHandler implements Runnable
    * @param listener
    *        the listener that will be notified when the transfer has completed
    */
-  public TransferHandler (final NioHandler nioHandler,
+  public TransferHandler (final INioHandler nioHandler,
                           final Transferable t,
                           final SocketChannel channel,
                           final TrafficLogger tlFrom,
@@ -99,7 +99,7 @@ public class TransferHandler implements Runnable
     nioHandler.waitForWrite (channel, new WriteWaiter ());
   }
 
-  private class WriteWaiter implements WriteHandler
+  private class WriteWaiter implements IWriteHandler
   {
     private final Long timeout = nioHandler.getDefaultTimeout ();
 

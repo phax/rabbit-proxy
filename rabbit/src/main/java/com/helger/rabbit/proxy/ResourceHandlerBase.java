@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.WebConnection;
-import com.helger.rnio.ReadHandler;
+import com.helger.rnio.IReadHandler;
 
 /**
  * A base for client resource transfer classes.
@@ -70,11 +70,11 @@ abstract class ResourceHandlerBase implements ClientResourceHandler
   protected void waitForRead ()
   {
     bufHandle.possiblyFlush ();
-    final ReadHandler sh = new Reader ();
+    final IReadHandler sh = new Reader ();
     con.getNioHandler ().waitForRead (con.getChannel (), sh);
   }
 
-  private class Reader implements ReadHandler
+  private class Reader implements IReadHandler
   {
     private final Long timeout = con.getNioHandler ().getDefaultTimeout ();
 

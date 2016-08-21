@@ -29,14 +29,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.helger.rnio.impl;
-
-import java.io.IOException;
+package com.helger.rnio;
 
 /**
- * A task to be run on a selector thread.
+ * A handler that signals that a channel is ready to connect.
  */
-interface SelectorRunnable
+public interface IConnectHandler extends ISocketChannelHandler
 {
-  void run (SingleSelectorRunner sc) throws IOException;
+
+  /** The channel is ready for read. */
+  void connect ();
 }

@@ -20,9 +20,9 @@ import com.helger.rabbit.io.WebConnectionListener;
 import com.helger.rabbit.util.Counter;
 import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.StatisticsHolder;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IStatisticsHolder;
 import com.helger.rnio.impl.BasicStatisticsHolder;
 import com.helger.rnio.impl.CachingBufferHandler;
 import com.helger.rnio.impl.MultiSelectorNioHandler;
@@ -37,9 +37,9 @@ public class ClientBase
 {
   private final Logger logger = Logger.getLogger (getClass ().getName ());
   private final ConnectionHandler connectionHandler;
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
   private final TrafficLogger trafficLogger = new SimpleTrafficLogger ();
-  private final BufferHandler bufHandler;
+  private final IBufferHandler bufHandler;
 
   /**
    * Create a new ClientBase.
@@ -50,7 +50,7 @@ public class ClientBase
   public ClientBase () throws IOException
   {
     final ExecutorService es = Executors.newCachedThreadPool ();
-    final StatisticsHolder sh = new BasicStatisticsHolder ();
+    final IStatisticsHolder sh = new BasicStatisticsHolder ();
     nioHandler = new MultiSelectorNioHandler (es, sh, 4, 15000L);
     nioHandler.start (new SimpleThreadFactory ());
     final DNSJavaHandler jh = new DNSJavaHandler ();
@@ -88,7 +88,7 @@ public class ClientBase
    * 
    * @return the current NioHandler
    */
-  public NioHandler getNioHandler ()
+  public INioHandler getNioHandler ()
   {
     return nioHandler;
   }

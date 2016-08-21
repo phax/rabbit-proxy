@@ -10,8 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.helger.rabbit.util.Counter;
-import com.helger.rnio.ConnectHandler;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.IConnectHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A class to handle a connection to the Internet.
@@ -108,7 +108,7 @@ public class WebConnection implements Closeable
    * @throws IOException
    *         if the network operations fail
    */
-  public void connect (final NioHandler nioHandler,
+  public void connect (final INioHandler nioHandler,
                        final WebConnectionListener wcl,
                        final boolean setTcpNoDelay) throws IOException
   {
@@ -138,9 +138,9 @@ public class WebConnection implements Closeable
     }
   }
 
-  private class ConnectListener implements ConnectHandler
+  private class ConnectListener implements IConnectHandler
   {
-    private NioHandler nioHandler;
+    private INioHandler nioHandler;
     private final WebConnectionListener wcl;
     private Long timeout;
 
@@ -149,7 +149,7 @@ public class WebConnection implements Closeable
       this.wcl = wcl;
     }
 
-    public void waitForConnection (final NioHandler nioHandler)
+    public void waitForConnection (final INioHandler nioHandler)
     {
       this.nioHandler = nioHandler;
       timeout = nioHandler.getDefaultTimeout ();

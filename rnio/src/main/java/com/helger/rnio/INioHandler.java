@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadFactory;
 /**
  * A handler of nio based events.
  */
-public interface NioHandler
+public interface INioHandler
 {
 
   /**
@@ -80,7 +80,7 @@ public interface NioHandler
    * @param ti
    *        an identifier for the statistics
    */
-  void runThreadTask (Runnable r, TaskIdentifier ti);
+  void runThreadTask (Runnable r, ITaskIdentifier ti);
 
   /**
    * Install an event listener for read events. When the channels is ready the
@@ -92,7 +92,7 @@ public interface NioHandler
    * @param handler
    *        the listener that will be notified when the chanel has data
    */
-  void waitForRead (SelectableChannel channel, ReadHandler handler);
+  void waitForRead (SelectableChannel channel, IReadHandler handler);
 
   /**
    * Install an event listener for write events. When the channel is ready the
@@ -105,7 +105,7 @@ public interface NioHandler
    *        the listener that will be notified when the chanel is ready to be
    *        written
    */
-  void waitForWrite (SelectableChannel channel, WriteHandler handler);
+  void waitForWrite (SelectableChannel channel, IWriteHandler handler);
 
   /**
    * Install an event listener for accent events. When the channel is ready the
@@ -118,7 +118,7 @@ public interface NioHandler
    *        the listener that will be notified when the chanel has is ready for
    *        accepting new channels
    */
-  void waitForAccept (SelectableChannel channel, AcceptHandler handler);
+  void waitForAccept (SelectableChannel channel, IAcceptHandler handler);
 
   /**
    * Install an event listener for connect events. When the channel is ready the
@@ -131,7 +131,7 @@ public interface NioHandler
    *        the listener that will be notified when the chanel is ready to
    *        complete the connection
    */
-  void waitForConnect (SelectableChannel channel, ConnectHandler handler);
+  void waitForConnect (SelectableChannel channel, IConnectHandler handler);
 
   /**
    * Remove an event listener.
@@ -141,7 +141,7 @@ public interface NioHandler
    * @param handler
    *        the listener to remove
    */
-  void cancel (SelectableChannel channel, SocketChannelHandler handler);
+  void cancel (SelectableChannel channel, ISocketChannelHandler handler);
 
   /**
    * Close the given channel. Closing a channel will cause
@@ -160,12 +160,12 @@ public interface NioHandler
    * @param visitor
    *        the listener that will be notified of the selector and channels
    */
-  void visitSelectors (SelectorVisitor visitor);
+  void visitSelectors (ISelectorVisitor visitor);
 
   /**
    * Get the timing information for the thread tasks.
    *
    * @return the StatisticsHolder for this NioHandler
    */
-  StatisticsHolder getTimingStatistics ();
+  IStatisticsHolder getTimingStatistics ();
 }

@@ -23,7 +23,7 @@ import com.helger.rabbit.proxy.HttpProxy;
 import com.helger.rabbit.proxy.TrafficLoggerHandler;
 import com.helger.rabbit.zip.GZipUnpackListener;
 import com.helger.rabbit.zip.GZipUnpacker;
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.ITaskIdentifier;
 import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
@@ -260,7 +260,7 @@ public class ImageHandler extends BaseHandler
     content.addBlockListener (new ImageReader (unzip));
   }
 
-  private TaskIdentifier getTaskIdentifier (final Object o, final String method)
+  private ITaskIdentifier getTaskIdentifier (final Object o, final String method)
   {
     final String gid = o.getClass ().getSimpleName () + "." + method;
     return new DefaultTaskIdentifier (gid, request.getRequestURI ());
@@ -284,7 +284,7 @@ public class ImageHandler extends BaseHandler
 
     public void bufferRead (final BufferHandle bufHandle)
     {
-      final TaskIdentifier ti = getTaskIdentifier (this, "bufferRead");
+      final ITaskIdentifier ti = getTaskIdentifier (this, "bufferRead");
       con.getNioHandler ().runThreadTask ( () -> {
         if (unzip)
         {
@@ -395,7 +395,7 @@ public class ImageHandler extends BaseHandler
    */
   protected void convertImage ()
   {
-    final TaskIdentifier ti = getTaskIdentifier (this, "convertImage");
+    final ITaskIdentifier ti = getTaskIdentifier (this, "convertImage");
     con.getNioHandler ().runThreadTask ( () -> {
       try
       {

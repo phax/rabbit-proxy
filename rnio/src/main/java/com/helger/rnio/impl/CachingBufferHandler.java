@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.helger.rnio.BufferHandler;
+import com.helger.rnio.IBufferHandler;
 
 /**
  * A buffer handler that re-uses returned buffers.
@@ -46,7 +46,7 @@ import com.helger.rnio.BufferHandler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class CachingBufferHandler implements BufferHandler
+public class CachingBufferHandler implements IBufferHandler
 {
   private final Queue <BufferHolder> cache = new ConcurrentLinkedQueue<> ();
   private final Queue <BufferHolder> largeCache = new ConcurrentLinkedQueue<> ();

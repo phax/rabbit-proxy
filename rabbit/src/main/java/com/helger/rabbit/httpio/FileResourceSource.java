@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.ITaskIdentifier;
 import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
@@ -28,7 +28,7 @@ public class FileResourceSource implements ResourceSource
 
   // used for block handling.
   private BlockListener listener;
-  private NioHandler nioHandler;
+  private INioHandler nioHandler;
   protected BufferHandle bufHandle;
 
   private final Logger logger = Logger.getLogger (getClass ().getName ());
@@ -46,8 +46,8 @@ public class FileResourceSource implements ResourceSource
    *         if the file is a valid file
    */
   public FileResourceSource (final String filename,
-                             final NioHandler nioHandler,
-                             final BufferHandler bufHandler) throws IOException
+                             final INioHandler nioHandler,
+                             final IBufferHandler bufHandler) throws IOException
   {
     this (new File (filename), nioHandler, bufHandler);
   }
@@ -65,8 +65,8 @@ public class FileResourceSource implements ResourceSource
    *         if the file is a valid file
    */
   public FileResourceSource (final File f,
-                             final NioHandler nioHandler,
-                             final BufferHandler bufHandler) throws IOException
+                             final INioHandler nioHandler,
+                             final IBufferHandler bufHandler) throws IOException
   {
     if (!f.exists ())
       throw new FileNotFoundException ("File: " + f.getName () + " not found");
@@ -127,7 +127,7 @@ public class FileResourceSource implements ResourceSource
     this.listener = listener;
     // Get buffer on selector thread.
     bufHandle.getBuffer ();
-    final TaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName (),
+    final ITaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName (),
                                                          "addBlockListener: channel: " + fc);
     nioHandler.runThreadTask (new ReadBlock (), ti);
   }

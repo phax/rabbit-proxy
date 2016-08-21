@@ -27,8 +27,8 @@ import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.Resolver;
 import com.helger.rabbit.util.Counter;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.ITaskIdentifier;
 import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
@@ -261,7 +261,7 @@ public class Connection
             readMultiPart (ct);
       }
 
-      final TaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName () +
+      final ITaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName () +
                                                            ".filterAndHandleRequest: ",
                                                            request.getRequestURI ());
       getNioHandler ().runThreadTask ( () -> filterAndHandleRequest (), ti);
@@ -951,7 +951,7 @@ public class Connection
   /**
    * @return the NioHandler that this connection is using
    */
-  public NioHandler getNioHandler ()
+  public INioHandler getNioHandler ()
   {
     return proxy.getNioHandler ();
   }
@@ -1445,7 +1445,7 @@ public class Connection
   {
     if (getNioHandler ().isSelectorThread ())
     {
-      final TaskIdentifier ti = new DefaultTaskIdentifier ("logConnection", request.getRequestURI ());
+      final ITaskIdentifier ti = new DefaultTaskIdentifier ("logConnection", request.getRequestURI ());
       getNioHandler ().runThreadTask ( () -> internalLogAndTryRestart (), ti);
     }
     else

@@ -31,81 +31,23 @@
  */
 package com.helger.rnio.impl;
 
-import java.nio.channels.SelectableChannel;
-import java.util.logging.Logger;
-
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.SocketChannelHandler;
+import java.io.IOException;
+import java.nio.channels.SocketChannel;
 
 /**
- * A socket handler that never times out and always runs on the selector thread.
+ * A listener for accepted connections.
  *
- * @param <T>
- *        the type of chanel that is handled
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public abstract class SocketHandlerBase <T extends SelectableChannel> implements SocketChannelHandler
+public interface IAcceptorListener
 {
-  /** The actual channel */
-  public final T sc;
-  /** The NioHandler used to wait for opeations. */
-  public final NioHandler nioHandler;
-  /** The timeout for the current operation */
-  public final Long timeout;
-
-  private final Logger logger = Logger.getLogger ("org.khelekore.rnio");
-
   /**
-   * @param sc
-   *        the channel to handle
-   * @param nioHandler
-   *        the NioHandler
-   * @param timeout
-   *        the timeout in millis, may be null if no timeout is wanted.
-   */
-  public SocketHandlerBase (final T sc, final NioHandler nioHandler, final Long timeout)
-  {
-    this.sc = sc;
-    this.nioHandler = nioHandler;
-    this.timeout = timeout;
-  }
-
-  /**
-   * Will return null to indicate no timeout on accepts.
-   */
-  public Long getTimeout ()
-  {
-    return timeout;
-  }
-
-  /**
-   * Returns the class name.
-   */
-  public String getDescription ()
-  {
-    return getClass ().getSimpleName ();
-  }
-
-  /**
-   * Will always run on the selector thread so return false.
+   * A conneciton has been accepted
    *
-   * @return false
+   * @param sc
+   *        the new socket channel, will already be set to non blocking mode
+   * @throws IOException
+   *         if the accept fails
    */
-  public boolean useSeparateThread ()
-  {
-    return false;
-  }
-
-  /**
-   * Handle timeouts. Default implementation just calls closed().
-   */
-  public void timeout ()
-  {
-    closed ();
-  }
-
-  public void closed ()
-  {
-    Closer.close (sc, logger);
-  }
+  void connectionAccepted (SocketChannel sc) throws IOException;
 }

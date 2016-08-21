@@ -10,7 +10,7 @@ import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.BlockListener;
 import com.helger.rabbit.httpio.ResourceSource;
 import com.helger.rabbit.io.BufferHandle;
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.ITaskIdentifier;
 import com.helger.rnio.impl.Closer;
 import com.helger.rnio.impl.DefaultTaskIdentifier;
 
@@ -60,7 +60,7 @@ public class FileSaver implements BlockListener
 
   public void bufferRead (final BufferHandle bufHandle)
   {
-    final TaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName (), request.getRequestURI ());
+    final ITaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName (), request.getRequestURI ());
     clientBase.getNioHandler ().runThreadTask ( () -> {
       try
       {

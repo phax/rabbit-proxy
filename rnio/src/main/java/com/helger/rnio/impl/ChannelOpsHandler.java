@@ -34,18 +34,18 @@ package com.helger.rnio.impl;
 import java.nio.channels.SelectionKey;
 import java.util.concurrent.ExecutorService;
 
-import com.helger.rnio.AcceptHandler;
-import com.helger.rnio.ConnectHandler;
-import com.helger.rnio.ReadHandler;
-import com.helger.rnio.SocketChannelHandler;
-import com.helger.rnio.WriteHandler;
+import com.helger.rnio.IAcceptHandler;
+import com.helger.rnio.IConnectHandler;
+import com.helger.rnio.IReadHandler;
+import com.helger.rnio.ISocketChannelHandler;
+import com.helger.rnio.IWriteHandler;
 
 /**
  * The handler of channel operations.
  */
 class ChannelOpsHandler
 {
-  private static class NullHandler implements ReadHandler, WriteHandler, AcceptHandler, ConnectHandler
+  private static class NullHandler implements IReadHandler, IWriteHandler, IAcceptHandler, IConnectHandler
   {
     public void closed ()
     { /* empty */ }
@@ -89,10 +89,10 @@ class ChannelOpsHandler
 
   private static final NullHandler NULL_HANDLER = new NullHandler ();
 
-  private ReadHandler readHandler = NULL_HANDLER;
-  private WriteHandler writeHandler = NULL_HANDLER;
-  private AcceptHandler acceptHandler = NULL_HANDLER;
-  private ConnectHandler connectHandler = NULL_HANDLER;
+  private IReadHandler readHandler = NULL_HANDLER;
+  private IWriteHandler writeHandler = NULL_HANDLER;
+  private IAcceptHandler acceptHandler = NULL_HANDLER;
+  private IConnectHandler connectHandler = NULL_HANDLER;
 
   @Override
   public String toString ()
@@ -124,8 +124,8 @@ class ChannelOpsHandler
     return ret;
   }
 
-  private void checkNullHandler (final SocketChannelHandler handler,
-                                 final SocketChannelHandler newHandler,
+  private void checkNullHandler (final ISocketChannelHandler handler,
+                                 final ISocketChannelHandler newHandler,
                                  final String type)
   {
     if (handler != NULL_HANDLER)
@@ -144,7 +144,7 @@ class ChannelOpsHandler
     }
   }
 
-  public void setReadHandler (final ReadHandler rh)
+  public void setReadHandler (final IReadHandler rh)
   {
     if (rh == null)
       throw new IllegalArgumentException ("read handler may not be null");
@@ -152,7 +152,7 @@ class ChannelOpsHandler
     this.readHandler = rh;
   }
 
-  public void setWriteHandler (final WriteHandler writeHandler)
+  public void setWriteHandler (final IWriteHandler writeHandler)
   {
     if (writeHandler == null)
       throw new IllegalArgumentException ("write handler may not be null");
@@ -160,7 +160,7 @@ class ChannelOpsHandler
     this.writeHandler = writeHandler;
   }
 
-  public void setAcceptHandler (final AcceptHandler acceptHandler)
+  public void setAcceptHandler (final IAcceptHandler acceptHandler)
   {
     if (acceptHandler == null)
       throw new IllegalArgumentException ("accept handler may not be null");
@@ -168,7 +168,7 @@ class ChannelOpsHandler
     this.acceptHandler = acceptHandler;
   }
 
-  public void setConnectHandler (final ConnectHandler connectHandler)
+  public void setConnectHandler (final IConnectHandler connectHandler)
   {
     if (connectHandler == null)
       throw new IllegalArgumentException ("connect handler may not be null");
@@ -176,7 +176,7 @@ class ChannelOpsHandler
     this.connectHandler = connectHandler;
   }
 
-  private void handleRead (final ExecutorService executorService, final ReadHandler rh)
+  private void handleRead (final ExecutorService executorService, final IReadHandler rh)
   {
     if (rh.useSeparateThread ())
     {
@@ -188,7 +188,7 @@ class ChannelOpsHandler
     }
   }
 
-  private void handleWrite (final ExecutorService executorService, final WriteHandler wh)
+  private void handleWrite (final ExecutorService executorService, final IWriteHandler wh)
   {
     if (wh.useSeparateThread ())
     {
@@ -200,7 +200,7 @@ class ChannelOpsHandler
     }
   }
 
-  private void handleAccept (final ExecutorService executorService, final AcceptHandler ah)
+  private void handleAccept (final ExecutorService executorService, final IAcceptHandler ah)
   {
     if (ah.useSeparateThread ())
     {
@@ -212,7 +212,7 @@ class ChannelOpsHandler
     }
   }
 
-  private void handleConnect (final ExecutorService executorService, final ConnectHandler ch)
+  private void handleConnect (final ExecutorService executorService, final IConnectHandler ch)
   {
     if (ch.useSeparateThread ())
     {
@@ -227,10 +227,10 @@ class ChannelOpsHandler
   public void handle (final ExecutorService executorService, final SelectionKey sk)
   {
     sk.interestOps (0);
-    final ReadHandler rh = readHandler;
-    final WriteHandler wh = writeHandler;
-    final AcceptHandler ah = acceptHandler;
-    final ConnectHandler ch = connectHandler;
+    final IReadHandler rh = readHandler;
+    final IWriteHandler wh = writeHandler;
+    final IAcceptHandler ah = acceptHandler;
+    final IConnectHandler ch = connectHandler;
     readHandler = NULL_HANDLER;
     writeHandler = NULL_HANDLER;
     acceptHandler = NULL_HANDLER;
@@ -261,7 +261,7 @@ class ChannelOpsHandler
         setConnectHandler (ch);
   }
 
-  private boolean doTimeout (final long now, final SocketChannelHandler sch)
+  private boolean doTimeout (final long now, final ISocketChannelHandler sch)
   {
     if (sch == null)
       return false;
@@ -288,7 +288,7 @@ class ChannelOpsHandler
     return ret;
   }
 
-  private Long minTimeout (final Long t, final SocketChannelHandler sch)
+  private Long minTimeout (final Long t, final ISocketChannelHandler sch)
   {
     if (sch == null)
       return t;
@@ -309,7 +309,7 @@ class ChannelOpsHandler
     return t;
   }
 
-  public void cancel (final SocketChannelHandler sch)
+  public void cancel (final ISocketChannelHandler sch)
   {
     if (readHandler == sch)
       readHandler = NULL_HANDLER;
@@ -321,7 +321,7 @@ class ChannelOpsHandler
       connectHandler = NULL_HANDLER;
   }
 
-  private void closedIfSet (final SocketChannelHandler sch)
+  private void closedIfSet (final ISocketChannelHandler sch)
   {
     if (sch != null)
       sch.closed ();

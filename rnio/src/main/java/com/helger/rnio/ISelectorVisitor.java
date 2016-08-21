@@ -31,35 +31,24 @@
  */
 package com.helger.rnio;
 
+import java.nio.channels.Selector;
+
 /**
- * A handler for socket operations.
+ * A visitor of the selectors used by a NioHandler. The method selector will be
+ * called once for each of the different selectors used by the NioHandler.
  */
-public interface SocketChannelHandler
+public interface ISelectorVisitor
 {
-  /** Signal that the channel has been closed. */
-  void closed ();
-
-  /** Signal that the select operation timed out. */
-  void timeout ();
+  /**
+   * Visit one selector.
+   *
+   * @param selector
+   *        one of the Selector:s handled by the NioHandler
+   */
+  void selector (Selector selector);
 
   /**
-   * Check if this handler needs to run in a separate thread.
-   *
-   * @return true if this task want to run in a worker thread, false otherwise
+   * Indicates that all selectors have been visited
    */
-  boolean useSeparateThread ();
-
-  /**
-   * Get a string description.
-   *
-   * @return a description of this task
-   */
-  String getDescription ();
-
-  /**
-   * Get the timeout time in millis.
-   *
-   * @return the time when this operation times out, null if no timeout is set.
-   */
-  Long getTimeout ();
+  void end ();
 }

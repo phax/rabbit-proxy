@@ -10,11 +10,11 @@ import java.util.concurrent.Executors;
 
 import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.StatisticsHolder;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IStatisticsHolder;
 import com.helger.rnio.impl.Acceptor;
-import com.helger.rnio.impl.AcceptorListener;
+import com.helger.rnio.impl.IAcceptorListener;
 import com.helger.rnio.impl.BasicStatisticsHolder;
 import com.helger.rnio.impl.CachingBufferHandler;
 import com.helger.rnio.impl.MultiSelectorNioHandler;
@@ -29,9 +29,9 @@ public class SimpleWebServer
 {
   private File dir;
   private final int port;
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
   private final TrafficLogger trafficLogger = new SimpleTrafficLogger ();
-  private final BufferHandler bufferHandler = new CachingBufferHandler ();
+  private final IBufferHandler bufferHandler = new CachingBufferHandler ();
 
   /**
    * Start a web server using the port and base dir given as arguments.
@@ -83,7 +83,7 @@ public class SimpleWebServer
       throw new IOException (dir + " is not an existing directory");
     dir = dir.getCanonicalFile ();
     final ExecutorService es = Executors.newCachedThreadPool ();
-    final StatisticsHolder sh = new BasicStatisticsHolder ();
+    final IStatisticsHolder sh = new BasicStatisticsHolder ();
     nioHandler = new MultiSelectorNioHandler (es, sh, 4, Long.valueOf (15000L));
   }
 
@@ -103,7 +103,7 @@ public class SimpleWebServer
       final ServerSocketChannel ssc = ServerSocketChannel.open ();
       ssc.configureBlocking (false);
       ssc.socket ().bind (new InetSocketAddress (port));
-      final AcceptorListener acceptListener = new AcceptListener ();
+      final IAcceptorListener acceptListener = new AcceptListener ();
       final Acceptor acceptor = new Acceptor (ssc, nioHandler, acceptListener);
       acceptor.register ();
     }
@@ -113,7 +113,7 @@ public class SimpleWebServer
     }
   }
 
-  private class AcceptListener implements AcceptorListener
+  private class AcceptListener implements IAcceptorListener
   {
     public void connectionAccepted (final SocketChannel sc) throws IOException
     {
@@ -136,7 +136,7 @@ public class SimpleWebServer
    * 
    * @return the BufferHandler
    */
-  public BufferHandler getBufferHandler ()
+  public IBufferHandler getBufferHandler ()
   {
     return bufferHandler;
   }
@@ -146,7 +146,7 @@ public class SimpleWebServer
    * 
    * @return the NioHandler in use
    */
-  public NioHandler getNioHandler ()
+  public INioHandler getNioHandler ()
   {
     return nioHandler;
   }

@@ -47,12 +47,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.helger.rnio.AcceptHandler;
-import com.helger.rnio.ConnectHandler;
-import com.helger.rnio.ReadHandler;
-import com.helger.rnio.SelectorVisitor;
-import com.helger.rnio.SocketChannelHandler;
-import com.helger.rnio.WriteHandler;
+import com.helger.rnio.IAcceptHandler;
+import com.helger.rnio.IConnectHandler;
+import com.helger.rnio.IReadHandler;
+import com.helger.rnio.ISelectorVisitor;
+import com.helger.rnio.ISocketChannelHandler;
+import com.helger.rnio.IWriteHandler;
 
 /**
  * A selector handler.
@@ -66,8 +66,8 @@ class SingleSelectorRunner implements Runnable
 
   /** The queue to get back on the main thread. */
   private final Object returnedTasksLock = new Object ();
-  private List <SelectorRunnable> returnedTasks1 = new ArrayList<> ();
-  private List <SelectorRunnable> returnedTasks2 = new ArrayList<> ();
+  private List <ISelectorRunnable> returnedTasks1 = new ArrayList<> ();
+  private List <ISelectorRunnable> returnedTasks2 = new ArrayList<> ();
 
   private Thread selectorThread;
 
@@ -144,7 +144,7 @@ class SingleSelectorRunner implements Runnable
   }
 
   private void updateSelectionKey (final SelectableChannel channel,
-                                   final SocketChannelHandler handler,
+                                   final ISocketChannelHandler handler,
                                    final ChannelOpsUpdater updater) throws IOException
   {
     SelectionKey sk = channel.keyFor (selector);
@@ -196,22 +196,22 @@ class SingleSelectorRunner implements Runnable
       logger.fine ("SingleSelectorRunner." + id + ": sk.interestOps " + sk.interestOps ());
   }
 
-  public void waitForRead (final SelectableChannel channel, final ReadHandler handler) throws IOException
+  public void waitForRead (final SelectableChannel channel, final IReadHandler handler) throws IOException
   {
     updateSelectionKey (channel, handler, coh -> coh.setReadHandler (handler));
   }
 
-  public void waitForWrite (final SelectableChannel channel, final WriteHandler handler) throws IOException
+  public void waitForWrite (final SelectableChannel channel, final IWriteHandler handler) throws IOException
   {
     updateSelectionKey (channel, handler, coh -> coh.setWriteHandler (handler));
   }
 
-  public void waitForAccept (final SelectableChannel channel, final AcceptHandler handler) throws IOException
+  public void waitForAccept (final SelectableChannel channel, final IAcceptHandler handler) throws IOException
   {
     updateSelectionKey (channel, handler, coh -> coh.setAcceptHandler (handler));
   }
 
-  public void waitForConnect (final SelectableChannel channel, final ConnectHandler handler) throws IOException
+  public void waitForConnect (final SelectableChannel channel, final IConnectHandler handler) throws IOException
   {
     updateSelectionKey (channel, handler, coh -> coh.setConnectHandler (handler));
   }
@@ -425,7 +425,7 @@ class SingleSelectorRunner implements Runnable
   {
     synchronized (returnedTasksLock)
     {
-      final List <SelectorRunnable> toRun = returnedTasks1;
+      final List <ISelectorRunnable> toRun = returnedTasks1;
       returnedTasks1 = returnedTasks2;
       returnedTasks2 = toRun;
     }
@@ -436,7 +436,7 @@ class SingleSelectorRunner implements Runnable
     {
       try
       {
-        final SelectorRunnable sr = returnedTasks2.get (i);
+        final ISelectorRunnable sr = returnedTasks2.get (i);
         if (logger.isLoggable (Level.FINEST))
           logger.finest (id + ": Selector running task " + sr);
         sr.run (this);
@@ -450,7 +450,7 @@ class SingleSelectorRunner implements Runnable
     return s;
   }
 
-  public void runSelectorTask (final SelectorRunnable sr)
+  public void runSelectorTask (final ISelectorRunnable sr)
   {
     if (!running.get ())
     {
@@ -482,7 +482,7 @@ class SingleSelectorRunner implements Runnable
     return sk != null;
   }
 
-  public void cancel (final SelectableChannel channel, final SocketChannelHandler handler)
+  public void cancel (final SelectableChannel channel, final ISocketChannelHandler handler)
   {
     final SelectionKey sk = channel.keyFor (selector);
     if (sk == null)
@@ -506,7 +506,7 @@ class SingleSelectorRunner implements Runnable
     coh.closed ();
   }
 
-  public void visit (final SelectorVisitor visitor)
+  public void visit (final ISelectorVisitor visitor)
   {
     visitor.selector (selector);
   }

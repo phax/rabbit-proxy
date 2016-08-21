@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.ReadHandler;
-import com.helger.rnio.WriteHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IReadHandler;
+import com.helger.rnio.IWriteHandler;
 import com.helger.rnio.impl.Closer;
 
 /**
@@ -20,7 +20,7 @@ import com.helger.rnio.impl.Closer;
  */
 public class Tunnel
 {
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
   private final Logger logger = Logger.getLogger (getClass ().getName ());
   private final OneWayTunnel fromToTo;
   private final OneWayTunnel toToFrom;
@@ -47,7 +47,7 @@ public class Tunnel
    * @param listener
    *        the listener that will be notified when the tunnel is closed
    */
-  public Tunnel (final NioHandler nioHandler,
+  public Tunnel (final INioHandler nioHandler,
                  final SocketChannel from,
                  final BufferHandle fromHandle,
                  final TrafficLogger fromLogger,
@@ -75,7 +75,7 @@ public class Tunnel
     toToFrom.start ();
   }
 
-  private class OneWayTunnel implements ReadHandler, WriteHandler
+  private class OneWayTunnel implements IReadHandler, IWriteHandler
   {
     private final SocketChannel from;
     private final SocketChannel to;

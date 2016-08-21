@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.helger.rabbit.proxy.HtmlPage;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.StatisticsHolder;
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IStatisticsHolder;
+import com.helger.rnio.ITaskIdentifier;
 import com.helger.rnio.statistics.CompletionEntry;
 import com.helger.rnio.statistics.TotalTimeSpent;
 
@@ -33,8 +33,8 @@ public class TaskTimings extends BaseMetaHandler
 
   private void addStatus (final StringBuilder sb)
   {
-    final NioHandler nio = con.getNioHandler ();
-    final StatisticsHolder stats = nio.getTimingStatistics ();
+    final INioHandler nio = con.getNioHandler ();
+    final IStatisticsHolder stats = nio.getTimingStatistics ();
 
     appendTable (sb, "Pending tasks", stats.getPendingTasks ());
     appendTable (sb, "Runing tasks", stats.getRunningTasks ());
@@ -69,13 +69,13 @@ public class TaskTimings extends BaseMetaHandler
     }
   }
 
-  private void appendTable (final StringBuilder sb, final String title, final Map <String, List <TaskIdentifier>> m)
+  private void appendTable (final StringBuilder sb, final String title, final Map <String, List <ITaskIdentifier>> m)
   {
     appenTableHeader (sb, title, new int [] { 30, 70 }, new String [] { "Group", "Information" });
     int row = 0;
-    for (final Map.Entry <String, List <TaskIdentifier>> me : m.entrySet ())
+    for (final Map.Entry <String, List <ITaskIdentifier>> me : m.entrySet ())
     {
-      for (final TaskIdentifier ti : me.getValue ())
+      for (final ITaskIdentifier ti : me.getValue ())
       {
         sb.append ("<tr bgcolor=\"" +
                    getRowColor (row) +

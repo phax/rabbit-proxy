@@ -31,8 +31,8 @@
  */
 package com.helger.rnio.impl;
 
-import com.helger.rnio.StatisticsHolder;
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.IStatisticsHolder;
+import com.helger.rnio.ITaskIdentifier;
 
 /**
  * A class that executes one task and gathers information about the time spent
@@ -42,9 +42,9 @@ import com.helger.rnio.TaskIdentifier;
  */
 class StatisticsCollector implements Runnable
 {
-  private final StatisticsHolder stats;
+  private final IStatisticsHolder stats;
   private final Runnable realTask;
-  private final TaskIdentifier ti;
+  private final ITaskIdentifier ti;
 
   /**
    * Create a new StatisticsCollector that will update the given
@@ -57,7 +57,7 @@ class StatisticsCollector implements Runnable
    * @param ti
    *        the identifier of the task
    */
-  public StatisticsCollector (final StatisticsHolder stats, final Runnable realTask, final TaskIdentifier ti)
+  public StatisticsCollector (final IStatisticsHolder stats, final Runnable realTask, final ITaskIdentifier ti)
   {
     this.stats = stats;
     this.realTask = realTask;

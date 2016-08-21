@@ -29,25 +29,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package com.helger.rnio.impl;
-
-import java.io.IOException;
-import java.nio.channels.SocketChannel;
+package com.helger.rnio;
 
 /**
- * A listener for accepted connections.
- *
- * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
+ * A handler that signals that data is ready to be read.
  */
-public interface AcceptorListener
+public interface IReadHandler extends ISocketChannelHandler
 {
-  /**
-   * A conneciton has been accepted
-   *
-   * @param sc
-   *        the new socket channel, will already be set to non blocking mode
-   * @throws IOException
-   *         if the accept fails
-   */
-  void connectionAccepted (SocketChannel sc) throws IOException;
+
+  /** The channel is ready for read. */
+  void read ();
 }

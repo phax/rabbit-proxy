@@ -9,7 +9,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.helger.commons.base64.Base64;
+import com.helger.commons.charset.CCharset;
 import com.helger.commons.url.SMap;
+import com.helger.http.basicauth.BasicAuthClientCredentials;
+import com.helger.http.basicauth.HTTPBasicAuth;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.http.HttpHeaderWithContent;
@@ -17,7 +21,6 @@ import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.Resolver;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HttpProxy;
-import com.helger.rabbit.util.Base64;
 import com.helger.rabbit.util.SimpleUserHandler;
 
 /**
@@ -46,20 +49,16 @@ public class HttpBaseFilter implements HttpFilter
    * @param con
    *        the Connection.
    */
-  private void handleProxyAuthentication (String uap, final Connection con)
+  private void handleProxyAuthentication (final String uap, final Connection con)
   {
     // guess we should handle digest here also.. :-/
     if (uap.startsWith ("Basic "))
     {
-      uap = uap.substring ("Basic ".length ());
-      final String userapass = Base64.decode (uap);
-      int i;
-      if ((i = userapass.indexOf (":")) > -1)
+      final BasicAuthClientCredentials aCred = HTTPBasicAuth.getBasicAuthClientCredentials (uap);
+      if (aCred != null)
       {
-        final String userid = userapass.substring (0, i);
-        final String pass = userapass.substring (i + 1);
-        con.setUserName (userid);
-        con.setPassword (pass);
+        con.setUserName (aCred.getUserName ());
+        con.setPassword (aCred.getPassword ());
       }
     }
   }
@@ -113,7 +112,7 @@ public class HttpBaseFilter implements HttpFilter
     {
 
       final String userPass = requestURI.substring (s3 + 2, s5);
-      header.setHeader ("Authorization", "Basic " + Base64.encode (userPass));
+      header.setHeader ("Authorization", "Basic " + Base64.safeEncode (userPass, CCharset.CHARSET_UTF_8_OBJ));
 
       header.setRequestURI (requestURI.substring (0, s3 + 2) + requestURI.substring (s5 + 1));
     }
@@ -441,7 +440,7 @@ public class HttpBaseFilter implements HttpFilter
       // it should look like this (using RabbIT:RabbIT):
       // Proxy-authorization: Basic UmFiYklUOlJhYmJJVA==
       if (auth != null && !auth.isEmpty ())
-        header.setHeader ("Proxy-Authorization", "Basic " + Base64.encode (auth));
+        header.setHeader ("Proxy-Authorization", "Basic " + Base64.safeEncode (auth, CCharset.CHARSET_UTF_8_OBJ));
     }
 
     // try to use keepalive backwards.

@@ -6,8 +6,8 @@ import com.helger.rabbit.cache.Cache;
 import com.helger.rabbit.cache.CacheEntry;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.FileResourceSource;
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A resource that comes from the cache.
@@ -34,8 +34,8 @@ public class CacheResourceSource extends FileResourceSource
    */
   public CacheResourceSource (final Cache <HttpHeader, HttpHeader> cache,
                               final CacheEntry <HttpHeader, HttpHeader> entry,
-                              final NioHandler tr,
-                              final BufferHandler bufHandler) throws IOException
+                              final INioHandler tr,
+                              final IBufferHandler bufHandler) throws IOException
   {
     super (cache.getEntryName (entry.getId (), true, null), tr, bufHandler);
   }

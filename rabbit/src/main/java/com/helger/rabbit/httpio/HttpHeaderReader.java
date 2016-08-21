@@ -9,15 +9,15 @@ import java.util.logging.Logger;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.ReadHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IReadHandler;
 
 /**
  * A handler that reads http headers
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class HttpHeaderReader extends BaseSocketHandler implements ReadHandler
+public class HttpHeaderReader extends BaseSocketHandler implements IReadHandler
 {
 
   private final HttpHeaderListener reader;
@@ -51,7 +51,7 @@ public class HttpHeaderReader extends BaseSocketHandler implements ReadHandler
    */
   public HttpHeaderReader (final SocketChannel channel,
                            final BufferHandle bh,
-                           final NioHandler nioHandler,
+                           final INioHandler nioHandler,
                            final TrafficLogger tl,
                            final boolean request,
                            final boolean strictHttp,

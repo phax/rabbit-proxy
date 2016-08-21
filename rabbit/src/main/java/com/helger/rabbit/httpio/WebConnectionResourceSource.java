@@ -9,18 +9,18 @@ import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.ConnectionHandler;
 import com.helger.rabbit.io.WebConnection;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.ReadHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IReadHandler;
 
 /**
  * A resource source that gets the data from a WebConnection
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class WebConnectionResourceSource implements ResourceSource, ReadHandler, ChunkDataFeeder
+public class WebConnectionResourceSource implements ResourceSource, IReadHandler, ChunkDataFeeder
 {
   private final ConnectionHandler con;
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
   private final WebConnection wc;
   private final BufferHandle bufHandle;
   private final TrafficLogger tl;
@@ -55,7 +55,7 @@ public class WebConnectionResourceSource implements ResourceSource, ReadHandler,
    *        server
    */
   public WebConnectionResourceSource (final ConnectionHandler con,
-                                      final NioHandler nioHandler,
+                                      final INioHandler nioHandler,
                                       final WebConnection wc,
                                       final BufferHandle bufHandle,
                                       final TrafficLogger tl,

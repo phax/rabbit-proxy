@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-import com.helger.rnio.AcceptHandler;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.IAcceptHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A standard acceptor.
@@ -46,9 +46,9 @@ import com.helger.rnio.NioHandler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class Acceptor extends SocketHandlerBase <ServerSocketChannel> implements AcceptHandler
+public class Acceptor extends AbstractSocketHandlerBase <ServerSocketChannel> implements IAcceptHandler
 {
-  private final AcceptorListener listener;
+  private final IAcceptorListener listener;
 
   /**
    * Create a new Acceptor that will wait for accepts on the given channel.
@@ -60,7 +60,7 @@ public class Acceptor extends SocketHandlerBase <ServerSocketChannel> implements
    * @param listener
    *        the listener waiting for connections
    */
-  public Acceptor (final ServerSocketChannel ssc, final NioHandler nioHandler, final AcceptorListener listener)
+  public Acceptor (final ServerSocketChannel ssc, final INioHandler nioHandler, final IAcceptorListener listener)
   {
     super (ssc, nioHandler, null);
     this.listener = listener;

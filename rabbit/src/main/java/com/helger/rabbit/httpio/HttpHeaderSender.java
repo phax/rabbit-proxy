@@ -9,7 +9,7 @@ import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A handler that writes http headers
@@ -40,7 +40,7 @@ public class HttpHeaderSender implements BlockSentListener
    *         if the header can not be converted to network data
    */
   public HttpHeaderSender (final SocketChannel channel,
-                           final NioHandler nioHandler,
+                           final INioHandler nioHandler,
                            final TrafficLogger tl,
                            final HttpHeader header,
                            final boolean fullURI,

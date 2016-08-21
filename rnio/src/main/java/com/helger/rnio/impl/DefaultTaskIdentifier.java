@@ -31,14 +31,14 @@
  */
 package com.helger.rnio.impl;
 
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.ITaskIdentifier;
 
 /**
  * A basic immutable task identifier
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class DefaultTaskIdentifier implements TaskIdentifier
+public class DefaultTaskIdentifier implements ITaskIdentifier
 {
   private final String groupId;
   private final String description;

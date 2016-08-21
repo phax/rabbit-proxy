@@ -37,11 +37,11 @@ import com.helger.rabbit.io.WebConnection;
 import com.helger.rabbit.io.WebConnectionListener;
 import com.helger.rabbit.util.Config;
 import com.helger.rabbit.util.Counter;
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.StatisticsHolder;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IStatisticsHolder;
 import com.helger.rnio.impl.Acceptor;
-import com.helger.rnio.impl.AcceptorListener;
+import com.helger.rnio.impl.IAcceptorListener;
 import com.helger.rnio.impl.BasicStatisticsHolder;
 import com.helger.rnio.impl.CachingBufferHandler;
 import com.helger.rnio.impl.MultiSelectorNioHandler;
@@ -103,10 +103,10 @@ public class HttpProxy
   /** The serversocket the proxy is using. */
   private ServerSocketChannel ssc = null;
 
-  private NioHandler nioHandler;
+  private INioHandler nioHandler;
 
   /** The buffer handlers. */
-  private final BufferHandler bufferHandler = new CachingBufferHandler ();
+  private final IBufferHandler bufferHandler = new CachingBufferHandler ();
 
   /** If this proxy is using strict http parsing. */
   private boolean strictHttp = true;
@@ -227,7 +227,7 @@ public class HttpProxy
     final int cpus = Runtime.getRuntime ().availableProcessors ();
     final int threads = getInt (section, "num_selector_threads", cpus);
     final ExecutorService es = Executors.newCachedThreadPool ();
-    final StatisticsHolder sh = new BasicStatisticsHolder ();
+    final IStatisticsHolder sh = new BasicStatisticsHolder ();
     final Long timeout = Long.valueOf (15000);
     try
     {
@@ -505,7 +505,7 @@ public class HttpProxy
           logger.info ("listening on inetaddress: " + ia + ":" + port + " on inet address: " + ia);
           ssc.socket ().bind (new InetSocketAddress (ia, port));
         }
-        final AcceptorListener listener = new ProxyConnectionAcceptor (acceptorId++, this);
+        final IAcceptorListener listener = new ProxyConnectionAcceptor (acceptorId++, this);
         final Acceptor acceptor = new Acceptor (ssc, nioHandler, listener);
         acceptor.register ();
       }
@@ -591,7 +591,7 @@ public class HttpProxy
    *
    * @return the NioHandler in use
    */
-  public NioHandler getNioHandler ()
+  public INioHandler getNioHandler ()
   {
     return nioHandler;
   }
@@ -893,7 +893,7 @@ public class HttpProxy
    *
    * @return a BufferHandler
    */
-  public BufferHandler getBufferHandler ()
+  public IBufferHandler getBufferHandler ()
   {
     return bufferHandler;
   }

@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import com.helger.rabbit.dns.DNSHandler;
 import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.Resolver;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A proxy chain that connects directly to the local network and uses a chained
@@ -22,7 +22,7 @@ public class InOutProxyChain implements IProxyChain
   private final Resolver proxiedResolver;
 
   public InOutProxyChain (final String insideMatch,
-                          final NioHandler nio,
+                          final INioHandler nio,
                           final DNSHandler dnsHandler,
                           final InetAddress proxy,
                           final int port,

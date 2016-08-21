@@ -7,14 +7,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.helger.rabbit.util.Config;
-import com.helger.rnio.impl.AcceptorListener;
+import com.helger.rnio.impl.IAcceptorListener;
 
 /**
  * An acceptor handler that creates proxy client connection
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class ProxyConnectionAcceptor implements AcceptorListener
+public class ProxyConnectionAcceptor implements IAcceptorListener
 {
   private final HttpProxy proxy;
   private final Logger logger = Logger.getLogger (getClass ().getName ());

@@ -10,8 +10,8 @@ import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.http.MultipartHeader;
 import com.helger.rabbit.httpio.BlockListener;
 import com.helger.rabbit.io.Range;
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A resource that gets ranges from the cache. This resource will read data from
@@ -58,8 +58,8 @@ public class RandomCacheResourceSource extends CacheResourceSource
    */
   public RandomCacheResourceSource (final Cache <HttpHeader, HttpHeader> cache,
                                     final RequestHandler rh,
-                                    final NioHandler tr,
-                                    final BufferHandler bufHandler,
+                                    final INioHandler tr,
+                                    final IBufferHandler bufHandler,
                                     final List <Range> ranges,
                                     final long totalSize) throws IOException
   {

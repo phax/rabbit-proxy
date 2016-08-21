@@ -8,7 +8,7 @@ import com.helger.commons.url.SMap;
 import com.helger.rabbit.dns.DNSHandler;
 import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.ProxyChainFactory;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A factory that creates InOutProxyChain:s.
@@ -18,7 +18,7 @@ import com.helger.rnio.NioHandler;
 public class InOutProxyChainFactory implements ProxyChainFactory
 {
   public IProxyChain getProxyChain (final SMap props,
-                                   final NioHandler nio,
+                                   final INioHandler nio,
                                    final DNSHandler dnsHandler,
                                    final Logger logger)
   {

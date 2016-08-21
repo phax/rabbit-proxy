@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Set;
 
 import com.helger.rabbit.proxy.HtmlPage;
-import com.helger.rnio.SelectorVisitor;
+import com.helger.rnio.ISelectorVisitor;
 
 /**
  * A status page for the proxy.
@@ -36,7 +36,7 @@ public class SelectorStatus extends BaseMetaHandler
     sb.append (new Date ());
     sb.append ("<p>\n");
 
-    con.getNioHandler ().visitSelectors (new SelectorVisitor ()
+    con.getNioHandler ().visitSelectors (new ISelectorVisitor ()
     {
       int count = 0;
 

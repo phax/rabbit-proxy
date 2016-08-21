@@ -42,7 +42,7 @@ import com.helger.rnio.statistics.TotalTimeSpent;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface StatisticsHolder
+public interface IStatisticsHolder
 {
 
   /**
@@ -51,7 +51,7 @@ public interface StatisticsHolder
    * @param ti
    *        the identifier of the new task.
    */
-  void addPendingTask (TaskIdentifier ti);
+  void addPendingTask (ITaskIdentifier ti);
 
   /**
    * A pending task is about to be run.
@@ -59,7 +59,7 @@ public interface StatisticsHolder
    * @param ti
    *        the identifier of the task that will start to run.
    */
-  void changeTaskStatusToRunning (TaskIdentifier ti);
+  void changeTaskStatusToRunning (ITaskIdentifier ti);
 
   /**
    * A task has been completed.
@@ -71,21 +71,21 @@ public interface StatisticsHolder
    * @param timeSpent
    *        wall clock time spent on the task.
    */
-  void changeTaskStatusToFinished (TaskIdentifier ti, boolean wasOk, long timeSpent);
+  void changeTaskStatusToFinished (ITaskIdentifier ti, boolean wasOk, long timeSpent);
 
   /**
    * Get information about the currently pending tasks.
    *
    * @return a mapping from group ids to the task identifiers
    */
-  Map <String, List <TaskIdentifier>> getPendingTasks ();
+  Map <String, List <ITaskIdentifier>> getPendingTasks ();
 
   /**
    * Get information about the currently running tasks.
    *
    * @return a mapping from group ids to the task identifiers
    */
-  Map <String, List <TaskIdentifier>> getRunningTasks ();
+  Map <String, List <ITaskIdentifier>> getRunningTasks ();
 
   /**
    * Get information about the most recent completed tasks

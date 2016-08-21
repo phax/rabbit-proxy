@@ -7,8 +7,8 @@ import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A handler that write one http header and reads a response
@@ -19,9 +19,9 @@ public class HttpResponseReader implements HttpHeaderSentListener, HttpHeaderLis
 {
 
   private final SocketChannel channel;
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
   private final TrafficLogger tl;
-  private final BufferHandler bufHandler;
+  private final IBufferHandler bufHandler;
   private final boolean strictHttp;
   private final HttpResponseListener listener;
   private final HttpHeaderSender sender;
@@ -50,9 +50,9 @@ public class HttpResponseReader implements HttpHeaderSentListener, HttpHeaderLis
    *         if the request can not be sent
    */
   public HttpResponseReader (final SocketChannel channel,
-                             final NioHandler nioHandler,
+                             final INioHandler nioHandler,
                              final TrafficLogger tl,
-                             final BufferHandler bufHandler,
+                             final IBufferHandler bufHandler,
                              final HttpHeader header,
                              final boolean fullURI,
                              final boolean strictHttp,

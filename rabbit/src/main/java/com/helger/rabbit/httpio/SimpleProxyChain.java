@@ -3,7 +3,7 @@ package com.helger.rabbit.httpio;
 import com.helger.rabbit.dns.DNSHandler;
 import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.Resolver;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A default implementation of a ProxyChain that always return the same
@@ -23,7 +23,7 @@ public class SimpleProxyChain implements IProxyChain
    * @param dnsHandler
    *        the DNSHandler to use for DNS lookups
    */
-  public SimpleProxyChain (final NioHandler nio, final DNSHandler dnsHandler)
+  public SimpleProxyChain (final INioHandler nio, final DNSHandler dnsHandler)
   {
     resolver = new SimpleResolver (nio, dnsHandler);
   }

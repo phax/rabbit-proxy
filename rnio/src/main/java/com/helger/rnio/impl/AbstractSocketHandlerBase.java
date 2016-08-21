@@ -31,26 +31,28 @@
  */
 package com.helger.rnio.impl;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.util.logging.Level;
+import java.nio.channels.SelectableChannel;
 import java.util.logging.Logger;
 
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.WriteHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.ISocketChannelHandler;
 
 /**
- * A simple sender of data. Will try to send all data with no timeout.
- * <p>
- * Subclass this sender and implement <code>done()</code> to do any work after
- * the data has been sent.
+ * A socket handler that never times out and always runs on the selector thread.
  *
+ * @param <T>
+ *        the type of chanel that is handled
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public abstract class SimpleBlockSender extends SocketHandlerBase <SocketChannel> implements WriteHandler
+public abstract class AbstractSocketHandlerBase <T extends SelectableChannel> implements ISocketChannelHandler
 {
-  private final ByteBuffer buf;
+  /** The actual channel */
+  public final T sc;
+  /** The NioHandler used to wait for opeations. */
+  public final INioHandler nioHandler;
+  /** The timeout for the current operation */
+  public final Long timeout;
+
   private final Logger logger = Logger.getLogger ("org.khelekore.rnio");
 
   /**
@@ -58,75 +60,52 @@ public abstract class SimpleBlockSender extends SocketHandlerBase <SocketChannel
    *        the channel to handle
    * @param nioHandler
    *        the NioHandler
-   * @param buf
-   *        the ByteBuffer to send
    * @param timeout
    *        the timeout in millis, may be null if no timeout is wanted.
    */
-  public SimpleBlockSender (final SocketChannel sc,
-                            final NioHandler nioHandler,
-                            final ByteBuffer buf,
-                            final Long timeout)
+  public AbstractSocketHandlerBase (final T sc, final INioHandler nioHandler, final Long timeout)
   {
-    super (sc, nioHandler, timeout);
-    this.buf = buf;
+    this.sc = sc;
+    this.nioHandler = nioHandler;
+    this.timeout = timeout;
   }
 
   /**
-   * Get the buffer we are sending data from.
-   *
-   * @return the ByteBuffer with the data that is being sent
+   * Will return null to indicate no timeout on accepts.
    */
-  public ByteBuffer getBuffer ()
+  public Long getTimeout ()
   {
-    return buf;
-  }
-
-  public void write ()
-  {
-    try
-    {
-      int written = 0;
-      do
-      {
-        written = sc.write (buf);
-      } while (buf.hasRemaining () && written > 0);
-      if (buf.hasRemaining ())
-        register ();
-      else
-        done ();
-    }
-    catch (final IOException e)
-    {
-      handleIOException (e);
-    }
+    return timeout;
   }
 
   /**
-   * Handle the exception, default is to log it and to close the channel.
-   *
-   * @param e
-   *        the IOException that is the cause of data write failure
+   * Returns the class name.
    */
-  public void handleIOException (final IOException e)
+  public String getDescription ()
   {
-    logger.log (Level.WARNING, "Failed to send data", e);
+    return getClass ().getSimpleName ();
+  }
+
+  /**
+   * Will always run on the selector thread so return false.
+   *
+   * @return false
+   */
+  public boolean useSeparateThread ()
+  {
+    return false;
+  }
+
+  /**
+   * Handle timeouts. Default implementation just calls closed().
+   */
+  public void timeout ()
+  {
+    closed ();
+  }
+
+  public void closed ()
+  {
     Closer.close (sc, logger);
-  }
-
-  /**
-   * The default is to do nothing, override in subclasses if needed.
-   */
-  public void done ()
-  {
-    // empty
-  }
-
-  /**
-   * Register writeWait on the nioHandler
-   */
-  public void register ()
-  {
-    nioHandler.waitForWrite (sc, this);
   }
 }

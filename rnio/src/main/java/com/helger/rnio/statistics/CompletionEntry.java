@@ -31,7 +31,7 @@
  */
 package com.helger.rnio.statistics;
 
-import com.helger.rnio.TaskIdentifier;
+import com.helger.rnio.ITaskIdentifier;
 
 /**
  * Information about a completed task.
@@ -41,7 +41,7 @@ import com.helger.rnio.TaskIdentifier;
 public final class CompletionEntry
 {
   /** The identifier of the task that has been completed. */
-  public final TaskIdentifier ti;
+  public final ITaskIdentifier ti;
   /** The status of the completed job. */
   public final boolean wasOk;
   /** The number of millis spent on the task. */
@@ -57,7 +57,7 @@ public final class CompletionEntry
    * @param timeSpent
    *        the wall clock time for the task
    */
-  public CompletionEntry (final TaskIdentifier ti, final boolean wasOk, final long timeSpent)
+  public CompletionEntry (final ITaskIdentifier ti, final boolean wasOk, final long timeSpent)
   {
     this.ti = ti;
     this.wasOk = wasOk;

@@ -36,13 +36,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.Executors;
 
-import com.helger.rnio.BufferHandler;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.IBufferHandler;
+import com.helger.rnio.INioHandler;
 import com.helger.rnio.impl.AcceptingServer;
-import com.helger.rnio.impl.AcceptorListener;
+import com.helger.rnio.impl.IAcceptorListener;
 import com.helger.rnio.impl.CachingBufferHandler;
-import com.helger.rnio.impl.SimpleBlockReader;
-import com.helger.rnio.impl.SimpleBlockSender;
+import com.helger.rnio.impl.AbstractSimpleBlockReader;
+import com.helger.rnio.impl.AbstractSimpleBlockSender;
 
 /**
  * An echo server built using rnio. This echo server will handle many concurrent
@@ -53,7 +53,7 @@ import com.helger.rnio.impl.SimpleBlockSender;
 public class EchoServer
 {
   private final AcceptingServer as;
-  private final BufferHandler bufferHandler;
+  private final IBufferHandler bufferHandler;
   private final AcceptListener acceptHandler;
 
   private final ByteBuffer QUIT = ByteBuffer.wrap ("quit\r\n".getBytes ("UTF-8"));
@@ -116,7 +116,7 @@ public class EchoServer
     return Long.valueOf (now + 60 * 1000);
   }
 
-  private class AcceptListener implements AcceptorListener
+  private class AcceptListener implements IAcceptorListener
   {
     public void connectionAccepted (final SocketChannel sc) throws IOException
     {
@@ -125,9 +125,9 @@ public class EchoServer
     }
   }
 
-  private class Reader extends SimpleBlockReader
+  private class Reader extends AbstractSimpleBlockReader
   {
-    public Reader (final SocketChannel sc, final NioHandler nioHandler, final Long timeout)
+    public Reader (final SocketChannel sc, final INioHandler nioHandler, final Long timeout)
     {
       super (sc, nioHandler, timeout);
     }
@@ -172,12 +172,12 @@ public class EchoServer
     }
   }
 
-  private class Writer extends SimpleBlockSender
+  private class Writer extends AbstractSimpleBlockSender
   {
     private final Reader reader;
 
     public Writer (final SocketChannel sc,
-                   final NioHandler nioHandler,
+                   final INioHandler nioHandler,
                    final ByteBuffer buf,
                    final Reader reader,
                    final Long timeout)

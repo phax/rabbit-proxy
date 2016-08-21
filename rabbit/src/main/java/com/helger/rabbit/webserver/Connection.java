@@ -22,7 +22,7 @@ import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rabbit.util.MimeTypeMapper;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.INioHandler;
 import com.helger.rnio.impl.Closer;
 
 /**
@@ -199,7 +199,7 @@ public class Connection
   {
     final TransferListener transferDoneListener = new TransferDoneListener ();
     final TrafficLogger tl = sws.getTrafficLogger ();
-    final NioHandler nh = sws.getNioHandler ();
+    final INioHandler nh = sws.getNioHandler ();
     final TransferHandler th = new TransferHandler (nh, resourceSource, sc, tl, tl, transferDoneListener);
     th.transfer ();
   }

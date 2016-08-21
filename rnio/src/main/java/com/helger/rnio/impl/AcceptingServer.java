@@ -38,8 +38,8 @@ import java.net.ServerSocket;
 import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.ExecutorService;
 
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.StatisticsHolder;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IStatisticsHolder;
 
 /**
  * A basic server for rnio.
@@ -48,15 +48,15 @@ import com.helger.rnio.StatisticsHolder;
  * {@link BasicStatisticsHolder} and the ExecutorService you pass. <br>
  * When you start this server it will begin to listen for socket connections on
  * the specified InetAddress and port and hand off new socket connections to the
- * {@link AcceptorListener}
+ * {@link IAcceptorListener}
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
 public class AcceptingServer
 {
   private final ServerSocketChannel ssc;
-  private final AcceptorListener listener;
-  private final NioHandler nioHandler;
+  private final IAcceptorListener listener;
+  private final INioHandler nioHandler;
 
   /**
    * Create a new server using the parameters given.
@@ -78,7 +78,7 @@ public class AcceptingServer
    */
   public AcceptingServer (final InetAddress addr,
                           final int port,
-                          final AcceptorListener listener,
+                          final IAcceptorListener listener,
                           final ExecutorService es,
                           final int selectorThreads,
                           final Long defaultTimeout) throws IOException
@@ -88,7 +88,7 @@ public class AcceptingServer
     final ServerSocket ss = ssc.socket ();
     ss.bind (new InetSocketAddress (addr, port));
     this.listener = listener;
-    final StatisticsHolder stats = new BasicStatisticsHolder ();
+    final IStatisticsHolder stats = new BasicStatisticsHolder ();
     nioHandler = new MultiSelectorNioHandler (es, stats, selectorThreads, defaultTimeout);
   }
 
@@ -115,7 +115,7 @@ public class AcceptingServer
    *
    * @return the NioHandler used by this server
    */
-  public NioHandler getNioHandler ()
+  public INioHandler getNioHandler ()
   {
     return nioHandler;
   }

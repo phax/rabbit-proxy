@@ -8,15 +8,15 @@ import java.util.logging.Level;
 
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.util.TrafficLogger;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.WriteHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IWriteHandler;
 
 /**
  * A handler that writes data blocks.
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class BlockSender extends BaseSocketHandler implements WriteHandler
+public class BlockSender extends BaseSocketHandler implements IWriteHandler
 {
   private ByteBuffer chunkBuffer;
   private final ByteBuffer end;
@@ -41,7 +41,7 @@ public class BlockSender extends BaseSocketHandler implements WriteHandler
    *        the listener that will be notified when the data has been handled.
    */
   public BlockSender (final SocketChannel channel,
-                      final NioHandler nioHandler,
+                      final INioHandler nioHandler,
                       final TrafficLogger tl,
                       final BufferHandle bufHandle,
                       final boolean chunking,

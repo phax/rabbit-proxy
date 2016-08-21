@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.dns.DNSHandler;
-import com.helger.rnio.NioHandler;
+import com.helger.rnio.INioHandler;
 
 /**
  * A constructor of ProxyChain:s.
@@ -26,5 +26,5 @@ public interface ProxyChainFactory
    *        the Logger to log errors to
    * @return the new ProxyChain
    */
-  IProxyChain getProxyChain (SMap props, NioHandler nio, DNSHandler dnsHandler, Logger logger);
+  IProxyChain getProxyChain (SMap props, INioHandler nio, DNSHandler dnsHandler, Logger logger);
 }

@@ -2,7 +2,7 @@ package com.helger.rabbit.io;
 
 import java.nio.ByteBuffer;
 
-import com.helger.rnio.BufferHandler;
+import com.helger.rnio.IBufferHandler;
 
 /**
  * A handle to a ByteBuffer that uses a buffer handler
@@ -11,7 +11,7 @@ import com.helger.rnio.BufferHandler;
  */
 public class CacheBufferHandle implements BufferHandle
 {
-  private final BufferHandler bh;
+  private final IBufferHandler bh;
   private ByteBuffer buffer;
   private boolean mayBeFlushed = true;
 
@@ -22,7 +22,7 @@ public class CacheBufferHandle implements BufferHandle
    * @param bh
    *        the BufferHandler that is the actual cache
    */
-  public CacheBufferHandle (final BufferHandler bh)
+  public CacheBufferHandle (final IBufferHandler bh)
   {
     this.bh = bh;
   }

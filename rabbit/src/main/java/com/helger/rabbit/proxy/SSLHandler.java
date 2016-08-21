@@ -5,6 +5,8 @@ import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.helger.commons.base64.Base64;
+import com.helger.commons.charset.CCharset;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.HttpHeaderSender;
 import com.helger.rabbit.httpio.HttpHeaderSentListener;
@@ -16,7 +18,6 @@ import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.Resolver;
 import com.helger.rabbit.io.WebConnection;
 import com.helger.rabbit.io.WebConnectionListener;
-import com.helger.rabbit.util.Base64;
 import com.helger.rnio.impl.Closer;
 
 /**
@@ -39,7 +40,7 @@ public class SSLHandler implements TunnelDoneListener
 
   /**
    * Create a new SSLHandler
-   * 
+   *
    * @param proxy
    *        the HttpProxy this SSL connection is serving
    * @param con
@@ -64,7 +65,7 @@ public class SSLHandler implements TunnelDoneListener
 
   /**
    * Are we allowed to proxy ssl-type connections ?
-   * 
+   *
    * @return true if we allow the CONNECT &lt;port&gt; command.
    */
   public boolean isAllowed ()
@@ -98,7 +99,7 @@ public class SSLHandler implements TunnelDoneListener
 
   /**
    * handle the tunnel.
-   * 
+   *
    * @param channel
    *        the client channel
    * @param bh
@@ -114,7 +115,7 @@ public class SSLHandler implements TunnelDoneListener
       // it should look like this (using RabbIT:RabbIT):
       // Proxy-authorization: Basic UmFiYklUOlJhYmJJVA==
       if (auth != null && !auth.equals (""))
-        request.setHeader ("Proxy-authorization", "Basic " + Base64.encode (auth));
+        request.setHeader ("Proxy-authorization", "Basic " + Base64.safeEncode (auth, CCharset.CHARSET_UTF_8_OBJ));
     }
     final WebConnectionListener wcl = new WebConnector ();
     proxy.getWebConnection (request, wcl);

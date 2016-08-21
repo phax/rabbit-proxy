@@ -16,8 +16,8 @@ import java.util.logging.Logger;
 import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.util.Counter;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.ReadHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IReadHandler;
 
 /**
  * A class to handle the connections to the net. Tries to reuse connections
@@ -49,7 +49,7 @@ public class ConnectionHandler
   private boolean usePipelining = true;
 
   // the nio handler
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
 
   // the socket binder
   private SocketBinder socketBinder = new DefaultBinder ();
@@ -67,7 +67,7 @@ public class ConnectionHandler
    * @param nioHandler
    *        the NioHandler to use for network and background tasks
    */
-  public ConnectionHandler (final Counter counter, final IProxyChain proxyChain, final NioHandler nioHandler)
+  public ConnectionHandler (final Counter counter, final IProxyChain proxyChain, final INioHandler nioHandler)
   {
     this.counter = counter;
     this.proxyChain = proxyChain;
@@ -305,7 +305,7 @@ public class ConnectionHandler
     }
   }
 
-  private class CloseListener implements ReadHandler
+  private class CloseListener implements IReadHandler
   {
     private final WebConnection wc;
     private Long timeout;

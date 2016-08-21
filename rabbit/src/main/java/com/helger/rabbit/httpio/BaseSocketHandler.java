@@ -5,23 +5,23 @@ import java.nio.channels.SocketChannel;
 import java.util.logging.Logger;
 
 import com.helger.rabbit.io.BufferHandle;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.ReadHandler;
-import com.helger.rnio.SocketChannelHandler;
-import com.helger.rnio.WriteHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IReadHandler;
+import com.helger.rnio.ISocketChannelHandler;
+import com.helger.rnio.IWriteHandler;
 
 /**
  * A base class for socket handlers.
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public abstract class BaseSocketHandler implements SocketChannelHandler
+public abstract class BaseSocketHandler implements ISocketChannelHandler
 {
   /** The client channel. */
   private final SocketChannel channel;
 
   /** The nio handler we are using. */
-  private final NioHandler nioHandler;
+  private final INioHandler nioHandler;
 
   /** The logger to use. */
   private final Logger logger = Logger.getLogger (getClass ().getName ());
@@ -43,7 +43,7 @@ public abstract class BaseSocketHandler implements SocketChannelHandler
    * @param nioHandler
    *        the NioHandler to use to wait for operations on
    */
-  public BaseSocketHandler (final SocketChannel channel, final BufferHandle bh, final NioHandler nioHandler)
+  public BaseSocketHandler (final SocketChannel channel, final BufferHandle bh, final INioHandler nioHandler)
   {
     this.channel = channel;
     this.bh = bh;
@@ -135,7 +135,7 @@ public abstract class BaseSocketHandler implements SocketChannelHandler
    * @param rh
    *        the handler that will be notified when more data is ready to be read
    */
-  public void waitForRead (final ReadHandler rh)
+  public void waitForRead (final IReadHandler rh)
   {
     this.timeout = nioHandler.getDefaultTimeout ();
     nioHandler.waitForRead (channel, rh);
@@ -148,7 +148,7 @@ public abstract class BaseSocketHandler implements SocketChannelHandler
    *        the handler that will be notified when more data is ready to be
    *        written
    */
-  public void waitForWrite (final WriteHandler rh)
+  public void waitForWrite (final IWriteHandler rh)
   {
     this.timeout = nioHandler.getDefaultTimeout ();
     nioHandler.waitForWrite (channel, rh);

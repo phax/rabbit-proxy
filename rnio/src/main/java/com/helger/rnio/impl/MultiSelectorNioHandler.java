@@ -40,15 +40,15 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.helger.rnio.AcceptHandler;
-import com.helger.rnio.ConnectHandler;
-import com.helger.rnio.NioHandler;
-import com.helger.rnio.ReadHandler;
-import com.helger.rnio.SelectorVisitor;
-import com.helger.rnio.SocketChannelHandler;
-import com.helger.rnio.StatisticsHolder;
-import com.helger.rnio.TaskIdentifier;
-import com.helger.rnio.WriteHandler;
+import com.helger.rnio.IAcceptHandler;
+import com.helger.rnio.IConnectHandler;
+import com.helger.rnio.INioHandler;
+import com.helger.rnio.IReadHandler;
+import com.helger.rnio.ISelectorVisitor;
+import com.helger.rnio.ISocketChannelHandler;
+import com.helger.rnio.IStatisticsHolder;
+import com.helger.rnio.ITaskIdentifier;
+import com.helger.rnio.IWriteHandler;
 
 /**
  * An implementation of NioHandler that runs several selector threads.
@@ -60,13 +60,13 @@ import com.helger.rnio.WriteHandler;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class MultiSelectorNioHandler implements NioHandler
+public class MultiSelectorNioHandler implements INioHandler
 {
   /** The executor service. */
   private final ExecutorService executorService;
   private final List <SingleSelectorRunner> selectorRunners;
   private final Logger logger = Logger.getLogger ("org.khelekore.rnio");
-  private final StatisticsHolder stats;
+  private final IStatisticsHolder stats;
   private final Long defaultTimeout;
   private int nextIndex = 0;
 
@@ -86,7 +86,7 @@ public class MultiSelectorNioHandler implements NioHandler
    *         if the selectors can not be started
    */
   public MultiSelectorNioHandler (final ExecutorService executorService,
-                                  final StatisticsHolder stats,
+                                  final IStatisticsHolder stats,
                                   final int numSelectors,
                                   final Long defaultTimeout) throws IOException
   {
@@ -140,7 +140,7 @@ public class MultiSelectorNioHandler implements NioHandler
     return false;
   }
 
-  public void runThreadTask (final Runnable r, final TaskIdentifier ti)
+  public void runThreadTask (final Runnable r, final ITaskIdentifier ti)
   {
     stats.addPendingTask (ti);
     executorService.execute (new StatisticsCollector (stats, r, ti));
@@ -166,7 +166,7 @@ public class MultiSelectorNioHandler implements NioHandler
    * @param sr
    *        the task to run on the main thread.
    */
-  private void runSelectorTask (final SelectableChannel channel, final SelectorRunnable sr)
+  private void runSelectorTask (final SelectableChannel channel, final ISelectorRunnable sr)
   {
     // If the channel is already being served by someone, favor that one.
     for (final SingleSelectorRunner ssr : selectorRunners)
@@ -182,33 +182,33 @@ public class MultiSelectorNioHandler implements NioHandler
     ssr.runSelectorTask (sr);
   }
 
-  public void waitForRead (final SelectableChannel channel, final ReadHandler handler)
+  public void waitForRead (final SelectableChannel channel, final IReadHandler handler)
   {
     if (logger.isLoggable (Level.FINEST))
       logger.fine ("Waiting for read for: channel: " + channel + ", handler: " + handler);
     runSelectorTask (channel, ssr -> ssr.waitForRead (channel, handler));
   }
 
-  public void waitForWrite (final SelectableChannel channel, final WriteHandler handler)
+  public void waitForWrite (final SelectableChannel channel, final IWriteHandler handler)
   {
     if (logger.isLoggable (Level.FINEST))
       logger.fine ("Waiting for write for: channel: " + channel + ", handler: " + handler);
     runSelectorTask (channel, ssr -> ssr.waitForWrite (channel, handler));
   }
 
-  public void waitForAccept (final SelectableChannel channel, final AcceptHandler handler)
+  public void waitForAccept (final SelectableChannel channel, final IAcceptHandler handler)
   {
     if (logger.isLoggable (Level.FINEST))
       logger.fine ("Waiting for accept for: channel: " + channel + ", handler: " + handler);
     runSelectorTask (channel, ssr -> ssr.waitForAccept (channel, handler));
   }
 
-  public void waitForConnect (final SelectableChannel channel, final ConnectHandler handler)
+  public void waitForConnect (final SelectableChannel channel, final IConnectHandler handler)
   {
     runSelectorTask (channel, ssr -> ssr.waitForConnect (channel, handler));
   }
 
-  public void cancel (final SelectableChannel channel, final SocketChannelHandler handler)
+  public void cancel (final SelectableChannel channel, final ISocketChannelHandler handler)
   {
     for (final SingleSelectorRunner sr : selectorRunners)
     {
@@ -224,7 +224,7 @@ public class MultiSelectorNioHandler implements NioHandler
     }
   }
 
-  public void visitSelectors (final SelectorVisitor visitor)
+  public void visitSelectors (final ISelectorVisitor visitor)
   {
     // TODO: do we need to run on the respective threads?
     for (final SingleSelectorRunner sr : selectorRunners)
@@ -233,7 +233,7 @@ public class MultiSelectorNioHandler implements NioHandler
   }
 
   // TODO: where does this belong?
-  public StatisticsHolder getTimingStatistics ()
+  public IStatisticsHolder getTimingStatistics ()
   {
     return stats;
   }
