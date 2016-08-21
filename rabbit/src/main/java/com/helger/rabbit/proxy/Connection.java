@@ -475,9 +475,10 @@ public class Connection
   public void webConnectionSetupFailed (final RequestHandler rh, final Exception cause)
   {
     if (cause instanceof UnknownHostException)
-                                              // do we really want this in the
-                                              // log?
-                                              logger.warning (cause.toString () + ": " + request.getRequestURI ());
+    {
+      // do we really want this in the log?
+      logger.warning (cause.toString () + ": " + request.getRequestURI ());
+    }
     else
       logger.warning ("Failed to set up web connection to: " + request.getRequestURI () + ", cause: " + cause);
     tryStaleEntry (rh, cause);
@@ -619,13 +620,13 @@ public class Connection
       setHandlerFactory (rh);
       status = "Handling request - " + rh.getHandlerFactory ().getClass ().getName ();
       final IHandler handler = rh.getHandlerFactory ().getNewInstance (this,
-                                                                      tlh,
-                                                                      request,
-                                                                      rh.getWebHeader (),
-                                                                      rh.getContent (),
-                                                                      getMayCache (),
-                                                                      getMayFilter (),
-                                                                      rh.getSize ());
+                                                                       tlh,
+                                                                       request,
+                                                                       rh.getWebHeader (),
+                                                                       rh.getContent (),
+                                                                       getMayCache (),
+                                                                       getMayFilter (),
+                                                                       rh.getSize ());
       if (handler == null)
       {
         doError (500, "Failed to find handler");
