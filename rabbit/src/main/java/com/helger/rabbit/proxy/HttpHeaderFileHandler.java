@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.helger.rabbit.cache.ncache.FileHandler;
+import com.helger.rabbit.cache.ncache.IFileHandler;
 import com.helger.rabbit.http.HttpHeader;
 
 /**
@@ -14,7 +14,7 @@ import com.helger.rabbit.http.HttpHeader;
  * 
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class HttpHeaderFileHandler implements FileHandler <HttpHeader>
+public class HttpHeaderFileHandler implements IFileHandler <HttpHeader>
 {
   public HttpHeader read (final InputStream is) throws IOException
   {

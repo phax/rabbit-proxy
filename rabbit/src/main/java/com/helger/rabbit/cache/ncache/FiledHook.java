@@ -72,7 +72,7 @@ class FiledHook <V> extends FileData <V>
    */
   protected <K> long storeHook (final NCache <K, V> cache,
                                 final long id,
-                                final FileHandler <V> fh,
+                                final IFileHandler <V> fh,
                                 final V hook,
                                 final Logger LOGGER) throws IOException
   {

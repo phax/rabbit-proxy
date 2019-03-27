@@ -27,7 +27,7 @@ import com.helger.rabbit.cache.CacheException;
 import com.helger.rabbit.cache.ICache;
 import com.helger.rabbit.cache.ICacheConfiguration;
 import com.helger.rabbit.cache.ICacheEntry;
-import com.helger.rabbit.cache.utils.CacheConfigurationBase;
+import com.helger.rabbit.cache.utils.AbstractCacheConfigurationBase;
 import com.helger.rabbit.cache.utils.CacheUtils;
 import com.helger.rabbit.io.FileHelper;
 
@@ -69,8 +69,8 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
   private final Lock r = rwl.readLock ();
   private final Lock w = rwl.writeLock ();
 
-  private final FileHandler <K> fhk;
-  private final FileHandler <V> fhv;
+  private final IFileHandler <K> fhk;
+  private final IFileHandler <V> fhv;
 
   private volatile boolean running = true;
 
@@ -87,7 +87,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
    * @throws IOException
    *         if the cache file directory can not be configured
    */
-  public NCache (final StringMap props, final FileHandler <K> fhk, final FileHandler <V> fhv) throws IOException
+  public NCache (final StringMap props, final IFileHandler <K> fhk, final IFileHandler <V> fhv) throws IOException
   {
     this.fhk = fhk;
     this.fhv = fhv;
@@ -111,7 +111,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
     return configuration;
   }
 
-  private class Configuration extends CacheConfigurationBase
+  private class Configuration extends AbstractCacheConfigurationBase
   {
     public URL getCacheDir ()
     {
@@ -332,7 +332,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
    *
    * @return the FileHandler for the key objects
    */
-  FileHandler <K> getKeyFileHandler ()
+  IFileHandler <K> getKeyFileHandler ()
   {
     return fhk;
   }
@@ -342,7 +342,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
    *
    * @return the FileHandler for the values
    */
-  FileHandler <V> getHookFileHandler ()
+  IFileHandler <V> getHookFileHandler ()
   {
     return fhv;
   }

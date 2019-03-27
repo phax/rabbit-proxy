@@ -30,7 +30,7 @@ class FileData <T> implements Serializable
    *         if file reading fails
    * @return the object read
    */
-  protected T readData (final File name, final FileHandler <T> fh) throws IOException
+  protected T readData (final File name, final IFileHandler <T> fh) throws IOException
   {
     if (!name.exists ())
       return null;
@@ -42,7 +42,7 @@ class FileData <T> implements Serializable
   }
 
   protected long writeData (final File name,
-                            final FileHandler <T> fh,
+                            final IFileHandler <T> fh,
                             final T data) throws IOException
   {
 

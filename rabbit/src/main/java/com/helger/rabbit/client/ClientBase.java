@@ -5,9 +5,6 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.helger.rabbit.dns.DNSJavaHandler;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.HttpResponseListener;
@@ -37,8 +34,6 @@ import com.helger.rnio.impl.SimpleThreadFactory;
  */
 public class ClientBase
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (ClientBase.class);
-
   private final ConnectionHandler connectionHandler;
   private final INioHandler nioHandler;
   private final ITrafficLogger trafficLogger = new SimpleTrafficLogger ();

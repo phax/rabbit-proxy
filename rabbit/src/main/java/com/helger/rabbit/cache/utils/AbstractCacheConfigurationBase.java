@@ -11,13 +11,13 @@ import com.helger.rabbit.cache.ICacheConfiguration;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public abstract class CacheConfigurationBase implements ICacheConfiguration
+public abstract class AbstractCacheConfigurationBase implements ICacheConfiguration
 {
-  private long maxSize = 0;
-  private long cacheTimeMS = 0;
-
   private static final String DEFAULT_SIZE = "10"; // 10 MB.
   private static final String DEFAULT_CACHE_TIME = "24"; // 1 day.
+
+  private long maxSize = 0;
+  private long cacheTimeMS = 0;
 
   public synchronized long getMaxSize ()
   {

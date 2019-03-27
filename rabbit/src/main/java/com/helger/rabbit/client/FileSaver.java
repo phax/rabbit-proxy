@@ -53,6 +53,7 @@ public class FileSaver implements BlockListener
     this.request = request;
     this.clientBase = clientBase;
     this.listener = listener;
+    @SuppressWarnings ("resource")
     final FileOutputStream fos = new FileOutputStream (f);
     fc = fos.getChannel ();
     this.rs = rs;
@@ -67,7 +68,7 @@ public class FileSaver implements BlockListener
         final ByteBuffer buf = bufHandle.getBuffer ();
         fc.write (buf);
         bufHandle.possiblyFlush ();
-        readMore ();
+        _readMore ();
       }
       catch (final IOException e)
       {
@@ -76,7 +77,7 @@ public class FileSaver implements BlockListener
     }, ti);
   }
 
-  private void readMore ()
+  private void _readMore ()
   {
     rs.addBlockListener (FileSaver.this);
   }
@@ -97,17 +98,17 @@ public class FileSaver implements BlockListener
 
   public void failed (final Exception cause)
   {
-    downloadFailed ();
+    _downloadFailed ();
     listener.handleFailure (request, cause);
   }
 
   public void timeout ()
   {
-    downloadFailed ();
+    _downloadFailed ();
     listener.handleTimeout (request);
   }
 
-  private void downloadFailed ()
+  private void _downloadFailed ()
   {
     rs.release ();
     StreamHelper.close (fc);

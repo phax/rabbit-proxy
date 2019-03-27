@@ -4,14 +4,17 @@ import com.helger.rabbit.http.HttpHeader;
 
 /**
  * Methods dealing with etags
- * 
+ *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
 public class ETagUtils
 {
+  private ETagUtils ()
+  {}
+
   /**
    * Check if the given etag is weak.
-   * 
+   *
    * @param t
    *        the String to check
    * @return true if the given token starts with the weak identifier "W/"
@@ -23,7 +26,7 @@ public class ETagUtils
 
   /**
    * Check if we have a strong etag match.
-   * 
+   *
    * @param et
    *        the current etag
    * @param im
@@ -38,7 +41,7 @@ public class ETagUtils
   /**
    * Remove any W/ prefix then check if etags are equal. Inputs can be in any
    * order.
-   * 
+   *
    * @param h1
    *        the first header to get an etag from
    * @param h2
@@ -58,7 +61,7 @@ public class ETagUtils
   /**
    * Remove any W/ prefix from the inputs then check if they are equal. Inputs
    * can be in any order.
-   * 
+   *
    * @param et
    *        an etag header
    * @param im

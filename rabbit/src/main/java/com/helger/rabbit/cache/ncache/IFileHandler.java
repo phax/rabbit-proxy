@@ -11,7 +11,7 @@ import java.io.OutputStream;
  *        the type of objects to read and write
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public interface FileHandler <T>
+public interface IFileHandler <T>
 {
   /**
    * Read a T from the given stream.

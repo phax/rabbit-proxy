@@ -16,7 +16,8 @@ class FiledKey <K> extends FileData <K>
 {
   private static final long serialVersionUID = 20050430;
 
-  protected int hashCode; // the hashCode for the contained object.
+  // the hashCode for the contained object.
+  protected int hashCode;
   private long id;
   protected transient NCache <K, ?> cache;
 
