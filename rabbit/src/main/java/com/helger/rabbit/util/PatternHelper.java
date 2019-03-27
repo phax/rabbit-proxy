@@ -1,21 +1,21 @@
 package com.helger.rabbit.util;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 
 /**
- * Helper class for regular expresions.
+ * Helper class for regular expressions.
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
 public class PatternHelper
 {
-
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (PatternHelper.class);
 
   /**
    * Get a Pattern for a given property.
@@ -28,7 +28,7 @@ public class PatternHelper
    *        the warning message to log if construction fails
    * @return a Pattern or null if no pattern could be created.
    */
-  public Pattern getPattern (final SMap properties, final String configOption, final String warn)
+  public Pattern getPattern (final StringMap properties, final String configOption, final String warn)
   {
     Pattern ret = null;
     final String val = properties.get (configOption);
@@ -40,7 +40,7 @@ public class PatternHelper
       }
       catch (final PatternSyntaxException e)
       {
-        logger.log (Level.WARNING, warn, e);
+        LOGGER.warn (warn, e);
       }
     }
     return ret;

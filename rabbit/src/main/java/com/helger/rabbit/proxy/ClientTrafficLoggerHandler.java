@@ -2,8 +2,9 @@ package com.helger.rabbit.proxy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.util.Config;
@@ -16,11 +17,12 @@ import com.helger.rabbit.util.ITrafficLogger;
  */
 class ClientTrafficLoggerHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (ClientTrafficLoggerHandler.class);
+
   private final List <ClientTrafficLogger> loggers;
 
   public ClientTrafficLoggerHandler (final Config config, final HttpProxy proxy)
   {
-    final Logger log = Logger.getLogger (getClass ().getName ());
     final String filters = config.getProperty ("logging", "traffic_loggers", "");
     final String [] classNames = filters.split (",");
     loggers = new ArrayList <> (classNames.length);
@@ -38,15 +40,15 @@ class ClientTrafficLoggerHandler
       }
       catch (final ClassNotFoundException ex)
       {
-        log.log (Level.WARNING, "Could not load traffic logger class: '" + clz + "'", ex);
+        LOGGER.warn ("Could not load traffic LOGGER class: '" + clz + "'", ex);
       }
       catch (final InstantiationException ex)
       {
-        log.log (Level.WARNING, "Could not instansiate traffic logger: '" + clz + "'", ex);
+        LOGGER.warn ("Could not instansiate traffic LOGGER: '" + clz + "'", ex);
       }
       catch (final IllegalAccessException ex)
       {
-        log.log (Level.WARNING, "Could not access traffic logger: '" + clz + "'", ex);
+        LOGGER.warn ("Could not access traffic LOGGER: '" + clz + "'", ex);
       }
     }
   }

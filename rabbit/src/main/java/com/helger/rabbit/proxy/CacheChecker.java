@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.cache.CacheException;
 import com.helger.rabbit.cache.ICache;
@@ -21,7 +22,7 @@ import com.helger.rabbit.http.HttpHeader;
  */
 class CacheChecker
 {
-
+  private static final Logger LOGGER = LoggerFactory.getLogger (CacheChecker.class);
   private static final String EXP_ERR = "No expected header found";
 
   HttpHeader checkExpectations (final Connection con, final HttpHeader header, final HttpHeader webheader)
@@ -76,7 +77,7 @@ class CacheChecker
 
   /**
    * Check if we can use the cached entry.
-   * 
+   *
    * @param con
    *        the Connection handling the request
    * @param header
@@ -206,15 +207,11 @@ class CacheChecker
     }
     catch (final CacheException e)
     {
-      final Logger logger = Logger.getLogger (getClass ().getName ());
-      logger.log (Level.WARNING,
-                  "RemoveCaches failed to remove cache entry: " + request.getRequestURI () + ", " + loc,
-                  e);
+      LOGGER.warn ("RemoveCaches failed to remove cache entry: " + request.getRequestURI () + ", " + loc, e);
     }
     catch (final MalformedURLException e)
     {
-      final Logger logger = Logger.getLogger (getClass ().getName ());
-      logger.log (Level.WARNING, "RemoveCaches got bad url: " + request.getRequestURI () + ", " + loc, e);
+      LOGGER.warn ("RemoveCaches got bad url: " + request.getRequestURI () + ", " + loc, e);
     }
   }
 

@@ -18,7 +18,7 @@ import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * An image converter that uses javax.image to convert images
@@ -37,7 +37,7 @@ public class JavaImageConverter implements ImageConverter
    * @param props
    *        the properties hodling the configuration
    */
-  public JavaImageConverter (final SMap props)
+  public JavaImageConverter (final StringMap props)
   {
     final Runtime rt = Runtime.getRuntime ();
     final long max = rt.maxMemory ();

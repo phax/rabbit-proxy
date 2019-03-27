@@ -12,11 +12,12 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.url.SMap;
 import com.helger.rabbit.util.IPAccess;
 
 /**
@@ -26,11 +27,11 @@ import com.helger.rabbit.util.IPAccess;
  */
 public class AccessFilter implements IIPAccessFilter
 {
-  private List <IPAccess> allowed = new ArrayList<> ();
-  private List <IPAccess> denied = new ArrayList<> ();
-  private static final String DEFAULTCONFIG = "conf/access";
+  private static final Logger LOGGER = LoggerFactory.getLogger (AccessFilter.class);
 
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private List <IPAccess> allowed = new ArrayList <> ();
+  private List <IPAccess> denied = new ArrayList <> ();
+  private static final String DEFAULTCONFIG = "conf/access";
 
   /**
    * Filter based on a socket.
@@ -59,7 +60,7 @@ public class AccessFilter implements IIPAccessFilter
    * @param properties
    *        the Properties to get the settings from.
    */
-  public void setup (final SMap properties)
+  public void setup (final StringMap properties)
   {
     final String file = properties.getOrDefault ("accessfile", DEFAULTCONFIG);
     loadAccess (file);
@@ -76,7 +77,7 @@ public class AccessFilter implements IIPAccessFilter
     filename = filename.replace ('/', File.separatorChar);
 
     try (final FileInputStream is = new FileInputStream (filename);
-         final Reader r = new InputStreamReader (is, "UTF-8"))
+        final Reader r = new InputStreamReader (is, "UTF-8"))
     {
       try
       {
@@ -89,7 +90,7 @@ public class AccessFilter implements IIPAccessFilter
     }
     catch (final IOException e)
     {
-      logger.log (Level.WARNING, "Accessfile '" + filename + "' not found: no one allowed", e);
+      LOGGER.warn ("Accessfile '" + filename + "' not found: no one allowed", e);
     }
   }
 
@@ -101,8 +102,8 @@ public class AccessFilter implements IIPAccessFilter
    */
   public void loadAccess (final Reader r) throws IOException
   {
-    final List <IPAccess> allowed = new ArrayList<> ();
-    final List <IPAccess> denied = new ArrayList<> ();
+    final List <IPAccess> allowed = new ArrayList <> ();
+    final List <IPAccess> denied = new ArrayList <> ();
     try (final LineNumberReader br = new LineNumberReader (r))
     {
       String line;
@@ -124,13 +125,13 @@ public class AccessFilter implements IIPAccessFilter
         final StringTokenizer st = new StringTokenizer (line);
         if (st.countTokens () != 2)
         {
-          logger.warning ("Bad line in accessconf:" + br.getLineNumber ());
+          LOGGER.warn ("Bad line in accessconf:" + br.getLineNumber ());
           continue;
         }
         final String low = st.nextToken ();
-        final InetAddress lowip = getInetAddress (low, logger, br);
+        final InetAddress lowip = getInetAddress (low, LOGGER, br);
         final String high = st.nextToken ();
-        final InetAddress highip = getInetAddress (high, logger, br);
+        final InetAddress highip = getInetAddress (high, LOGGER, br);
 
         if (lowip != null && highip != null)
         {
@@ -145,7 +146,7 @@ public class AccessFilter implements IIPAccessFilter
     this.denied = denied;
   }
 
-  private InetAddress getInetAddress (final String text, final Logger logger, final LineNumberReader br)
+  private InetAddress getInetAddress (final String text, final Logger LOGGER, final LineNumberReader br)
   {
     InetAddress ip = null;
     try
@@ -154,7 +155,7 @@ public class AccessFilter implements IIPAccessFilter
     }
     catch (final UnknownHostException e)
     {
-      logger.warning ("Bad host: " + text + " at line:" + br.getLineNumber ());
+      LOGGER.warn ("Bad host: " + text + " at line:" + br.getLineNumber ());
     }
     return ip;
   }

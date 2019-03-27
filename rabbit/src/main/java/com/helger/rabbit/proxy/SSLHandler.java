@@ -3,11 +3,12 @@ package com.helger.rabbit.proxy;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.nio.charset.StandardCharsets;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.base64.Base64;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.HttpHeaderSender;
@@ -28,6 +29,8 @@ import com.helger.rabbit.io.WebConnectionListener;
  */
 public class SSLHandler implements TunnelDoneListener
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SSLHandler.class);
+
   private final HttpProxy proxy;
   private final Connection con;
   private final HttpHeader request;
@@ -37,7 +40,6 @@ public class SSLHandler implements TunnelDoneListener
   private BufferHandle bh;
   private BufferHandle sbh;
   private WebConnection wc;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   /**
    * Create a new SSLHandler
@@ -82,7 +84,7 @@ public class SSLHandler implements TunnelDoneListener
       }
       catch (final NumberFormatException e)
       {
-        logger.warning ("Connect to odd port: " + e);
+        LOGGER.warn ("Connect to odd port: " + e);
         return false;
       }
     }
@@ -116,7 +118,7 @@ public class SSLHandler implements TunnelDoneListener
       // it should look like this (using RabbIT:RabbIT):
       // Proxy-authorization: Basic UmFiYklUOlJhYmJJVA==
       if (auth != null && !auth.equals (""))
-        request.setHeader ("Proxy-authorization", "Basic " + Base64.safeEncode (auth, CCharset.CHARSET_UTF_8_OBJ));
+        request.setHeader ("Proxy-authorization", "Basic " + Base64.safeEncode (auth, StandardCharsets.UTF_8));
     }
     final WebConnectionListener wcl = new WebConnector ();
     proxy.getWebConnection (request, wcl);
@@ -151,13 +153,13 @@ public class SSLHandler implements TunnelDoneListener
     public void timeout ()
     {
       final String err = "SSLHandler: Timeout waiting for web connection: " + uri;
-      logger.warning (err);
+      LOGGER.warn (err);
       closeDown ();
     }
 
     public void failed (final Exception e)
     {
-      warn ("SSLHandler: failed to get web connection to: " + uri, e);
+      LOGGER.warn ("SSLHandler: failed to get web connection to: " + uri, e);
       closeDown ();
     }
   }
@@ -172,11 +174,6 @@ public class SSLHandler implements TunnelDoneListener
     StreamHelper.close (c);
     wc = null;
     con.logAndClose ();
-  }
-
-  private void warn (final String err, final Exception e)
-  {
-    logger.log (Level.WARNING, err, e);
   }
 
   private void setupChain ()
@@ -196,7 +193,7 @@ public class SSLHandler implements TunnelDoneListener
     }
     catch (final IOException e)
     {
-      warn ("IOException when waiting for chained response: " + request.getRequestURI (), e);
+      LOGGER.warn ("IOException when waiting for chained response: " + request.getRequestURI (), e);
       closeDown ();
     }
   }
@@ -222,14 +219,14 @@ public class SSLHandler implements TunnelDoneListener
 
     public void failed (final Exception cause)
     {
-      warn ("SSLHandler: failed to get chained response: " + request.getRequestURI (), cause);
+      LOGGER.warn ("SSLHandler: failed to get chained response: " + request.getRequestURI (), cause);
       closeDown ();
     }
 
     public void timeout ()
     {
       final String err = "SSLHandler: Timeout waiting for chained response: " + request.getRequestURI ();
-      logger.warning (err);
+      LOGGER.warn (err);
       closeDown ();
     }
   }
@@ -253,7 +250,7 @@ public class SSLHandler implements TunnelDoneListener
     }
     catch (final IOException e)
     {
-      warn ("IOException when sending header", e);
+      LOGGER.warn ("IOException when sending header", e);
       closeDown ();
     }
   }
@@ -274,13 +271,13 @@ public class SSLHandler implements TunnelDoneListener
 
     public void timeout ()
     {
-      logger.warning ("SSLHandler: Timeout when sending http header: " + request.getRequestURI ());
+      LOGGER.warn ("SSLHandler: Timeout when sending http header: " + request.getRequestURI ());
       closeDown ();
     }
 
     public void failed (final Exception e)
     {
-      warn ("SSLHandler: Exception when sending http header: " + request.getRequestURI (), e);
+      LOGGER.warn ("SSLHandler: Exception when sending http header: " + request.getRequestURI (), e);
       closeDown ();
     }
   }

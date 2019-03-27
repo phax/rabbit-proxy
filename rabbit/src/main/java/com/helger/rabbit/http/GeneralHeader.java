@@ -5,8 +5,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Iterator;
 
-import com.helger.commons.collection.ext.CommonsArrayList;
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.rabbit.io.IStorable;
 
 /**

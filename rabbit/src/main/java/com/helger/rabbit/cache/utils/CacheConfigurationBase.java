@@ -1,8 +1,9 @@
 package com.helger.rabbit.cache.utils;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.CGlobal;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.cache.ICacheConfiguration;
 
 /**
@@ -13,7 +14,7 @@ import com.helger.rabbit.cache.ICacheConfiguration;
 public abstract class CacheConfigurationBase implements ICacheConfiguration
 {
   private long maxSize = 0;
-  private long cacheTime = 0;
+  private long cacheTimeMS = 0;
 
   private static final String DEFAULT_SIZE = "10"; // 10 MB.
   private static final String DEFAULT_CACHE_TIME = "24"; // 1 day.
@@ -30,36 +31,36 @@ public abstract class CacheConfigurationBase implements ICacheConfiguration
 
   public synchronized long getCacheTime ()
   {
-    return cacheTime;
+    return cacheTimeMS;
   }
 
   public synchronized void setCacheTime (final long newCacheTime)
   {
-    cacheTime = newCacheTime;
+    cacheTimeMS = newCacheTime;
   }
 
-  public void setup (final Logger logger, final SMap config)
+  public void setup (final Logger aLogger, final StringMap config)
   {
     final String cmsize = config.getOrDefault ("maxsize", DEFAULT_SIZE);
     try
     {
       // size is in MB
-      setMaxSize (Long.parseLong (cmsize) * 1024 * 1024);
+      setMaxSize (Long.parseLong (cmsize) * CGlobal.BYTES_PER_MEGABYTE);
     }
     catch (final NumberFormatException e)
     {
-      logger.warning ("Bad number for cache maxsize: '" + cmsize + "'");
+      aLogger.warn ("Bad number for cache maxsize: '" + cmsize + "'");
     }
 
     final String ctime = config.getOrDefault ("cachetime", DEFAULT_CACHE_TIME);
     try
     {
       // time is given in hours
-      setCacheTime (Long.parseLong (ctime) * 1000 * 60 * 60);
+      setCacheTime (Long.parseLong (ctime) * CGlobal.MILLISECONDS_PER_HOUR);
     }
     catch (final NumberFormatException e)
     {
-      logger.warning ("Bad number for cache cachetime: '" + ctime + "'");
+      aLogger.warn ("Bad number for cache cachetime: '" + ctime + "'");
     }
   }
 }

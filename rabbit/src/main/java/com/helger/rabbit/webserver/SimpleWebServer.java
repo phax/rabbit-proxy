@@ -8,8 +8,8 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rabbit.util.ITrafficLogger;
+import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IStatisticsHolder;

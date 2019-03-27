@@ -9,10 +9,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.cache.CacheException;
 import com.helger.rabbit.cache.ICache;
 import com.helger.rabbit.cache.ICacheEntry;
@@ -43,9 +44,11 @@ import com.helger.rabbit.proxy.TrafficLoggerHandler;
  */
 public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentListener, BlockListener, BlockSentListener
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (BaseHandler.class);
+
   /** The Connection handling the request. */
   protected Connection con;
-  /** The traffic logger handler. */
+  /** The traffic LOGGER handler. */
   protected TrafficLoggerHandler tlh;
   /** The actual request made. */
   protected HttpHeader request;
@@ -70,8 +73,6 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
 
   /** The flag for the last empty chunk */
   private boolean emptyChunkSent = false;
-
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   /**
    * For creating the factory.
@@ -123,20 +124,15 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
   }
 
   public IHandler getNewInstance (final Connection con,
-                                 final TrafficLoggerHandler tlh,
-                                 final HttpHeader header,
-                                 final HttpHeader webHeader,
-                                 final IResourceSource content,
-                                 final boolean mayCache,
-                                 final boolean mayFilter,
-                                 final long size)
+                                  final TrafficLoggerHandler tlh,
+                                  final HttpHeader header,
+                                  final HttpHeader webHeader,
+                                  final IResourceSource content,
+                                  final boolean mayCache,
+                                  final boolean mayFilter,
+                                  final long size)
   {
     return new BaseHandler (con, tlh, header, webHeader, content, mayCache, mayFilter, size);
-  }
-
-  protected Logger getLogger ()
-  {
-    return logger;
   }
 
   /**
@@ -323,7 +319,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
     }
     catch (final CacheException e)
     {
-      getLogger ().log (Level.WARNING, "Failed to add cache entry: " + request.getRequestURI (), e);
+      LOGGER.warn ("Failed to add cache entry: " + request.getRequestURI (), e);
     }
   }
 
@@ -370,7 +366,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
         final long now = System.currentTimeMillis ();
         if (now > exp.getTime ())
         {
-          getLogger ().config ("expire date in the past: '" + expires + "'");
+          LOGGER.info ("expire date in the past: '" + expires + "'");
           entry = null;
           return;
         }
@@ -378,11 +374,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
       }
       else
       {
-        getLogger ().config ("unable to parse expire date: '" +
-                             expires +
-                             "' for URI: '" +
-                             request.getRequestURI () +
-                             "'");
+        LOGGER.info ("unable to parse expire date: '" + expires + "' for URI: '" + request.getRequestURI () + "'");
         entry = null;
       }
     }
@@ -441,7 +433,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
       }
       catch (final CacheException e)
       {
-        getLogger ().log (Level.WARNING, "Failed to update range: " + request.getRequestURI (), e);
+        LOGGER.warn ("Failed to update range: " + request.getRequestURI (), e);
       }
       return;
     }
@@ -464,12 +456,12 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
       }
       catch (final CacheException e)
       {
-        getLogger ().log (Level.WARNING, "Failed to create new entry for: " + request + ", will not cache", e);
+        LOGGER.warn ("Failed to create new entry for: " + request + ", will not cache", e);
       }
       setCacheExpiry ();
       if (entry == null)
       {
-        getLogger ().config ("Expiry =< 0 set on entry, will not cache");
+        LOGGER.info ("Expiry =< 0 set on entry, will not cache");
         return;
       }
       final File entryName = cache.getEntryName (entry.getID (), false, null);
@@ -482,7 +474,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
         }
         catch (final CacheException e)
         {
-          getLogger ().log (Level.WARNING, "Failed to get old entry: " + request.getRequestURI (), e);
+          LOGGER.warn ("Failed to get old entry: " + request.getRequestURI (), e);
         }
         try
         {
@@ -490,7 +482,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
         }
         catch (final IOException e)
         {
-          getLogger ().log (Level.WARNING, "Got IOException, not updating cache", e);
+          LOGGER.warn ("Got IOException, not updating cache", e);
           entry = null;
           cacheChannel = null;
         }
@@ -509,7 +501,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
         }
         catch (final IOException e)
         {
-          getLogger ().log (Level.WARNING, "Got IOException, not caching", e);
+          LOGGER.warn ("Got IOException, not caching", e);
           entry = null;
           cacheChannel = null;
         }
@@ -643,7 +635,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
     }
     catch (final IOException e)
     {
-      getLogger ().log (Level.WARNING, "Failed to delete file", e);
+      LOGGER.warn ("Failed to delete file", e);
     }
   }
 
@@ -661,7 +653,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
       }
       catch (final IOException e)
       {
-        getLogger ().log (Level.WARNING, "failed to remove cache entry: ", e);
+        LOGGER.warn ("failed to remove cache entry: ", e);
       }
       finally
       {
@@ -691,7 +683,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
       {
         st = getStackTrace (cause);
       }
-      getLogger ().warning ("BaseHandler: error handling request: " + request.getRequestURI () + ": " + st);
+      LOGGER.warn ("BaseHandler: error handling request: " + request.getRequestURI () + ": " + st);
       con.setStatusCode ("500");
       String ei = con.getExtraInfo ();
       ei = ei == null ? cause.toString () : (ei + ", " + cause);
@@ -704,12 +696,12 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
   public void timeout ()
   {
     if (con != null)
-      getLogger ().warning ("BaseHandler: timeout: uri: " + request.getRequestURI ());
+      LOGGER.warn ("BaseHandler: timeout: uri: " + request.getRequestURI ());
     removeCache ();
     finish (false);
   }
 
-  public void setup (final SMap properties, final HttpProxy proxy)
+  public void setup (final StringMap properties, final HttpProxy proxy)
   {
     // nothing to do.
   }

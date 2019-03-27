@@ -4,16 +4,21 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+
+import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.base64.Base64;
-import com.helger.commons.charset.CCharset;
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
+import com.helger.commons.string.StringHelper;
 import com.helger.http.basicauth.BasicAuthClientCredentials;
-import com.helger.http.basicauth.HTTPBasicAuth;
+import com.helger.http.basicauth.HttpBasicAuth;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.http.HttpHeaderWithContent;
@@ -35,11 +40,11 @@ public class HttpBaseFilter implements IHttpFilter
   public static final String NOPROXY = "http://noproxy.";
   private static final BigInteger ZERO = BigInteger.ZERO;
   private static final BigInteger ONE = BigInteger.ONE;
+  private static final Logger LOGGER = LoggerFactory.getLogger (HttpBaseFilter.class);
 
-  private final List <String> removes = new ArrayList<> ();
+  private final List <String> removes = new ArrayList <> ();
   private boolean cookieId = false;
   private final SimpleUserHandler userHandler = new SimpleUserHandler ();
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   /**
    * We got a proxy authentication, handle it...
@@ -54,7 +59,7 @@ public class HttpBaseFilter implements IHttpFilter
     // guess we should handle digest here also.. :-/
     if (uap.startsWith ("Basic "))
     {
-      final BasicAuthClientCredentials aCred = HTTPBasicAuth.getBasicAuthClientCredentials (uap);
+      final BasicAuthClientCredentials aCred = HttpBasicAuth.getBasicAuthClientCredentials (uap);
       if (aCred != null)
       {
         con.setUserName (aCred.getUserName ());
@@ -110,9 +115,8 @@ public class HttpBaseFilter implements IHttpFilter
         (s5 = requestURI.indexOf ('@', s3 + 2)) >= 0 &&
         s5 < s4)
     {
-
       final String userPass = requestURI.substring (s3 + 2, s5);
-      header.setHeader ("Authorization", "Basic " + Base64.safeEncode (userPass, CCharset.CHARSET_UTF_8_OBJ));
+      header.setHeader ("Authorization", "Basic " + Base64.safeEncode (userPass, StandardCharsets.UTF_8));
 
       header.setRequestURI (requestURI.substring (0, s3 + 2) + requestURI.substring (s5 + 1));
     }
@@ -279,7 +283,7 @@ public class HttpBaseFilter implements IHttpFilter
     }
     catch (final NumberFormatException e)
     {
-      logger.warning ("Bad number for Max-Forwards: '" + val + "'");
+      LOGGER.warn ("Bad number for Max-Forwards: '" + val + "'");
     }
     return null;
   }
@@ -440,7 +444,7 @@ public class HttpBaseFilter implements IHttpFilter
       // it should look like this (using RabbIT:RabbIT):
       // Proxy-authorization: Basic UmFiYklUOlJhYmJJVA==
       if (auth != null && !auth.isEmpty ())
-        header.setHeader ("Proxy-Authorization", "Basic " + Base64.safeEncode (auth, CCharset.CHARSET_UTF_8_OBJ));
+        header.setHeader ("Proxy-Authorization", "Basic " + Base64.safeEncode (auth, StandardCharsets.UTF_8));
     }
 
     // try to use keepalive backwards.
@@ -450,15 +454,14 @@ public class HttpBaseFilter implements IHttpFilter
     return null;
   }
 
-  private boolean checkCacheControl (final String cachecontrol)
+  private boolean checkCacheControl (@Nonnull final String cachecontrol)
   {
-    final String [] caches = cachecontrol.split (",");
-    for (String cached : caches)
+    for (String sCached : StringHelper.getExploded (',', cachecontrol))
     {
-      cached = cached.trim ();
-      if (cached.equals ("no-store"))
+      sCached = sCached.trim ();
+      if (sCached.equals ("no-store"))
         return false;
-      if (cached.equals ("private"))
+      if (sCached.equals ("private"))
         return false;
     }
     return true;
@@ -536,7 +539,7 @@ public class HttpBaseFilter implements IHttpFilter
     return null;
   }
 
-  public void setup (final SMap properties, final HttpProxy proxy)
+  public void setup (final StringMap properties, final HttpProxy proxy)
   {
     removes.clear ();
     final String rs = properties.getOrDefault ("remove", "");

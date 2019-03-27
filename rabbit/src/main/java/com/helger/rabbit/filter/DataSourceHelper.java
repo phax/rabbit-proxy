@@ -8,7 +8,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * A helper class for dealing with DataSource:s
@@ -38,7 +38,7 @@ public class DataSourceHelper
    * @throws NamingException
    *         if the DataSource can not be found
    */
-  public DataSourceHelper (final SMap props, final String defaultSelect) throws NamingException
+  public DataSourceHelper (final StringMap props, final String defaultSelect) throws NamingException
   {
     final String resource = props.get ("resource");
     final Context context = new InitialContext ();

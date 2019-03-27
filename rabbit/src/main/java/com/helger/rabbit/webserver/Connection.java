@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.http.HttpDateParser;
@@ -21,8 +22,8 @@ import com.helger.rabbit.httpio.TransferHandler;
 import com.helger.rabbit.httpio.TransferListener;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
-import com.helger.rabbit.util.MimeTypeMapper;
 import com.helger.rabbit.util.ITrafficLogger;
+import com.helger.rabbit.util.MimeTypeMapper;
 import com.helger.rnio.INioHandler;
 
 /**
@@ -32,17 +33,17 @@ import com.helger.rnio.INioHandler;
  */
 public class Connection
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (Connection.class);
+
   private final SimpleWebServer sws;
   private final SocketChannel sc;
   private BufferHandle clientBufferHandle;
   private boolean timeToClose = false;
   private IResourceSource resourceSource = null;
 
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
-
   /**
    * Create a new Connection for the given web server and socket channel.
-   * 
+   *
    * @param sws
    *        the web server
    * @param sc
@@ -56,7 +57,7 @@ public class Connection
 
   /**
    * Set up a http reader to listen for http request.
-   * 
+   *
    * @throws IOException
    *         if reading the request fails
    */
@@ -115,8 +116,8 @@ public class Connection
           if ("HTTP/1.0".equals (header.getHTTPVersion ()))
             resp.setHeader ("Connection", "Keep-Alive");
 
-          if (logger.isLoggable (Level.FINEST))
-            logger.finest ("Connection; http response: " + resp);
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Connection; http response: " + resp);
 
           if ("GET".equals (method))
             resourceSource = new FileResourceSource (f, sws.getNioHandler (), sws.getBufferHandler ());

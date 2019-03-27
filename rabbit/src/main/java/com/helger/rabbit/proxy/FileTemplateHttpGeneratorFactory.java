@@ -1,9 +1,11 @@
 package com.helger.rabbit.proxy;
 
 import java.io.File;
-import java.util.logging.Logger;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * A HttpGeneratorFactory that creates FileTemplateHttpGenerator instances.
@@ -12,6 +14,8 @@ import com.helger.commons.url.SMap;
  */
 public class FileTemplateHttpGeneratorFactory implements HttpGeneratorFactory
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (FileTemplateHttpGeneratorFactory.class);
+
   private File dir;
 
   public HttpGenerator create (final String identity, final Connection con)
@@ -21,15 +25,14 @@ public class FileTemplateHttpGeneratorFactory implements HttpGeneratorFactory
     return new StandardResponseHeaders (identity, con);
   }
 
-  public void setup (final SMap props)
+  public void setup (final StringMap props)
   {
     final String templateDir = props.get ("error_pages");
     dir = new File (templateDir);
     if (!dir.exists ())
     {
       dir = null;
-      final Logger logger = Logger.getLogger (getClass ().getName ());
-      logger.warning ("Failed to find error pages directory: " + templateDir);
+      LOGGER.warn ("Failed to find error pages directory: " + templateDir);
     }
   }
 }

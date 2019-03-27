@@ -2,7 +2,7 @@ package com.helger.rabbit.handler;
 
 import java.nio.ByteBuffer;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.io.BufferHandle;
@@ -333,7 +333,7 @@ public class GZipHandler extends BaseHandler
   }
 
   @Override
-  public void setup (final SMap prop, final HttpProxy proxy)
+  public void setup (final StringMap prop, final HttpProxy proxy)
   {
     super.setup (prop, proxy);
     if (prop != null)

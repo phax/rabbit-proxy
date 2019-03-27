@@ -7,12 +7,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ProxyClassLoaderHelper
 {
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (ProxyClassLoaderHelper.class);
 
   public ClassLoader get3rdPartyClassLoader (final String dirLine)
   {
@@ -26,12 +27,12 @@ class ProxyClassLoaderHelper
         final File d = new File (dir);
         if (!d.exists ())
         {
-          logger.warning (d.getCanonicalPath () + " does not exist, skipping it from " + "3:rd party list");
+          LOGGER.warn (d.getCanonicalPath () + " does not exist, skipping it from " + "3:rd party list");
           continue;
         }
         if (!d.isDirectory ())
         {
-          logger.warning (d.getCanonicalPath () + " is not a directory, skipping it from " + "3:rd party list");
+          LOGGER.warn (d.getCanonicalPath () + " is not a directory, skipping it from " + "3:rd party list");
           continue;
         }
         for (final File f : d.listFiles (jarFilter))
@@ -39,7 +40,7 @@ class ProxyClassLoaderHelper
       }
       catch (final IOException e)
       {
-        logger.log (Level.SEVERE, "Failed to setup classloading", e);
+        LOGGER.error ("Failed to setup classloading", e);
       }
     }
     final URL [] urlArray = urls.toArray (new URL [urls.size ()]);

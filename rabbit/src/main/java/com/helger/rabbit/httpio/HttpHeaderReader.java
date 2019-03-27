@@ -3,8 +3,9 @@ package com.helger.rabbit.httpio;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.io.BufferHandle;
@@ -19,6 +20,7 @@ import com.helger.rnio.IReadHandler;
  */
 public class HttpHeaderReader extends BaseSocketHandler implements IReadHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (HttpHeaderReader.class);
 
   private final HttpHeaderListener reader;
   private final HttpHeaderParser headerParser;
@@ -65,7 +67,7 @@ public class HttpHeaderReader extends BaseSocketHandler implements IReadHandler
 
   /**
    * Try to read a http header
-   * 
+   *
    * @throws IOException
    *         if a header can not be parsed
    */
@@ -113,8 +115,8 @@ public class HttpHeaderReader extends BaseSocketHandler implements IReadHandler
 
   public void read ()
   {
-    final Logger logger = getLogger ();
-    logger.finest ("HttpHeaderReader reading data");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("HttpHeaderReader reading data");
     try
     {
       // read http request
@@ -161,9 +163,8 @@ public class HttpHeaderReader extends BaseSocketHandler implements IReadHandler
     final int startPos = buffer.position ();
     buffer.mark ();
     final boolean done = headerParser.handleBuffer (buffer);
-    final Logger logger = getLogger ();
-    if (logger.isLoggable (Level.FINEST))
-      logger.finest ("HttpHeaderReader.parseBuffer: done " + done);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("HttpHeaderReader.parseBuffer: done " + done);
     if (!done)
     {
       final int pos = buffer.position ();
@@ -289,7 +290,7 @@ public class HttpHeaderReader extends BaseSocketHandler implements IReadHandler
 
   /**
    * Set the keep alive value to currentkeepalive & keepalive
-   * 
+   *
    * @param keepalive
    *        the new keepalive value.
    */

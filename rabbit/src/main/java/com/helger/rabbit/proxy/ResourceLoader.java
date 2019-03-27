@@ -5,14 +5,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.jndi.InitCtxFactory;
 
 /**
@@ -22,7 +23,8 @@ import com.helger.rabbit.jndi.InitCtxFactory;
  */
 public class ResourceLoader
 {
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (ResourceLoader.class);
+
   private final Context context;
 
   /**
@@ -47,11 +49,11 @@ public class ResourceLoader
    * @param proxy
    *        the HttpProxy loading the classes
    */
-  public void setupResource (final String name, final SMap props, final HttpProxy proxy)
+  public void setupResource (final String name, final StringMap props, final HttpProxy proxy)
   {
     if (props == null)
     {
-      logger.warning ("No properties for: " + name + ", not registering resource");
+      LOGGER.warn ("No properties for: " + name + ", not registering resource");
       return;
     }
     final String clz = props.get ("class");
@@ -59,7 +61,7 @@ public class ResourceLoader
     {
       final Class <?> c = proxy.load3rdPartyClass (clz, Object.class);
       final Object dataSource = c.newInstance ();
-      final Set <String> ignore = new HashSet<> (Arrays.asList ("class", "bind_name"));
+      final Set <String> ignore = new HashSet <> (Arrays.asList ("class", "bind_name"));
       for (final Map.Entry <String, String> me : props.entrySet ())
       {
         final String k = me.getKey ();
@@ -73,7 +75,7 @@ public class ResourceLoader
     }
     catch (final Exception e)
     {
-      logger.log (Level.WARNING, "Failed to setup resource: " + name, e);
+      LOGGER.warn ("Failed to setup resource: " + name, e);
     }
   }
 }

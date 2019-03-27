@@ -6,10 +6,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.url.SMap;
 import com.helger.rabbit.handler.convert.ExternalProcessConverter;
 import com.helger.rabbit.handler.convert.ImageConverter;
 import com.helger.rabbit.handler.convert.JavaImageConverter;
@@ -36,7 +38,9 @@ import com.helger.rnio.impl.DefaultTaskIdentifier;
  */
 public class ImageHandler extends BaseHandler
 {
-  private SMap config = new SMap ();
+  private static final Logger LOGGER = LoggerFactory.getLogger (ImageHandler.class);
+
+  private StringMap config = new StringMap ();
   private boolean doConvert = true;
   private int minSizeToConvert = 2000;
 
@@ -58,7 +62,7 @@ public class ImageHandler extends BaseHandler
    * @param con
    *        the Connection handling the request.
    * @param tlh
-   *        the logger for the data traffic
+   *        the LOGGER for the data traffic
    * @param request
    *        the actual request made.
    * @param response
@@ -88,7 +92,7 @@ public class ImageHandler extends BaseHandler
                        final boolean mayCache,
                        final boolean mayFilter,
                        final long size,
-                       final SMap config,
+                       final StringMap config,
                        final boolean doConvert,
                        final int minSizeToConvert,
                        final ImageConverter imageConverter)
@@ -105,13 +109,13 @@ public class ImageHandler extends BaseHandler
 
   @Override
   public IHandler getNewInstance (final Connection con,
-                                 final TrafficLoggerHandler tlh,
-                                 final HttpHeader header,
-                                 final HttpHeader webHeader,
-                                 final IResourceSource content,
-                                 final boolean mayCache,
-                                 final boolean mayFilter,
-                                 final long size)
+                                  final TrafficLoggerHandler tlh,
+                                  final HttpHeader header,
+                                  final HttpHeader webHeader,
+                                  final IResourceSource content,
+                                  final boolean mayCache,
+                                  final boolean mayFilter,
+                                  final long size)
   {
     return new ImageHandler (con,
                              tlh,
@@ -220,18 +224,18 @@ public class ImageHandler extends BaseHandler
    */
   protected void tryconvert ()
   {
-    if (getLogger ().isLoggable (Level.FINER))
-      getLogger ().finer (request.getRequestURI () +
-                          ": doConvert: " +
-                          doConvert +
-                          ", mayFilter: " +
-                          mayFilter +
-                          ", mayCache: " +
-                          mayCache +
-                          ", size: " +
-                          size +
-                          ", minSizeToConvert: " +
-                          minSizeToConvert);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug (request.getRequestURI () +
+                    ": doConvert: " +
+                    doConvert +
+                    ", mayFilter: " +
+                    mayFilter +
+                    ", mayCache: " +
+                    mayCache +
+                    ", size: " +
+                    size +
+                    ", minSizeToConvert: " +
+                    minSizeToConvert);
     // TODO: if the image size is unknown (chunked) we will have -1 > 2000
     // TODO: perhaps we should add something to handle that.
     if (doConvert && mayFilter && mayCache && size > minSizeToConvert)
@@ -417,8 +421,8 @@ public class ImageHandler extends BaseHandler
     final File imageFile = proxy.getCache ().getEntryName (entry.getID (), false, null);
     final String imageName = imageFile.getName ();
 
-    if (getLogger ().isLoggable (Level.FINER))
-      getLogger ().finer (request.getRequestURI () + ": Trying to convert image: " + imageName);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug (request.getRequestURI () + ": Trying to convert image: " + imageName);
     final ImageConversionResult icr = internalConvertImage (imageFile, imageName);
     try
     {
@@ -433,12 +437,8 @@ public class ImageHandler extends BaseHandler
         deleteFile (icr.typeFile);
     }
 
-    if (getLogger ().isLoggable (Level.FINER))
-      getLogger ().finer (request.getRequestURI () +
-                          ": OrigSize: " +
-                          icr.origSize +
-                          ", convertedSize: " +
-                          icr.convertedSize);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug (request.getRequestURI () + ": OrigSize: " + icr.origSize + ", convertedSize: " + icr.convertedSize);
     size = icr.convertedSize > 0 ? icr.convertedSize : icr.origSize;
     response.setHeader ("Content-length", "" + size);
     final double ratio = (double) icr.convertedSize / icr.origSize;
@@ -527,20 +527,20 @@ public class ImageHandler extends BaseHandler
        */
       if (entry.exists ())
       {
-        if (getLogger ().isLoggable (Level.FINER))
-          getLogger ().finer (request.getRequestURI () + ": deleting old entry: " + entry);
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug (request.getRequestURI () + ": deleting old entry: " + entry);
         FileHelper.delete (entry);
       }
-      if (getLogger ().isLoggable (Level.FINER))
-        getLogger ().finer (request.getRequestURI () +
-                            ": Trying to move converted file: " +
-                            icr.convertedFile +
-                            " => " +
-                            entry);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug (request.getRequestURI () +
+                      ": Trying to move converted file: " +
+                      icr.convertedFile +
+                      " => " +
+                      entry);
       if (icr.convertedFile.renameTo (entry))
         convertedFile = null;
       else
-        getLogger ().warning ("rename failed: " + convertedFile.getName () + " => " + entry);
+        LOGGER.warn ("rename failed: " + convertedFile.getName () + " => " + entry);
     }
     return convertedFile;
   }
@@ -591,7 +591,7 @@ public class ImageHandler extends BaseHandler
    *
    * @return the current configuration
    */
-  public SMap getConfig ()
+  public StringMap getConfig ()
   {
     return config;
   }
@@ -607,7 +607,7 @@ public class ImageHandler extends BaseHandler
   }
 
   @Override
-  public void setup (final SMap prop, final HttpProxy proxy)
+  public void setup (final StringMap prop, final HttpProxy proxy)
   {
     super.setup (prop, proxy);
     if (prop == null)
@@ -621,7 +621,7 @@ public class ImageHandler extends BaseHandler
       imageConverter = new ExternalProcessConverter (prop);
       if (!imageConverter.canConvert ())
       {
-        getLogger ().warning ("imageConverter: " + imageConverter + " can not convert images, using java.");
+        LOGGER.warn ("imageConverter: " + imageConverter + " can not convert images, using java.");
         imageConverter = null;
       }
     }

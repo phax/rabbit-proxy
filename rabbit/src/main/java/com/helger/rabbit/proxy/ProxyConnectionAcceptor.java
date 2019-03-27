@@ -3,8 +3,9 @@ package com.helger.rabbit.proxy;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.util.Config;
 import com.helger.rnio.impl.IAcceptorListener;
@@ -16,15 +17,16 @@ import com.helger.rnio.impl.IAcceptorListener;
  */
 public class ProxyConnectionAcceptor implements IAcceptorListener
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (ProxyConnectionAcceptor.class);
+
   private final HttpProxy proxy;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
   private final AtomicLong counter = new AtomicLong ();
   private final int id;
   private final boolean setTcpNoDelay;
 
   /**
    * Create a new ProxyConnectionAcceptor.
-   * 
+   *
    * @param id
    *        the connection group id
    * @param proxy
@@ -32,7 +34,8 @@ public class ProxyConnectionAcceptor implements IAcceptorListener
    */
   public ProxyConnectionAcceptor (final int id, final HttpProxy proxy)
   {
-    logger.fine ("ProxyConnectionAcceptor created: " + id);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("ProxyConnectionAcceptor created: " + id);
     this.id = id;
     this.proxy = proxy;
     final Config c = proxy.getConfig ();
@@ -43,11 +46,11 @@ public class ProxyConnectionAcceptor implements IAcceptorListener
   public void connectionAccepted (final SocketChannel sc) throws IOException
   {
     proxy.getCounter ().inc ("Socket accepts");
-    if (logger.isLoggable (Level.FINE))
-      logger.fine ("Accepted connection from: " + sc);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Accepted connection from: " + sc);
     if (!proxy.getSocketAccessController ().checkAccess (sc))
     {
-      logger.warning ("Rejecting access from " + sc.socket ().getInetAddress ());
+      LOGGER.warn ("Rejecting access from " + sc.socket ().getInetAddress ());
       proxy.getCounter ().inc ("Rejected IP:s");
       sc.close ();
     }

@@ -4,12 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.filter.DataSourceHelper;
 import com.helger.rabbit.http.HttpHeader;
 
@@ -27,10 +28,10 @@ import com.helger.rabbit.http.HttpHeader;
  */
 public class SQLAuthenticator implements IAuthenticator
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SQLAuthenticator.class);
+  private static final String DEFAULT_SELECT = "select password from users where username = ?";
 
   private final DataSourceHelper dsh;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
-  private static final String DEFAULT_SELECT = "select password from users where username = ?";
 
   /**
    * Create a new SQLAuthenticator that will be configured using the given
@@ -39,7 +40,7 @@ public class SQLAuthenticator implements IAuthenticator
    * @param props
    *        the configuration for this authenticator
    */
-  public SQLAuthenticator (final SMap props)
+  public SQLAuthenticator (final StringMap props)
   {
     try
     {
@@ -70,7 +71,7 @@ public class SQLAuthenticator implements IAuthenticator
     }
     catch (final SQLException e)
     {
-      logger.log (Level.WARNING, "Exception when trying to authenticate", e);
+      LOGGER.warn ("Exception when trying to authenticate", e);
     }
     return false;
   }

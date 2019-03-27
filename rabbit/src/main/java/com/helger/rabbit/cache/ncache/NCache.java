@@ -16,15 +16,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import com.helger.commons.url.SMap;
-import com.helger.rabbit.cache.ICacheConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.cache.CacheException;
 import com.helger.rabbit.cache.ICache;
+import com.helger.rabbit.cache.ICacheConfiguration;
 import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.cache.utils.CacheConfigurationBase;
 import com.helger.rabbit.cache.utils.CacheUtils;
@@ -48,6 +49,8 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
 
   private static final String CACHEINDEX = "cache.index"; // the indexfile.
 
+  private static final Logger LOGGER = LoggerFactory.getLogger (NCache.class);
+
   private final Configuration configuration = new Configuration ();
   private boolean changed = false; // have we changed?
   private Thread cleaner = null; // remover of old stuff.
@@ -61,8 +64,6 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
 
   private File tempdir = null;
   private final Object dirLock = new Object ();
-
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock ();
   private final Lock r = rwl.readLock ();
@@ -86,12 +87,12 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
    * @throws IOException
    *         if the cache file directory can not be configured
    */
-  public NCache (final SMap props, final FileHandler <K> fhk, final FileHandler <V> fhv) throws IOException
+  public NCache (final StringMap props, final FileHandler <K> fhk, final FileHandler <V> fhv) throws IOException
   {
     this.fhk = fhk;
     this.fhv = fhv;
-    htab = new HashMap<> ();
-    vec = new ArrayList<> ();
+    htab = new HashMap <> ();
+    vec = new ArrayList <> ();
     setup (props);
   }
 
@@ -158,14 +159,14 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
           FileHelper.mkdirs (dirtest);
           if (!dirtest.exists ())
           {
-            logger.warning ("could not create cachedir: " + dirtest);
+            LOGGER.warn ("could not create cachedir: " + dirtest);
           }
           readCache = false;
         }
         else
           if (dirtest.isFile ())
           {
-            logger.warning ("Cachedir: " + dirtest + " is a file");
+            LOGGER.warn ("Cachedir: " + dirtest + " is a file");
           }
 
         synchronized (dirLock)
@@ -176,18 +177,18 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
             FileHelper.mkdirs (tempdir);
             if (!tempdir.exists ())
             {
-              logger.warning ("could not create cache tempdir: " + tempdir);
+              LOGGER.warn ("could not create cache tempdir: " + tempdir);
             }
           }
           else
             if (tempdir.isFile ())
             {
-              logger.warning ("Cache temp dir is a file: " + tempdir);
+              LOGGER.warn ("Cache temp dir is a file: " + tempdir);
             }
         }
         if (readCache)
-                      // move to new dir.
-                      readCacheIndex ();
+          // move to new dir.
+          readCacheIndex ();
       }
       finally
       {
@@ -323,7 +324,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
     }
     final long now = System.currentTimeMillis ();
     final long expires = now + configuration.getCacheTime ();
-    return new NCacheEntry<> (newId, now, expires, 0, k, null);
+    return new NCacheEntry <> (newId, now, expires, 0, k, null);
   }
 
   /**
@@ -372,7 +373,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
     {
       ensureCacheDirIsValid (cacheDir);
       if (!cfile.renameTo (newName))
-        logger.severe ("Failed to renamve file from: " + cfile.getAbsolutePath () + " to" + newName.getAbsolutePath ());
+        LOGGER.error ("Failed to renamve file from: " + cfile.getAbsolutePath () + " to" + newName.getAbsolutePath ());
     }
     cfile = newName;
     final NCacheData <K, V> data = getData (ent, cfile);
@@ -397,7 +398,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
     if (f.exists ())
     {
       if (f.isFile ())
-        logger.warning ("Wanted cachedir is a file: " + f);
+        LOGGER.warn ("Wanted cachedir is a file: " + f);
       // good situation...
     }
     else
@@ -408,7 +409,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
       }
       catch (final IOException e)
       {
-        logWarning ("Could not create directory: " + f, e);
+        LOGGER.warn ("Could not create directory: " + f, e);
       }
     }
   }
@@ -422,7 +423,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
     if (data == null)
     {
       Thread.dumpStack ();
-      logger.warning ("Failed to find changed entry so ignoring: " + ent.getID ());
+      LOGGER.warn ("Failed to find changed entry so ignoring: " + ent.getID ());
       return;
     }
     try
@@ -446,7 +447,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
 
   private NCacheData <K, V> getCurrentData (final K key)
   {
-    final MemoryKey <K> mkey = new MemoryKey<> (key);
+    final MemoryKey <K> mkey = new MemoryKey <> (key);
     r.lock ();
     try
     {
@@ -485,7 +486,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
         // by someone else before enumeration gets to it.
         return;
       }
-      final FiledKey <K> fk = new MemoryKey<> (k);
+      final FiledKey <K> fk = new MemoryKey <> (k);
       r = htab.get (fk);
       if (r != null)
       {
@@ -542,7 +543,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
     w.lock ();
     try
     {
-      ls = new ArrayList<> (htab.keySet ());
+      ls = new ArrayList <> (htab.keySet ());
       for (final FiledKey <K> k : ls)
       {
         try
@@ -590,7 +591,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
 
     public NCacheIterator (final Collection <NCacheData <K, V>> c)
     {
-      dataIterator = new ArrayList<> (c).iterator ();
+      dataIterator = new ArrayList <> (c).iterator ();
     }
 
     public Iterator <NCacheEntry <K, V>> iterator ()
@@ -632,50 +633,48 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
       if (index.exists ())
         readCacheIndex (index);
       else
-        logger.info ("No cache index found: " + index + ", treating as empty cache");
+        LOGGER.info ("No cache index found: " + index + ", treating as empty cache");
     }
     catch (final IOException e)
     {
-      logWarning ("Couldnt read " +
-                  dir +
-                  File.separator +
-                  CACHEINDEX +
-                  ". This is bad (but not serius).\nTreating as empty. ",
-                  e);
+      LOGGER.warn ("Couldnt read " +
+                   dir +
+                   File.separator +
+                   CACHEINDEX +
+                   ". This is bad (but not serius).\nTreating as empty. ",
+                   e);
     }
     catch (final ClassNotFoundException e)
     {
-      logger.log (Level.SEVERE, "Couldn't find classes", e);
+      LOGGER.error ("Couldn't find classes", e);
     }
   }
 
   @SuppressWarnings ("unchecked")
   private void readCacheIndex (final File index) throws IOException, ClassNotFoundException
   {
-    long fileNo;
-    long currentSize;
-    final FileInputStream fis = new FileInputStream (index);
-    final ObjectInputStream is = new ObjectInputStream (new GZIPInputStream (fis));
-    fileNo = is.readLong ();
-    currentSize = is.readLong ();
-    final int size = is.readInt ();
-    final Map <FiledKey <K>, NCacheData <K, V>> htab = new HashMap<> ((int) (size * 1.2));
-    for (int i = 0; i < size; i++)
+    try (final FileInputStream fis = new FileInputStream (index);
+        final ObjectInputStream is = new ObjectInputStream (new GZIPInputStream (fis)))
     {
-      final FiledKey <K> fk = (FiledKey <K>) is.readObject ();
-      fk.setCache (this);
-      final NCacheData <K, V> entry = (NCacheData <K, V>) is.readObject ();
-      htab.put (fk, entry);
+      final long fileNo = is.readLong ();
+      final long currentSize = is.readLong ();
+      final int size = is.readInt ();
+      final Map <FiledKey <K>, NCacheData <K, V>> htab = new HashMap <> ((int) (size * 1.2));
+      for (int i = 0; i < size; i++)
+      {
+        final FiledKey <K> fk = (FiledKey <K>) is.readObject ();
+        fk.setCache (this);
+        final NCacheData <K, V> entry = (NCacheData <K, V>) is.readObject ();
+        htab.put (fk, entry);
+      }
+      final List <NCacheData <K, V>> vec = (List <NCacheData <K, V>>) is.readObject ();
+
+      // Only set internal state if we managed to get it all.
+      this.fileNo = fileNo;
+      this.currentSize = currentSize;
+      this.htab = htab;
+      this.vec = vec;
     }
-    final List <NCacheData <K, V>> vec = (List <NCacheData <K, V>>) is.readObject ();
-    is.close ();
-
-    // Only set internal state if we managed to get it all.
-    this.fileNo = fileNo;
-    this.currentSize = currentSize;
-    this.htab = htab;
-    this.vec = vec;
-
   }
 
   /**
@@ -691,13 +690,11 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
    */
   private void writeCacheIndex ()
   {
-    try
+    final String name = dir + File.separator + CACHEINDEX;
+    try (final FileOutputStream fos = new FileOutputStream (name);
+        final GZIPOutputStream gzos = new GZIPOutputStream (fos);
+        final ObjectOutputStream os = new ObjectOutputStream (gzos))
     {
-      final String name = dir + File.separator + CACHEINDEX;
-
-      final FileOutputStream fos = new FileOutputStream (name);
-      final ObjectOutputStream os = new ObjectOutputStream (new GZIPOutputStream (fos));
-
       r.lock ();
       try
       {
@@ -715,11 +712,10 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
       {
         r.unlock ();
       }
-      os.close ();
     }
     catch (final IOException e)
     {
-      logWarning ("Couldnt write " + dir + File.separator + CACHEINDEX + ", This is serious!\n", e);
+      LOGGER.warn ("Couldnt write " + dir + File.separator + CACHEINDEX + ", This is serious!\n", e);
     }
   }
 
@@ -749,7 +745,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
       r.lock ();
       try
       {
-        hc = new HashMap<> (htab);
+        hc = new HashMap <> (htab);
       }
       finally
       {
@@ -765,11 +761,11 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
         }
         catch (final IOException e)
         {
-          logWarning ("Failed to remove expired entry", e);
+          LOGGER.warn ("Failed to remove expired entry", e);
         }
         catch (final CacheException e)
         {
-          logWarning ("Failed to remove expired entry", e);
+          LOGGER.warn ("Failed to remove expired entry", e);
         }
       }
 
@@ -790,11 +786,11 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
         }
         catch (final IOException e)
         {
-          logWarning ("Failed to remove entry", e);
+          LOGGER.warn ("Failed to remove entry", e);
         }
         catch (final CacheException e)
         {
-          logWarning ("Failed to remove entry", e);
+          LOGGER.warn ("Failed to remove entry", e);
         }
         finally
         {
@@ -841,13 +837,13 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
    * @throws IOException
    *         if the new cache can not be configured correctly
    */
-  public void setup (SMap config) throws IOException
+  public void setup (StringMap config) throws IOException
   {
     if (config == null)
-      config = new SMap ();
+      config = new StringMap ();
     final String cachedir = config.getOrDefault ("directory", DIR);
     configuration.setCacheDir (cachedir);
-    configuration.setup (logger, config);
+    configuration.setup (LOGGER, config);
     final String ct = config.getOrDefault ("cleanloop", DEFAULT_CLEAN_LOOP);
     try
     {
@@ -855,13 +851,8 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
     }
     catch (final NumberFormatException e)
     {
-      logger.warning ("Bad number for cache cleanloop: '" + ct + "'");
+      LOGGER.warn ("Bad number for cache cleanloop: '" + ct + "'");
     }
-  }
-
-  public Logger getLogger ()
-  {
-    return logger;
   }
 
   private NCacheEntry <K, V> getEntry (final NCacheData <K, V> data) throws CacheException
@@ -873,13 +864,13 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
       final FiledKey <K> key = data.getKey ();
       key.setCache (this);
       final K keyData = key.getData ();
-      final V hook = data.getDataHook ().getData (this, data, getLogger ());
-      return new NCacheEntry<> (data.getID (),
-                                data.getCacheTime (),
-                                data.getExpires (),
-                                data.getSize (),
-                                keyData,
-                                hook);
+      final V hook = data.getDataHook ().getData (this, data, LOGGER);
+      return new NCacheEntry <> (data.getID (),
+                                 data.getCacheTime (),
+                                 data.getExpires (),
+                                 data.getSize (),
+                                 keyData,
+                                 hook);
     }
     catch (final IOException e)
     {
@@ -895,14 +886,14 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
     {
       final FiledWithSize <FiledKey <K>> fkws = storeKey (entry.getKey (), id);
       final FiledWithSize <FiledHook <V>> fhws = storeHook (entry.getDataHook (), id);
-      return new NCacheData<> (id,
-                               entry.getCacheTime (),
-                               entry.getExpires (),
-                               size,
-                               fkws.t,
-                               fkws.size,
-                               fhws.t,
-                               fhws.size);
+      return new NCacheData <> (id,
+                                entry.getCacheTime (),
+                                entry.getExpires (),
+                                size,
+                                fkws.t,
+                                fkws.size,
+                                fhws.t,
+                                fhws.size);
     }
     catch (final IOException e)
     {
@@ -913,18 +904,18 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
 
   private FiledWithSize <FiledKey <K>> storeKey (final K realKey, final long id) throws IOException
   {
-    final FiledKey <K> fk = new FiledKey<> ();
-    final long size = fk.storeKey (this, id, realKey, logger);
-    return new FiledWithSize<> (fk, size);
+    final FiledKey <K> fk = new FiledKey <> ();
+    final long size = fk.storeKey (this, id, realKey, LOGGER);
+    return new FiledWithSize <> (fk, size);
   }
 
   private FiledWithSize <FiledHook <V>> storeHook (final V hook, final long id) throws IOException
   {
     if (hook == null)
       return null;
-    final FiledHook <V> fh = new FiledHook<> ();
-    final long size = fh.storeHook (this, id, getHookFileHandler (), hook, logger);
-    return new FiledWithSize<> (fh, size);
+    final FiledHook <V> fh = new FiledHook <> ();
+    final long size = fh.storeHook (this, id, getHookFileHandler (), hook, LOGGER);
+    return new FiledWithSize <> (fh, size);
   }
 
   private static class FiledWithSize <T>
@@ -937,10 +928,5 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
       this.t = t;
       this.size = size;
     }
-  }
-
-  private void logWarning (final String s, final Exception e)
-  {
-    logger.log (Level.WARNING, s, e);
   }
 }

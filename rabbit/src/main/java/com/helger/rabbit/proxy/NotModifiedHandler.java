@@ -2,7 +2,9 @@ package com.helger.rabbit.proxy;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.cache.ICacheEntry;
 import com.helger.rabbit.http.HttpDateParser;
@@ -10,9 +12,11 @@ import com.helger.rabbit.http.HttpHeader;
 
 class NotModifiedHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (NotModifiedHandler.class);
+
   /**
    * Check if the request allows us to use a "304 Not modified" response.
-   * 
+   *
    * @param in
    *        the request being made.
    * @param httpGenerator
@@ -96,8 +100,7 @@ class NotModifiedHandler
      */
     if (ims == null)
     {
-      final Logger logger = Logger.getLogger (getClass ().getName ());
-      logger.info ("unparseable date: " + sims + " for URL: " + in.getRequestURI ());
+      LOGGER.info ("unparseable date: " + sims + " for URL: " + in.getRequestURI ());
       return ematch (httpGenerator, etagMatch, oldresp);
     }
 

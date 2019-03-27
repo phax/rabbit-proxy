@@ -1,7 +1,7 @@
 package com.helger.rabbit.proxy;
 
 /**
- * A logger interface.
+ * A LOGGER interface.
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */

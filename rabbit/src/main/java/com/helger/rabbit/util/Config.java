@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * a class to handle configs for different things. reads file on the format
@@ -37,7 +37,7 @@ import com.helger.commons.url.SMap;
  */
 public class Config
 {
-  private Map <String, SMap> configs;
+  private Map <String, StringMap> configs;
 
   /**
    * create an empty Config (has only section "" with no data in it)
@@ -46,7 +46,7 @@ public class Config
   {
     configs = new HashMap<> ();
     // the main thing.
-    configs.put ("", new SMap ());
+    configs.put ("", new StringMap ());
   }
 
   /**
@@ -117,7 +117,7 @@ public class Config
   {
     String line;
     configs = new HashMap<> ();
-    SMap current = new SMap (); // the main thing.
+    StringMap current = new StringMap (); // the main thing.
     configs.put ("", current);
     while ((line = br.readLine ()) != null)
     {
@@ -136,7 +136,7 @@ public class Config
           if (configs.get (newSection) != null)
             current = configs.get (newSection);
           else
-            current = new SMap ();
+            current = new StringMap ();
           configs.put (newSection, current);
         }
       }
@@ -186,11 +186,11 @@ public class Config
    *
    * @param sectionName
    *        the section we want properties for.
-   * @return a SMap if section exist or null.
+   * @return a StringMap if section exist or null.
    */
-  public SMap getProperties (final String sectionName)
+  public StringMap getProperties (final String sectionName)
   {
-    final SMap sp = configs.get (sectionName);
+    final StringMap sp = configs.get (sectionName);
     if (sp == null)
     {
       // logging might not be set up at this point so just write
@@ -205,9 +205,9 @@ public class Config
    * @param sectionName
    *        the section we want to set the properties for.
    * @param prop
-   *        the SMap for the sections
+   *        the StringMap for the sections
    */
-  public void setProperties (final String sectionName, final SMap prop)
+  public void setProperties (final String sectionName, final StringMap prop)
   {
     configs.put (sectionName, prop);
   }
@@ -239,7 +239,7 @@ public class Config
    */
   public String getProperty (final String section, final String key, final String defaultstring)
   {
-    final SMap p = getProperties (section);
+    final StringMap p = getProperties (section);
     if (p != null)
     {
       final String s = p.get (key);
@@ -261,10 +261,10 @@ public class Config
    */
   public void setProperty (final String section, final String key, final String value)
   {
-    SMap p = getProperties (section);
+    StringMap p = getProperties (section);
     if (p == null)
     {
-      p = new SMap ();
+      p = new StringMap ();
       configs.put (section, p);
     }
     p.put (key, value);
@@ -282,7 +282,7 @@ public class Config
     for (final String section : configs.keySet ())
     {
       dos.println ("[" + section + "]");
-      final SMap pr = configs.get (section);
+      final StringMap pr = configs.get (section);
       for (final Map.Entry <String, String> me : pr.entrySet ())
       {
         final String key = me.getKey ();
@@ -317,7 +317,7 @@ public class Config
       res.append (section);
       res.append (']');
       res.append ('\n');
-      final SMap pr = configs.get (section);
+      final StringMap pr = configs.get (section);
       for (final Map.Entry <String, String> me : pr.entrySet ())
       {
         final String key = me.getKey ();
@@ -353,7 +353,7 @@ public class Config
   {
     for (final String section : other.getSections ())
     {
-      final SMap p = other.getProperties (section);
+      final StringMap p = other.getProperties (section);
       if (p == null)
         continue;
       for (final Map.Entry <String, String> me : p.entrySet ())

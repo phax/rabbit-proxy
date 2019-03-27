@@ -18,8 +18,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
@@ -31,9 +32,9 @@ import com.helger.rabbit.html.Tag;
 import com.helger.rabbit.html.TagType;
 import com.helger.rabbit.html.Token;
 import com.helger.rabbit.html.TokenType;
+import com.helger.rabbit.http.EStatusCode;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.http.HttpHeaderWithContent;
-import com.helger.rabbit.http.EStatusCode;
 
 /**
  * A HttpGenerator that creates error pages from file templates.
@@ -42,9 +43,9 @@ import com.helger.rabbit.http.EStatusCode;
  */
 class FileTemplateHttpGenerator extends StandardResponseHeaders
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (FileTemplateHttpGenerator.class);
 
   private final File templateDir;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   public FileTemplateHttpGenerator (final String identity, final Connection con, final File templateDir)
   {
@@ -246,11 +247,11 @@ class FileTemplateHttpGenerator extends StandardResponseHeaders
     }
     catch (final HtmlParseException e)
     {
-      logger.log (Level.WARNING, "Failed to read template", e);
+      LOGGER.warn ("Failed to read template", e);
     }
     catch (final IOException e)
     {
-      logger.log (Level.WARNING, "Failed to read template", e);
+      LOGGER.warn ("Failed to read template", e);
     }
     return ret;
   }

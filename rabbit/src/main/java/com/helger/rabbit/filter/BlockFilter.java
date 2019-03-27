@@ -4,7 +4,7 @@ import java.nio.channels.SocketChannel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HttpProxy;
@@ -58,7 +58,7 @@ public class BlockFilter implements IHttpFilter
    * @param properties
    *        the new configuration of this class.
    */
-  public void setup (final SMap properties, final HttpProxy proxy)
+  public void setup (final StringMap properties, final HttpProxy proxy)
   {
     final PatternHelper ph = new PatternHelper ();
     blockPattern = ph.getPattern (properties, "blockURLmatching", "BlockFilter: bad pattern: ");

@@ -1,11 +1,13 @@
 package com.helger.rabbit.filter;
 
 import java.nio.channels.SocketChannel;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HttpProxy;
@@ -18,6 +20,7 @@ import com.helger.rabbit.proxy.HttpProxy;
  */
 public class RevalidateFilter implements IHttpFilter
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (RevalidateFilter.class);
   private boolean alwaysRevalidate = false;
   private Pattern revalidatePattern = null;
 
@@ -46,7 +49,7 @@ public class RevalidateFilter implements IHttpFilter
     return null;
   }
 
-  public void setup (final SMap properties, final HttpProxy proxy)
+  public void setup (final StringMap properties, final HttpProxy proxy)
   {
     final String always = properties.getOrDefault ("alwaysrevalidate", "false");
     alwaysRevalidate = Boolean.parseBoolean (always);
@@ -55,8 +58,7 @@ public class RevalidateFilter implements IHttpFilter
       final String mustRevalidate = properties.get ("revalidate");
       if (mustRevalidate == null)
       {
-        final Logger logger = Logger.getLogger (getClass ().getName ());
-        logger.warning ("alwaysRevalidate is off and no revalidate " + "patterns found, filter is useless.");
+        LOGGER.warn ("alwaysRevalidate is off and no revalidate " + "patterns found, filter is useless.");
         return;
       }
       revalidatePattern = Pattern.compile (mustRevalidate);

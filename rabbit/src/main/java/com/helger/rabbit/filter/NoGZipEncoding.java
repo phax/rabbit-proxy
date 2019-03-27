@@ -4,7 +4,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HttpProxy;
@@ -24,7 +24,7 @@ public class NoGZipEncoding implements IHttpFilter
       return null;
 
     final List <String> aes = header.getHeaders ("Accept-Encoding");
-    final List <String> faes = new ArrayList<> (aes.size ());
+    final List <String> faes = new ArrayList <> (aes.size ());
     boolean found = false;
     int s = aes.size ();
     for (int i = 0; i < s; i++)
@@ -77,7 +77,7 @@ public class NoGZipEncoding implements IHttpFilter
    * @param properties
    *        the new configuration of this class.
    */
-  public void setup (final SMap properties, final HttpProxy proxy)
+  public void setup (final StringMap properties, final HttpProxy proxy)
   {
     final String rs = properties.getOrDefault ("remove", "");
     remove = "true".equalsIgnoreCase (rs);

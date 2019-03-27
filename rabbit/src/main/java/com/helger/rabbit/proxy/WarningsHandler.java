@@ -2,7 +2,9 @@ package com.helger.rabbit.proxy;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
@@ -14,6 +16,8 @@ import com.helger.rabbit.http.HttpHeader;
  */
 class WarningsHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (WarningsHandler.class);
+
   private static int nextNonBlank (final String s, int start)
   {
     char c;
@@ -99,8 +103,7 @@ class WarningsHandler
       }
       catch (final StringIndexOutOfBoundsException e)
       {
-        final Logger logger = Logger.getLogger (getClass ().getName ());
-        logger.warning ("bad warning header: '" + val + "'");
+        LOGGER.warn ("bad warning header: '" + val + "'");
       }
     }
   }

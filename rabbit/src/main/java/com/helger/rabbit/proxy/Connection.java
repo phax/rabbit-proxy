@@ -6,8 +6,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.cache.CacheException;
@@ -90,7 +91,7 @@ public class Connection
 
   private final TrafficLoggerHandler tlh = new TrafficLoggerHandler ();
 
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (Connection.class);
 
   /**
    * Create a new Connection
@@ -163,12 +164,12 @@ public class Connection
     else
       if (connectionReset (t))
       {
-        logger.log (Level.INFO, "Exception when reading request: " + t);
+        LOGGER.info ("Exception when reading request: " + t);
         closeDown ();
       }
       else
       {
-        logger.log (Level.INFO, "Exception when reading request", t);
+        LOGGER.info ("Exception when reading request", t);
         closeDown ();
       }
   }
@@ -204,7 +205,7 @@ public class Connection
   private void handleInternalError (final Throwable t)
   {
     extraInfo = extraInfo != null ? extraInfo + t.toString () : t.toString ();
-    logger.log (Level.WARNING, "Internal Error", t);
+    LOGGER.warn ("Internal Error", t);
     final HttpHeader internalError = getHttpGenerator ().get500 (request.getRequestURI (), t);
     // Send response and close
     sendAndClose (internalError);
@@ -217,7 +218,7 @@ public class Connection
   {
     if (request == null)
     {
-      logger.warning ("Got a null request");
+      LOGGER.warn ("Got a null request");
       closeDown ();
       return;
     }
@@ -261,8 +262,7 @@ public class Connection
             readMultiPart (ct);
       }
 
-      final ITaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName () +
-                                                            ".filterAndHandleRequest: ",
+      final ITaskIdentifier ti = new DefaultTaskIdentifier (getClass ().getSimpleName () + ".filterAndHandleRequest: ",
                                                             request.getRequestURI ());
       getNioHandler ().runThreadTask ( () -> filterAndHandleRequest (), ti);
     }
@@ -297,11 +297,11 @@ public class Connection
       if (clientResourceHandler != null)
         readOffClientResource (badresponse);
       else
-                                         // Try to keep the connection open
-                                         // (authorization may need it).
-                                         // A filter that want to close can set
-                                         // keep alive to false
-                                         sendAndTryRestart (badresponse);
+        // Try to keep the connection open
+        // (authorization may need it).
+        // A filter that want to close can set
+        // keep alive to false
+        sendAndTryRestart (badresponse);
     }
     else
     {
@@ -373,7 +373,7 @@ public class Connection
     }
     catch (final CacheException e)
     {
-      logger.log (Level.WARNING, "Failed to remove entry from cache", e);
+      LOGGER.warn ("Failed to remove entry from cache", e);
     }
   }
 
@@ -426,7 +426,7 @@ public class Connection
     }
     catch (final CacheException e)
     {
-      logger.log (Level.WARNING, "Failed cache operation", e);
+      LOGGER.warn ("Failed cache operation", e);
     }
 
     final boolean mc = getMayCache ();
@@ -477,10 +477,10 @@ public class Connection
     if (cause instanceof UnknownHostException)
     {
       // do we really want this in the log?
-      logger.warning (cause.toString () + ": " + request.getRequestURI ());
+      LOGGER.warn (cause.toString () + ": " + request.getRequestURI ());
     }
     else
-      logger.warning ("Failed to set up web connection to: " + request.getRequestURI () + ", cause: " + cause);
+      LOGGER.warn ("Failed to set up web connection to: " + request.getRequestURI () + ", cause: " + cause);
     tryStaleEntry (rh, cause);
   }
 
@@ -619,14 +619,15 @@ public class Connection
 
       setHandlerFactory (rh);
       status = "Handling request - " + rh.getHandlerFactory ().getClass ().getName ();
-      final IHandler handler = rh.getHandlerFactory ().getNewInstance (this,
-                                                                       tlh,
-                                                                       request,
-                                                                       rh.getWebHeader (),
-                                                                       rh.getContent (),
-                                                                       getMayCache (),
-                                                                       getMayFilter (),
-                                                                       rh.getSize ());
+      final IHandler handler = rh.getHandlerFactory ()
+                                 .getNewInstance (this,
+                                                  tlh,
+                                                  request,
+                                                  rh.getWebHeader (),
+                                                  rh.getContent (),
+                                                  getMayCache (),
+                                                  getMayFilter (),
+                                                  rh.getSize ());
       if (handler == null)
       {
         doError (500, "Failed to find handler");
@@ -705,8 +706,10 @@ public class Connection
         }
       }
       if (rh.getHandlerFactory () == null)
-      { // still null
-        logger.fine ("Using BaseHandler for " + ct);
+      {
+        // still null
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Using BaseHandler for " + ct);
         rh.setHandlerFactory (new BaseHandler ()); // fallback...
       }
     }
@@ -740,7 +743,7 @@ public class Connection
       }
       catch (final IOException e)
       {
-        logger.log (Level.WARNING, "Conditional request: IOException (" + request.getRequestURI (), e);
+        LOGGER.warn ("Conditional request: IOException (" + request.getRequestURI (), e);
       }
     }
     else
@@ -753,7 +756,7 @@ public class Connection
       }
       catch (final CacheException e)
       {
-        logger.log (Level.WARNING, "Failed to remove entry", e);
+        LOGGER.warn ("Failed to remove entry", e);
       }
       handleRequest ();
       return true;
@@ -1391,7 +1394,7 @@ public class Connection
     }
     catch (final IOException e)
     {
-      logger.log (Level.WARNING, "IOException when sending header", e);
+      LOGGER.warn ("IOException when sending header", e);
       closeDown ();
     }
   }
@@ -1413,14 +1416,14 @@ public class Connection
     public void timeout ()
     {
       status = "Response sending timed out, logging and closing.";
-      logger.info ("Timeout when sending http header");
+      LOGGER.info ("Timeout when sending http header");
       logAndClose ();
     }
 
     public void failed (final Exception e)
     {
       status = "Response sending failed: " + e + ", logging and closing.";
-      logger.log (Level.INFO, "Exception when sending http header", e);
+      LOGGER.info ("Exception when sending http header", e);
       logAndClose ();
     }
 

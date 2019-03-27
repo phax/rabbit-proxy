@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.dns.DNSJavaHandler;
 import com.helger.rabbit.http.HttpHeader;
@@ -18,8 +20,8 @@ import com.helger.rabbit.io.IProxyChain;
 import com.helger.rabbit.io.WebConnection;
 import com.helger.rabbit.io.WebConnectionListener;
 import com.helger.rabbit.util.Counter;
-import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rabbit.util.ITrafficLogger;
+import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IStatisticsHolder;
@@ -35,7 +37,8 @@ import com.helger.rnio.impl.SimpleThreadFactory;
  */
 public class ClientBase
 {
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (ClientBase.class);
+
   private final ConnectionHandler connectionHandler;
   private final INioHandler nioHandler;
   private final ITrafficLogger trafficLogger = new SimpleTrafficLogger ();
@@ -43,7 +46,7 @@ public class ClientBase
 
   /**
    * Create a new ClientBase.
-   * 
+   *
    * @throws IOException
    *         if creating the nio handler fails
    */
@@ -51,7 +54,7 @@ public class ClientBase
   {
     final ExecutorService es = Executors.newCachedThreadPool ();
     final IStatisticsHolder sh = new BasicStatisticsHolder ();
-    nioHandler = new MultiSelectorNioHandler (es, sh, 4, 15000L);
+    nioHandler = new MultiSelectorNioHandler (es, sh, 4, Long.valueOf (15_000L));
     nioHandler.start (new SimpleThreadFactory ());
     final DNSJavaHandler jh = new DNSJavaHandler ();
     jh.setup (null);
@@ -64,7 +67,7 @@ public class ClientBase
 
   /**
    * Submit a new request, using the given method to the given url.
-   * 
+   *
    * @param method
    *        HEAD or GET or POST or ...
    * @param url
@@ -85,22 +88,12 @@ public class ClientBase
 
   /**
    * Get the NioHandler that this client is using
-   * 
+   *
    * @return the current NioHandler
    */
   public INioHandler getNioHandler ()
   {
     return nioHandler;
-  }
-
-  /**
-   * Get the logger that this client is using
-   * 
-   * @return the current logger
-   */
-  public Logger getLogger ()
-  {
-    return logger;
   }
 
   /**
@@ -113,7 +106,7 @@ public class ClientBase
 
   /**
    * Send a request and let the client be notified on response.
-   * 
+   *
    * @param request
    *        the request to send
    * @param client
@@ -225,7 +218,7 @@ public class ClientBase
 
   /**
    * Check if the status code is a redirect code.
-   * 
+   *
    * @param status
    *        the status code to check
    * @return true if the status code is a redirect
@@ -237,7 +230,7 @@ public class ClientBase
 
   /**
    * Create the url that the response redirected the request to.
-   * 
+   *
    * @param request
    *        the actual request made
    * @param location

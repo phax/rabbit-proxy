@@ -2,7 +2,8 @@ package com.helger.rabbit.cache.ncache;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
 
 import com.helger.rabbit.cache.ICache;
 
@@ -37,7 +38,7 @@ class FiledHook <V> extends FileData <V>
    *        the Caching reading the data
    * @param entry
    *        the CacheEntry that holds the data
-   * @param logger
+   * @param LOGGER
    *        the Logger to use
    * @return the data read from the file cache
    * @throws IOException
@@ -45,7 +46,7 @@ class FiledHook <V> extends FileData <V>
    */
   public <K> V getData (final NCache <K, V> cache,
                         final NCacheData <K, V> entry,
-                        final Logger logger) throws IOException
+                        final Logger LOGGER) throws IOException
   {
     return readData (getFileName (cache, entry.getID ()), cache.getHookFileHandler ());
   }
@@ -63,7 +64,7 @@ class FiledHook <V> extends FileData <V>
    *        the FileHandler used to do the data conversion
    * @param hook
    *        the data to store
-   * @param logger
+   * @param LOGGER
    *        the Logger to use
    * @return the size of the file that was written
    * @throws IOException
@@ -73,7 +74,7 @@ class FiledHook <V> extends FileData <V>
                                 final long id,
                                 final FileHandler <V> fh,
                                 final V hook,
-                                final Logger logger) throws IOException
+                                final Logger LOGGER) throws IOException
   {
     return writeData (getFileName (cache, id), fh, hook);
   }

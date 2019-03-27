@@ -2,7 +2,6 @@ package com.helger.rabbit.httpio;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.logging.Logger;
 
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rnio.INioHandler;
@@ -23,9 +22,6 @@ public abstract class BaseSocketHandler implements ISocketChannelHandler
   /** The nio handler we are using. */
   private final INioHandler nioHandler;
 
-  /** The logger to use. */
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
-
   /** The buffer handle. */
   private final BufferHandle bh;
 
@@ -35,7 +31,7 @@ public abstract class BaseSocketHandler implements ISocketChannelHandler
   /**
    * Create a new BaseSocketHandler that will handle the traffic on the given
    * channel
-   * 
+   *
    * @param channel
    *        the SocketChannel to read to and write from
    * @param bh
@@ -98,11 +94,6 @@ public abstract class BaseSocketHandler implements ISocketChannelHandler
     return timeout;
   }
 
-  protected Logger getLogger ()
-  {
-    return logger;
-  }
-
   protected void closeDown ()
   {
     releaseBuffer ();
@@ -111,7 +102,7 @@ public abstract class BaseSocketHandler implements ISocketChannelHandler
 
   /**
    * Get the channel this BaseSocketHandler is using
-   * 
+   *
    * @return the SocketChannel being used
    */
   public SocketChannel getChannel ()
@@ -121,7 +112,7 @@ public abstract class BaseSocketHandler implements ISocketChannelHandler
 
   /**
    * Get the BufferHandle this BaseSocketHandler is using
-   * 
+   *
    * @return the BufferHandle used for io operations
    */
   public BufferHandle getBufferHandle ()
@@ -131,7 +122,7 @@ public abstract class BaseSocketHandler implements ISocketChannelHandler
 
   /**
    * Wait for more data to be readable on the channel
-   * 
+   *
    * @param rh
    *        the handler that will be notified when more data is ready to be read
    */
@@ -143,7 +134,7 @@ public abstract class BaseSocketHandler implements ISocketChannelHandler
 
   /**
    * Wait for more data to be writable on the channel
-   * 
+   *
    * @param rh
    *        the handler that will be notified when more data is ready to be
    *        written

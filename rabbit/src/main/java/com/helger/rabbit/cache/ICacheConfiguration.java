@@ -1,9 +1,10 @@
 package com.helger.rabbit.cache;
 
 import java.net.URL;
-import java.util.logging.Logger;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * A description of cache configuration.
@@ -56,10 +57,10 @@ public interface ICacheConfiguration
   /**
    * Set the internal state from the given properties
    *
-   * @param logger
+   * @param LOGGER
    *        the Logger to use for warnings or errors
    * @param config
    *        the properties to use
    */
-  void setup (Logger logger, SMap config);
+  void setup (Logger LOGGER, StringMap config);
 }

@@ -1,6 +1,6 @@
 package com.helger.rabbit.proxy;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.util.ITrafficLogger;
 
@@ -34,7 +34,7 @@ public class StandardOutTrafficLogger implements ClientTrafficLogger
                         network.write ());
   }
 
-  public void setup (final SMap properties, final HttpProxy proxy)
+  public void setup (final StringMap properties, final HttpProxy proxy)
   {
     // empty
   }

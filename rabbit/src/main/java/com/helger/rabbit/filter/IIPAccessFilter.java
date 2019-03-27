@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.nio.channels.SocketChannel;
 import java.util.List;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.util.IPAccess;
 
 /**
@@ -31,7 +31,7 @@ public interface IIPAccessFilter
    * @param properties
    *        the SProperties to get the settings from.
    */
-  void setup (SMap properties);
+  void setup (StringMap properties);
 
   /**
    * Get the list of allowed ips

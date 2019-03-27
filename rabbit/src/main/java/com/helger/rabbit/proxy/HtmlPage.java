@@ -1,6 +1,6 @@
 package com.helger.rabbit.proxy;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.EStatusCode;
 
 /**
@@ -15,7 +15,7 @@ public class HtmlPage
 
   private static final String BASICLOGO = "http://www.khelekore.org/rabbit/images/smallRabbIT4.png";
 
-  private static SMap config = setup ();
+  private static StringMap config = setup ();
 
   // No dont instanciate this.
   private HtmlPage ()
@@ -140,9 +140,9 @@ public class HtmlPage
    *
    * @return some default properties with color codes
    */
-  public static SMap setup ()
+  public static StringMap setup ()
   {
-    config = new SMap ();
+    config = new StringMap ();
     config.put ("bodybgcolor", "WHITE");
     config.put ("bodytext", "BLACK");
     config.put ("bodylink", "BLUE");

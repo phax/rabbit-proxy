@@ -3,14 +3,15 @@ package com.helger.rabbit.dns;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Address;
 import org.xbill.DNS.Cache;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Lookup;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * A DNS handler using the dnsjava packages
@@ -19,13 +20,13 @@ import com.helger.commons.url.SMap;
  */
 public class DNSJavaHandler implements IDNSHandler
 {
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (DNSJavaHandler.class);
 
   /** Do any neccessary setup. */
-  public void setup (SMap config)
+  public void setup (StringMap config)
   {
     if (config == null)
-      config = new SMap ();
+      config = new StringMap ();
     final String ct = config.getOrDefault ("dnscachetime", "8").trim ();
     int time = 8 * 3600;
     try
@@ -34,7 +35,7 @@ public class DNSJavaHandler implements IDNSHandler
     }
     catch (final NumberFormatException e)
     {
-      logger.warning ("bad number for dnscachetime: '" + ct + "', using: " + (time / 3600) + " hours");
+      LOGGER.warn ("bad number for dnscachetime: '" + ct + "', using: " + (time / 3600) + " hours");
     }
     final Cache dnsCache = Lookup.getDefaultCache (DClass.IN);
     dnsCache.setMaxCache (time);

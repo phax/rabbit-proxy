@@ -14,17 +14,18 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.cache.ICache;
 import com.helger.rabbit.cache.ncache.NCache;
-import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rabbit.dns.DNSJavaHandler;
 import com.helger.rabbit.dns.DNSSunHandler;
+import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rabbit.handler.IHandlerFactory;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
@@ -54,9 +55,10 @@ import com.helger.rnio.impl.SimpleThreadFactory;
  */
 public class HttpProxy
 {
-
   /** Current version */
-  public static final String VERSION = "RabbIT proxy version 4.11";
+  public static final String VERSION = "RabbIT proxy version 5.0.0-SNAPSHOT";
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (HttpProxy.class);
 
   /** The current config of this proxy. */
   private Config config;
@@ -67,10 +69,7 @@ public class HttpProxy
   /** The identity of this server. */
   private String serverIdentity = VERSION;
 
-  /** The logger of this proxy. */
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
-
-  /** The access logger of the proxy */
+  /** The access LOGGER of the proxy */
   private final ProxyLogger accessLogger = new ProxyLogger ();
 
   /** The traffic loggers of the proxy */
@@ -129,7 +128,7 @@ public class HttpProxy
   private HandlerFactoryHandler handlerFactoryHandler;
 
   /** All the currently active connections. */
-  private final List <Connection> connections = new ArrayList<> ();
+  private final List <Connection> connections = new ArrayList <> ();
 
   /** The total traffic in and out of this proxy. */
   private final TrafficLoggerHandler tlh = new TrafficLoggerHandler ();
@@ -166,14 +165,14 @@ public class HttpProxy
 
   private void setupLogging ()
   {
-    final SMap logProps = config.getProperties ("logging");
+    final StringMap logProps = config.getProperties ("logging");
     try
     {
       accessLogger.setup (logProps);
     }
     catch (final IOException e)
     {
-      logger.log (Level.SEVERE, "Failed to configure logging", e);
+      LOGGER.error ("Failed to configure logging", e);
     }
   }
 
@@ -198,7 +197,7 @@ public class HttpProxy
     final String osName = System.getProperty ("os.name");
     if (osName.toLowerCase ().indexOf ("windows") > -1)
     {
-      logger.warning ("This seems like a windows system, " + "will use default sun handler for DNS");
+      LOGGER.warn ("This seems like a windows system, " + "will use default sun handler for DNS");
       dnsHandler = new DNSSunHandler ();
     }
     else
@@ -214,7 +213,7 @@ public class HttpProxy
       }
       catch (final Exception e)
       {
-        logger.warning ("Unable to create and setup dns handler: " + e + ", will try to use default instead.");
+        LOGGER.warn ("Unable to create and setup dns handler: " + e + ", will try to use default instead.");
         dnsHandler = new DNSJavaHandler ();
         dnsHandler.setup (config.getProperties ("dns"));
       }
@@ -235,7 +234,7 @@ public class HttpProxy
     }
     catch (final IOException e)
     {
-      logger.log (Level.SEVERE, "Failed to create the NioHandler", e);
+      LOGGER.error ("Failed to create the NioHandler", e);
       stop ();
     }
   }
@@ -246,12 +245,12 @@ public class HttpProxy
     {
       final Class <? extends ProxyChainFactory> clz = load3rdPartyClass (pcf, ProxyChainFactory.class);
       final ProxyChainFactory factory = clz.newInstance ();
-      final SMap props = config.getProperties (pcf);
-      return factory.getProxyChain (props, nioHandler, dnsHandler, logger);
+      final StringMap props = config.getProperties (pcf);
+      return factory.getProxyChain (props, nioHandler, dnsHandler, LOGGER);
     }
     catch (final Exception e)
     {
-      logger.log (Level.WARNING, "Unable to create the proxy chain " + "will fall back to the default one.", e);
+      LOGGER.warn ("Unable to create the proxy chain " + "will fall back to the default one.", e);
     }
     return null;
   }
@@ -269,12 +268,12 @@ public class HttpProxy
       }
       catch (final NumberFormatException e)
       {
-        logger.severe ("Strange proxyport: '" + pport + "', will not chain");
+        LOGGER.error ("Strange proxyport: '" + pport + "', will not chain");
       }
     }
     catch (final UnknownHostException e)
     {
-      logger.severe ("Unknown proxyhost: '" + pname + "', will not chain");
+      LOGGER.error ("Unknown proxyhost: '" + pname + "', will not chain");
     }
     return null;
   }
@@ -305,7 +304,7 @@ public class HttpProxy
 
   private void setupResources ()
   {
-    final SMap props = config.getProperties ("data_sources");
+    final StringMap props = config.getProperties ("data_sources");
     if (props == null || props.isEmpty ())
       return;
     final String resources = props.getOrDefault ("resources", "");
@@ -319,22 +318,22 @@ public class HttpProxy
     }
     catch (final NamingException e)
     {
-      logger.log (Level.WARNING, "Failed to setup initial context", e);
+      LOGGER.warn ("Failed to setup initial context", e);
     }
   }
 
   private void setupCache ()
   {
-    final SMap props = config.getProperties (NCache.class.getName ());
+    final StringMap props = config.getProperties (NCache.class.getName ());
     final HttpHeaderFileHandler hhfh = new HttpHeaderFileHandler ();
     try
     {
-      cache = new NCache<> (props, hhfh, hhfh);
+      cache = new NCache <> (props, hhfh, hhfh);
       cache.start ();
     }
     catch (final IOException e)
     {
-      logger.log (Level.SEVERE, "Failed to setup cache", e);
+      LOGGER.error ("Failed to setup cache", e);
     }
   }
 
@@ -359,7 +358,7 @@ public class HttpProxy
       {
         proxySSL = true;
         // ok, try to get the portnumbers.
-        sslports = new ArrayList<> ();
+        sslports = new ArrayList <> ();
         final StringTokenizer st = new StringTokenizer (ssl, ",");
         while (st.hasMoreTokens ())
         {
@@ -371,7 +370,7 @@ public class HttpProxy
           }
           catch (final NumberFormatException e)
           {
-            logger.warning ("bad number: '" + s + "' for ssl port, ignoring.");
+            LOGGER.warn ("bad number: '" + s + "' for ssl port, ignoring.");
           }
         }
       }
@@ -410,7 +409,7 @@ public class HttpProxy
     }
     catch (final NumberFormatException e)
     {
-      logger.warning ("bad number for maxconnections: '" + mc + "', using old value: " + maxConnections);
+      LOGGER.warn ("bad number for maxconnections: '" + mc + "', using old value: " + maxConnections);
     }
   }
 
@@ -418,7 +417,7 @@ public class HttpProxy
   {
     if (nioHandler == null)
     {
-      logger.info ("nioHandler == null " + this);
+      LOGGER.info ("nioHandler == null " + this);
       return;
     }
     conhandler = new ConnectionHandler (counter, proxyChain, nioHandler);
@@ -437,9 +436,7 @@ public class HttpProxy
     }
     catch (final Exception e)
     {
-      logger.log (Level.WARNING,
-                  "Unable to create the http generator " + "factory, will fall back to the default one.",
-                  e);
+      LOGGER.warn ("Unable to create the http generator " + "factory, will fall back to the default one.", e);
       hgf = new StandardHttpGeneratorFactory ();
     }
     final String section = hgf.getClass ().getName ();
@@ -467,7 +464,7 @@ public class HttpProxy
     openSocket ();
     setupConnectionHandler ();
     setupHttpGeneratorFactory ();
-    logger.info (VERSION + ": Configuration loaded: ready for action.");
+    LOGGER.info (VERSION + ": Configuration loaded: ready for action.");
   }
 
   private int getInt (final String section, final String key, final int defaultValue)
@@ -502,7 +499,7 @@ public class HttpProxy
         else
         {
           final InetAddress ia = InetAddress.getByName (bindIP);
-          logger.info ("listening on inetaddress: " + ia + ":" + port + " on inet address: " + ia);
+          LOGGER.info ("listening on inetaddress: " + ia + ":" + port + " on inet address: " + ia);
           ssc.socket ().bind (new InetSocketAddress (ia, port));
         }
         final IAcceptorListener listener = new ProxyConnectionAcceptor (acceptorId++, this);
@@ -511,7 +508,7 @@ public class HttpProxy
       }
       catch (final IOException e)
       {
-        logger.log (Level.SEVERE, "Failed to open serversocket on port " + port, e);
+        LOGGER.error ("Failed to open serversocket on port " + port, e);
         stop ();
       }
     }
@@ -533,7 +530,7 @@ public class HttpProxy
     }
     catch (final IOException e)
     {
-      logger.severe ("Failed to close serversocket on port " + port);
+      LOGGER.error ("Failed to close serversocket on port " + port);
       stop ();
     }
   }
@@ -549,8 +546,8 @@ public class HttpProxy
    */
   private void loadClasses ()
   {
-    final SMap hProps = config.getProperties ("Handlers");
-    final SMap chProps = config.getProperties ("CacheHandlers");
+    final StringMap hProps = config.getProperties ("Handlers");
+    final StringMap chProps = config.getProperties ("CacheHandlers");
     handlerFactoryHandler = new HandlerFactoryHandler (hProps, chProps, config, this);
 
     final String filters = config.getProperty ("Filters", "accessfilters", "");
@@ -574,7 +571,7 @@ public class HttpProxy
   /** Run the proxy in a separate thread. */
   public void stop ()
   {
-    logger.severe ("HttpProxy.stop() called, shutting down");
+    LOGGER.error ("HttpProxy.stop() called, shutting down");
     synchronized (this)
     {
       closeSocket ();
@@ -762,7 +759,7 @@ public class HttpProxy
       }
       catch (final SocketException e)
       {
-        logger.log (Level.WARNING, "Failed to get network interfaces", e);
+        LOGGER.warn ("Failed to get network interfaces", e);
       }
     }
     return false;

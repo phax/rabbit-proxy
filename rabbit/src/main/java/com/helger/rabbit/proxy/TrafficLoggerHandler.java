@@ -1,7 +1,7 @@
 package com.helger.rabbit.proxy;
 
-import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rabbit.util.ITrafficLogger;
+import com.helger.rabbit.util.SimpleTrafficLogger;
 
 /**
  * A class to track of multiple network flows.

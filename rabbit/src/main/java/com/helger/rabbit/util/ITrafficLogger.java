@@ -1,7 +1,7 @@
 package com.helger.rabbit.util;
 
 /**
- * A traffic logger interface.
+ * A traffic LOGGER interface.
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
@@ -76,7 +76,7 @@ public interface ITrafficLogger
    * Add the current log into the other TrafficLogger.
    * 
    * @param other
-   *        the traffic logger to add this statistics
+   *        the traffic LOGGER to add this statistics
    */
   void addTo (ITrafficLogger other);
 }

@@ -3,7 +3,9 @@ package com.helger.rabbit.proxy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.handler.BaseHandler;
 import com.helger.rabbit.http.ContentRangeParser;
@@ -17,13 +19,15 @@ import com.helger.rabbit.io.Range;
  */
 public class SCC
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SCC.class);
+
   private final Connection con;
   private final HttpHeader header;
   private final RequestHandler rh;
 
   /**
    * Create a new SCC, a helper that sets up resources from the cache.
-   * 
+   *
    * @param con
    *        the Connection handling the request
    * @param header
@@ -124,9 +128,9 @@ public class SCC
     if (ctype != null)
       rh.setHandlerFactory (proxy.getCacheHandlerFactory (ctype));
     if (rh.getHandlerFactory () == null || ranges != null)
-                                                          // Simply send, its
-                                                          // already filtered.
-                                                          rh.setHandlerFactory (new BaseHandler ());
+      // Simply send, its
+      // already filtered.
+      rh.setHandlerFactory (new BaseHandler ());
     final WarningsHandler wh = new WarningsHandler ();
     wh.removeWarnings (rh.getWebHeader (), false);
     return null;
@@ -176,8 +180,7 @@ public class SCC
       }
       catch (final NumberFormatException e)
       {
-        final Logger logger = Logger.getLogger (getClass ().getName ());
-        logger.warning ("bad Age : '" + age + "'");
+        LOGGER.warn ("bad Age : '" + age + "'");
       }
     }
     rh.getWebHeader ().setHeader ("Age", "" + secs);

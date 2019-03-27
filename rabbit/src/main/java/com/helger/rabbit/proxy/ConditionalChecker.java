@@ -2,7 +2,9 @@ package com.helger.rabbit.proxy;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.cache.CacheException;
 import com.helger.rabbit.cache.ICache;
@@ -17,6 +19,7 @@ import com.helger.rabbit.http.HttpHeader;
  */
 class ConditionalChecker
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (ConditionalChecker.class);
 
   boolean checkConditional (final Connection con,
                             final HttpHeader header,
@@ -106,8 +109,7 @@ class ConditionalChecker
       }
       catch (final NumberFormatException e)
       {
-        final Logger log = Logger.getLogger (getClass ().getName ());
-        log.warning ("Bad number for max-age: '" + cached.substring (8) + "'");
+        LOGGER.warn ("Bad number for max-age: '" + cached.substring (8) + "'");
       }
     }
     return false;

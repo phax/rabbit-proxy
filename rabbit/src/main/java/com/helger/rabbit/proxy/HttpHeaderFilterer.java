@@ -4,8 +4,9 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.filter.IHttpFilter;
 import com.helger.rabbit.http.HttpHeader;
@@ -18,6 +19,8 @@ import com.helger.rabbit.util.Config;
  */
 class HttpHeaderFilterer
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (HttpHeaderFilterer.class);
+
   private final List <IHttpFilter> httpInFilters;
   private final List <IHttpFilter> httpOutFilters;
   private final List <IHttpFilter> connectFilters;
@@ -94,7 +97,7 @@ class HttpHeaderFilterer
 
   /**
    * Runs all input filters on the given header.
-   * 
+   *
    * @param con
    *        the Connection handling the request
    * @param channel
@@ -110,7 +113,7 @@ class HttpHeaderFilterer
 
   /**
    * Runs all output filters on the given header.
-   * 
+   *
    * @param con
    *        the Connection handling the request
    * @param channel
@@ -126,7 +129,7 @@ class HttpHeaderFilterer
 
   /**
    * Runs all connect filters on the given header.
-   * 
+   *
    * @param con
    *        the Connection handling the request
    * @param channel
@@ -145,7 +148,6 @@ class HttpHeaderFilterer
                                 final Config config,
                                 final HttpProxy proxy)
   {
-    final Logger log = Logger.getLogger (getClass ().getName ());
     final String [] filterArray = filters.split (",");
     for (String className : filterArray)
     {
@@ -162,15 +164,15 @@ class HttpHeaderFilterer
       }
       catch (final ClassNotFoundException ex)
       {
-        log.log (Level.WARNING, "Could not load http filter class: '" + className + "'", ex);
+        LOGGER.warn ("Could not load http filter class: '" + className + "'", ex);
       }
       catch (final InstantiationException ex)
       {
-        log.log (Level.WARNING, "Could not instansiate http filter: '" + className + "'", ex);
+        LOGGER.warn ("Could not instansiate http filter: '" + className + "'", ex);
       }
       catch (final IllegalAccessException ex)
       {
-        log.log (Level.WARNING, "Could not access http filter: '" + className + "'", ex);
+        LOGGER.warn ("Could not access http filter: '" + className + "'", ex);
       }
     }
   }

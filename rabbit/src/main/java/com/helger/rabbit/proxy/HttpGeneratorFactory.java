@@ -1,6 +1,6 @@
 package com.helger.rabbit.proxy;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * The factory for the HttpGenerators used by rabbit.
@@ -26,5 +26,5 @@ public interface HttpGeneratorFactory
    * @param props
    *        the config parameters
    */
-  void setup (SMap props);
+  void setup (StringMap props);
 }

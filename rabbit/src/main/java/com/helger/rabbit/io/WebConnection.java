@@ -6,8 +6,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.util.Counter;
 import com.helger.rnio.IConnectHandler;
@@ -20,6 +21,9 @@ import com.helger.rnio.INioHandler;
  */
 public class WebConnection implements Closeable
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (WebConnection.class);
+  private static final AtomicInteger idCounter = new AtomicInteger (0);
+
   private final int id;
   private final Address address;
   private final SocketBinder binder;
@@ -28,13 +32,10 @@ public class WebConnection implements Closeable
   private long releasedAt = -1;
   private boolean keepalive = true;
   private boolean mayPipeline = false;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
-
-  private static final AtomicInteger idCounter = new AtomicInteger (0);
 
   /**
    * Create a new WebConnection to the given InetAddress and port.
-   * 
+   *
    * @param address
    *        the computer to connect to.
    * @param binder
@@ -70,7 +71,7 @@ public class WebConnection implements Closeable
 
   /**
    * Get the address that this connection is connected to
-   * 
+   *
    * @return the network address that the underlying socket is connected to
    */
   public Address getAddress ()
@@ -80,7 +81,7 @@ public class WebConnection implements Closeable
 
   /**
    * Get the actual SocketChannel that is used
-   * 
+   *
    * @return the network channel
    */
   public SocketChannel getChannel ()
@@ -96,7 +97,7 @@ public class WebConnection implements Closeable
 
   /**
    * Try to establish the network connection.
-   * 
+   *
    * @param nioHandler
    *        the NioHandler to use for network tasks
    * @param wcl
@@ -205,7 +206,7 @@ public class WebConnection implements Closeable
       }
       catch (final IOException e)
       {
-        logger.log (Level.WARNING, "Failed to close down WebConnection", e);
+        LOGGER.warn ("Failed to close down WebConnection", e);
       }
     }
 
@@ -218,7 +219,7 @@ public class WebConnection implements Closeable
 
   /**
    * Set the keepalive value for this WebConnection, Can only be turned off.
-   * 
+   *
    * @param b
    *        the new keepalive value.
    */
@@ -229,7 +230,7 @@ public class WebConnection implements Closeable
 
   /**
    * Get the keepalive value of this WebConnection.
-   * 
+   *
    * @return true if this WebConnection may be reused.
    */
   public boolean getKeepalive ()
@@ -247,7 +248,7 @@ public class WebConnection implements Closeable
 
   /**
    * Get the time that this WebConnection was released.
-   * 
+   *
    * @return the time this WebConnection was last released.
    */
   public long getReleasedAt ()
@@ -257,7 +258,7 @@ public class WebConnection implements Closeable
 
   /**
    * Mark this WebConnection for pipelining.
-   * 
+   *
    * @param b
    *        if true this connection may be used for pipelining.
    */
@@ -268,7 +269,7 @@ public class WebConnection implements Closeable
 
   /**
    * Check if this WebConnection may be used for pipelining.
-   * 
+   *
    * @return true if this connection may be used for pipelining
    */
   public boolean mayPipeline ()

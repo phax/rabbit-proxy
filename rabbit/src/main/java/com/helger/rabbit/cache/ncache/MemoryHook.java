@@ -1,6 +1,6 @@
 package com.helger.rabbit.cache.ncache;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 /**
  * A key to use when searching the cache. This class only exists to trick
@@ -21,7 +21,7 @@ class MemoryHook <V> extends FiledHook <V>
   }
 
   @Override
-  public <K> V getData (final NCache <K, V> cache, final NCacheData <K, V> entry, final Logger logger)
+  public <K> V getData (final NCache <K, V> cache, final NCacheData <K, V> entry, final Logger LOGGER)
   {
     return data;
   }

@@ -1,8 +1,8 @@
 package com.helger.rabbit.io;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.dns.IDNSHandler;
 import com.helger.rnio.INioHandler;
 
@@ -22,9 +22,9 @@ public interface ProxyChainFactory
    *        the NioHandler to use for network and background tasks
    * @param dnsHandler
    *        the DNSHandler to use for normal DNS lookups
-   * @param logger
+   * @param aLogger
    *        the Logger to log errors to
    * @return the new ProxyChain
    */
-  IProxyChain getProxyChain (SMap props, INioHandler nio, IDNSHandler dnsHandler, Logger logger);
+  IProxyChain getProxyChain (StringMap props, INioHandler nio, IDNSHandler dnsHandler, Logger aLogger);
 }

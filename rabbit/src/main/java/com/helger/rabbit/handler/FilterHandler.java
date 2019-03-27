@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.filter.AbstractHtmlFilter;
 import com.helger.rabbit.filter.IHtmlFilterFactory;
 import com.helger.rabbit.html.HtmlBlock;
@@ -32,7 +34,9 @@ import com.helger.rabbit.zip.GZipUnpacker;
  */
 public class FilterHandler extends GZipHandler
 {
-  private List <IHtmlFilterFactory> filterClasses = new ArrayList<> ();
+  private static final Logger LOGGER = LoggerFactory.getLogger (FilterHandler.class);
+
+  private List <IHtmlFilterFactory> filterClasses = new ArrayList <> ();
   private boolean repack = false;
   private String defaultCharSet = null;
   private String overrideCharSet = null;
@@ -138,7 +142,7 @@ public class FilterHandler extends GZipHandler
       }
       catch (final UnsupportedCharsetException e)
       {
-        getLogger ().warning ("Bad CharSet: " + cs);
+        LOGGER.warn ("Bad CharSet: " + cs);
         charSet = Charset.forName ("ISO-8859-1");
       }
       parser = new HtmlParser (charSet);
@@ -162,7 +166,7 @@ public class FilterHandler extends GZipHandler
       }
       else
       {
-        getLogger ().warning ("Do not know how to handle encoding: " + ce);
+        LOGGER.warn ("Do not know how to handle encoding: " + ce);
       }
     if (gzu != null && !compress)
     {
@@ -244,13 +248,13 @@ public class FilterHandler extends GZipHandler
 
   @Override
   public IHandler getNewInstance (final Connection con,
-                                 final TrafficLoggerHandler tlh,
-                                 final HttpHeader header,
-                                 final HttpHeader webHeader,
-                                 final IResourceSource content,
-                                 final boolean mayCache,
-                                 final boolean mayFilter,
-                                 final long size)
+                                  final TrafficLoggerHandler tlh,
+                                  final HttpHeader header,
+                                  final HttpHeader webHeader,
+                                  final IResourceSource content,
+                                  final boolean mayCache,
+                                  final boolean mayFilter,
+                                  final long size)
   {
     final FilterHandler h = new FilterHandler (con,
                                                tlh,
@@ -357,7 +361,7 @@ public class FilterHandler extends GZipHandler
     }
     catch (final HtmlParseException e)
     {
-      getLogger ().info ("Bad HTML: " + e.toString ());
+      LOGGER.info ("Bad HTML: " + e.toString ());
       // out.write (arr);
       final ByteBuffer buf = ByteBuffer.wrap (arr, off, len);
       sendBlocks = Arrays.asList (buf).iterator ();
@@ -429,7 +433,7 @@ public class FilterHandler extends GZipHandler
   private List <AbstractHtmlFilter> initFilters ()
   {
     final int fsize = filterClasses.size ();
-    final List <AbstractHtmlFilter> fl = new ArrayList<> (fsize);
+    final List <AbstractHtmlFilter> fl = new ArrayList <> (fsize);
 
     for (int i = 0; i < fsize; i++)
     {
@@ -446,7 +450,7 @@ public class FilterHandler extends GZipHandler
    *        the properties of this class.
    */
   @Override
-  public void setup (final SMap prop, final HttpProxy proxy)
+  public void setup (final StringMap prop, final HttpProxy proxy)
   {
     super.setup (prop, proxy);
     defaultCharSet = prop.getOrDefault ("defaultCharSet", "ISO-8859-1");
@@ -466,15 +470,15 @@ public class FilterHandler extends GZipHandler
       }
       catch (final ClassNotFoundException e)
       {
-        getLogger ().warning ("Could not find filter: '" + classname + "'");
+        LOGGER.warn ("Could not find filter: '" + classname + "'");
       }
       catch (final InstantiationException e)
       {
-        getLogger ().log (Level.WARNING, "Could not instanciate class: '" + classname + "'", e);
+        LOGGER.warn ("Could not instanciate class: '" + classname + "'", e);
       }
       catch (final IllegalAccessException e)
       {
-        getLogger ().log (Level.WARNING, "Could not get constructor for: '" + classname + "'", e);
+        LOGGER.warn ("Could not get constructor for: '" + classname + "'", e);
       }
     }
   }

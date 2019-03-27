@@ -7,9 +7,6 @@ package com.helger.rabbit.cache;
  */
 public class CacheException extends Exception
 {
-  /** The serial version id */
-  public static final long serialVersionUID = 1;
-
   /**
    * @param message
    *        a message describing the real problem

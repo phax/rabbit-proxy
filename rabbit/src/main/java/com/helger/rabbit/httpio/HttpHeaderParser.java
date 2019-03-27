@@ -2,7 +2,9 @@ package com.helger.rabbit.httpio;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.http.Header;
 import com.helger.rabbit.http.HttpHeader;
@@ -14,16 +16,7 @@ import com.helger.rabbit.http.HttpHeader;
  */
 public class HttpHeaderParser implements LineListener
 {
-
-  private final boolean request;
-  private final boolean strictHttp;
-  private final LineReader lr;
-  private HttpHeader header;
-  private Header head = null;
-  private boolean append = false;
-  private boolean headerRead = false;
-
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (HttpHeaderParser.class);
 
   private static final ByteBuffer HTTP_IDENTIFIER = ByteBuffer.wrap (new byte [] { (byte) 'H',
                                                                                    (byte) 'T',
@@ -37,9 +30,17 @@ public class HttpHeaderParser implements LineListener
                                                                                     (byte) '\r',
                                                                                     (byte) '\n' });
 
+  private final boolean request;
+  private final boolean strictHttp;
+  private final LineReader lr;
+  private HttpHeader header;
+  private Header head;
+  private boolean append = false;
+  private boolean headerRead = false;
+
   /**
    * Create a new HttpHeaderParser
-   * 
+   *
    * @param request
    *        if true try to read a request, if false try to read a response
    * @param strictHttp
@@ -66,7 +67,7 @@ public class HttpHeaderParser implements LineListener
 
   /**
    * Get the current header
-   * 
+   *
    * @return the header as it looks at this moment
    */
   public HttpHeader getHeader ()
@@ -76,7 +77,7 @@ public class HttpHeaderParser implements LineListener
 
   /**
    * Read the data from the buffer and try to build a http header.
-   * 
+   *
    * @param buffer
    *        the ByteBuffer to parse
    * @return true if a full header was read, false if more data is needed.
@@ -103,14 +104,14 @@ public class HttpHeaderParser implements LineListener
     // some broken web servers (apache/2.0.4x) send multiple last-chunks
     if (buffer.remaining () > 4 && matchBuffer (buffer, EXTRA_LAST_CHUNK))
     {
-      logger.warning ("Found a last-chunk, trying to ignore it.");
+      LOGGER.warn ("Found a last-chunk, trying to ignore it.");
       buffer.position (buffer.position () + EXTRA_LAST_CHUNK.capacity ());
       return verifyResponse (buffer);
     }
 
     if (buffer.remaining () > 4 && !matchBuffer (buffer, HTTP_IDENTIFIER))
     {
-      logger.warning ("http response header with odd start:" + getBufferStartString (buffer, 5));
+      LOGGER.warn ("http response header with odd start:" + getBufferStartString (buffer, 5));
       // Create a http/0.9 response...
       header = new HttpHeader ();
       return true;

@@ -6,12 +6,13 @@ import java.nio.channels.SocketChannel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HttpProxy;
@@ -23,14 +24,15 @@ import com.helger.rabbit.proxy.HttpProxy;
  */
 public class SQLBlockFilter implements IHttpFilter
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SQLBlockFilter.class);
+  
   private DataSourceHelper dsh;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
   private final String DEFAULT_SQL = "select 1 from bad_hosts where hostname = ?";
 
   public HttpHeader doHttpInFiltering (final SocketChannel socket, final HttpHeader header, final Connection con)
   {
     try (final java.sql.Connection db = dsh.getConnection ();
-         final PreparedStatement ps = db.prepareStatement (dsh.getSelect ()))
+        final PreparedStatement ps = db.prepareStatement (dsh.getSelect ()))
     {
       final URL u = new URL (header.getRequestURI ());
       ps.setString (1, u.getHost ());
@@ -42,11 +44,11 @@ public class SQLBlockFilter implements IHttpFilter
     }
     catch (final MalformedURLException e)
     {
-      logger.log (Level.WARNING, "Failed to create URL", e);
+      LOGGER.warn ("Failed to create URL", e);
     }
     catch (final SQLException e)
     {
-      logger.log (Level.WARNING, "Failed to get database connection", e);
+      LOGGER.warn ("Failed to get database connection", e);
     }
     return null;
   }
@@ -68,7 +70,7 @@ public class SQLBlockFilter implements IHttpFilter
    * @param props
    *        the new configuration of this class.
    */
-  public void setup (final SMap props, final HttpProxy proxy)
+  public void setup (final StringMap props, final HttpProxy proxy)
   {
     try
     {

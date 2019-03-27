@@ -2,7 +2,9 @@ package com.helger.rabbit.proxy;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.http.HttpDateParser;
@@ -30,6 +32,8 @@ public class SWC implements
                  WebConnectionListener,
                  ClientResourceTransferredListener
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SWC.class);
+
   private final Connection con;
   private final Resolver resolver;
   private final HttpHeader header;
@@ -44,11 +48,10 @@ public class SWC implements
   private char status = '0';
 
   private Exception lastException;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   /**
    * Create a new connection establisher.
-   * 
+   *
    * @param con
    *        the Connection handling the request
    * @param resolver
@@ -130,7 +133,7 @@ public class SWC implements
 
   /**
    * Check if the full uri should be included in the request.
-   * 
+   *
    * @return true if the upstream server need the full uri in the request
    */
   public boolean useFullURI ()
@@ -277,7 +280,7 @@ public class SWC implements
 
   /**
    * Calculate the age of the resource, needs ntp to be accurate.
-   * 
+   *
    * @param rh
    *        the RequestHandler holding the headers
    */
@@ -308,7 +311,7 @@ public class SWC implements
     catch (final NumberFormatException e)
     {
       // if we cant parse it, we leave the Age header..
-      logger.warning ("Bad age: " + age);
+      LOGGER.warn ("Bad age: " + age);
     }
   }
 

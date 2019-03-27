@@ -3,8 +3,9 @@ package com.helger.rabbit.proxy;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.io.BufferHandle;
@@ -20,15 +21,16 @@ import com.helger.rnio.IWriteHandler;
  */
 public class Tunnel
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (Tunnel.class);
+
   private final INioHandler nioHandler;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
   private final OneWayTunnel fromToTo;
   private final OneWayTunnel toToFrom;
   private final TunnelDoneListener listener;
 
   /**
    * Create a tunnel that transfers data as fast as possible in full duplex.
-   * 
+   *
    * @param nioHandler
    *        the NioHandler to use for waiting on data to read as well as waiting
    *        for write ready
@@ -56,8 +58,8 @@ public class Tunnel
                  final ITrafficLogger toLogger,
                  final TunnelDoneListener listener)
   {
-    if (logger.isLoggable (Level.FINEST))
-      logger.finest ("Tunnel created from: " + from + " to: " + to);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Tunnel created from: " + from + " to: " + to);
     this.nioHandler = nioHandler;
     fromToTo = new OneWayTunnel (from, to, fromHandle, fromLogger);
     toToFrom = new OneWayTunnel (to, from, toHandle, toLogger);
@@ -69,8 +71,8 @@ public class Tunnel
    */
   public void start ()
   {
-    if (logger.isLoggable (Level.FINEST))
-      logger.finest ("Tunnel started");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Tunnel started");
     fromToTo.start ();
     toToFrom.start ();
   }
@@ -95,8 +97,8 @@ public class Tunnel
 
     public void start ()
     {
-      if (logger.isLoggable (Level.FINEST))
-        logger.finest ("OneWayTunnel started: bh.isEmpty: " + bh.isEmpty ());
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("OneWayTunnel started: bh.isEmpty: " + bh.isEmpty ());
       if (bh.isEmpty ())
         waitForRead ();
       else
@@ -132,7 +134,7 @@ public class Tunnel
       {
         if (!to.isOpen ())
         {
-          logger.warning ("Tunnel to is closed, not writing data");
+          LOGGER.warn ("Tunnel to is closed, not writing data");
           closeDown ();
           return;
         }
@@ -143,8 +145,8 @@ public class Tunnel
           do
           {
             written = to.write (buf);
-            if (logger.isLoggable (Level.FINEST))
-              logger.finest ("OneWayTunnel wrote: " + written);
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug ("OneWayTunnel wrote: " + written);
             tl.write (written);
           } while (written > 0 && buf.hasRemaining ());
         }
@@ -156,20 +158,20 @@ public class Tunnel
       }
       catch (final IOException e)
       {
-        logger.warning ("Got exception writing to tunnel: " + e);
+        LOGGER.warn ("Got exception writing to tunnel", e);
         closeDown ();
       }
     }
 
     public void closed ()
     {
-      logger.info ("Tunnel closed");
+      LOGGER.info ("Tunnel closed");
       closeDown ();
     }
 
     public void timeout ()
     {
-      logger.warning ("Tunnel got timeout");
+      LOGGER.warn ("Tunnel got timeout");
       closeDown ();
     }
 
@@ -194,14 +196,14 @@ public class Tunnel
       {
         if (!from.isOpen ())
         {
-          logger.warning ("Tunnel to is closed, not reading data");
+          LOGGER.warn ("Tunnel to is closed, not reading data");
           return;
         }
         final ByteBuffer buffer = bh.getBuffer ();
         buffer.clear ();
         final int read = from.read (buffer);
-        if (logger.isLoggable (Level.FINEST))
-          logger.finest ("OneWayTunnel read: " + read);
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("OneWayTunnel read: " + read);
         if (read == -1)
         {
           buffer.position (buffer.limit ());
@@ -216,7 +218,7 @@ public class Tunnel
       }
       catch (final IOException e)
       {
-        logger.warning ("Got exception reading from tunnel: " + e);
+        LOGGER.warn ("Got exception reading from tunnel: " + e);
         closeDown ();
       }
     }

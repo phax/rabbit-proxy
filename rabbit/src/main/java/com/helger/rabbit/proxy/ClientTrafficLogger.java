@@ -1,11 +1,11 @@
 package com.helger.rabbit.proxy;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.util.ITrafficLogger;
 
 /**
- * A logger that gets notified about client traffic usage.
+ * A LOGGER that gets notified about client traffic usage.
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
@@ -35,12 +35,12 @@ public interface ClientTrafficLogger
                    ITrafficLogger proxy);
 
   /**
-   * Setup this logger
+   * Setup this LOGGER
    *
    * @param properties
    *        the SProperties to get the settings from.
    * @param proxy
-   *        the HttpProxy that is using this logger
+   *        the HttpProxy that is using this LOGGER
    */
-  void setup (SMap properties, HttpProxy proxy);
+  void setup (StringMap properties, HttpProxy proxy);
 }

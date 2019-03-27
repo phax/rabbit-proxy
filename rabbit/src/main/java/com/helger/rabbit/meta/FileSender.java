@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.url.SMap;
 import com.helger.rabbit.http.HttpDateParser;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.HttpHeaderSender;
@@ -20,8 +21,8 @@ import com.helger.rabbit.httpio.TransferHandler;
 import com.helger.rabbit.httpio.TransferListener;
 import com.helger.rabbit.httpio.Transferable;
 import com.helger.rabbit.proxy.Connection;
-import com.helger.rabbit.util.MimeTypeMapper;
 import com.helger.rabbit.util.ITrafficLogger;
+import com.helger.rabbit.util.MimeTypeMapper;
 
 /**
  * A file resource handler.
@@ -30,16 +31,17 @@ import com.helger.rabbit.util.ITrafficLogger;
  */
 public class FileSender implements MetaHandler, HttpHeaderSentListener
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (FileSender.class);
+
   private Connection con;
   private ITrafficLogger tlClient;
   private ITrafficLogger tlProxy;
   private FileInputStream fis;
   private FileChannel fc;
   private long length;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   public void handle (final HttpHeader request,
-                      final SMap htab,
+                      final StringMap htab,
                       final Connection con,
                       final ITrafficLogger tlProxy,
                       final ITrafficLogger tlClient) throws IOException
@@ -186,14 +188,14 @@ public class FileSender implements MetaHandler, HttpHeaderSentListener
   public void failed (final Exception e)
   {
     closeFile ();
-    logger.log (Level.WARNING, "Exception when handling meta", e);
+    LOGGER.warn ("Exception when handling meta", e);
     con.logAndClose ();
   }
 
   public void timeout ()
   {
     closeFile ();
-    logger.warning ("Timeout when handling meta.");
+    LOGGER.warn ("Timeout when handling meta.");
     con.logAndClose ();
   }
 }

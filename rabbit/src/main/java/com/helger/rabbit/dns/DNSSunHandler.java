@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * A DNS handler using the standard java packages.
@@ -13,7 +13,7 @@ import com.helger.commons.url.SMap;
  */
 public class DNSSunHandler implements IDNSHandler
 {
-  public void setup (final SMap config)
+  public void setup (final StringMap config)
   {
     // empty.
   }

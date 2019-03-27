@@ -2,12 +2,13 @@ package com.helger.rabbit.proxy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.handler.IHandlerFactory;
 import com.helger.rabbit.util.Config;
 
@@ -18,12 +19,13 @@ import com.helger.rabbit.util.Config;
  */
 class HandlerFactoryHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (HandlerFactoryHandler.class);
+
   private final List <HandlerInfo> handlers;
   private final List <HandlerInfo> cacheHandlers;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
-  public HandlerFactoryHandler (final SMap handlersProps,
-                                final SMap cacheHandlersProps,
+  public HandlerFactoryHandler (final StringMap handlersProps,
+                                final StringMap cacheHandlersProps,
                                 final Config config,
                                 final HttpProxy proxy)
   {
@@ -68,9 +70,9 @@ class HandlerFactoryHandler
    *        the HttpProxy loading the Handler
    * @return a Map with mimetypes as keys and Handlers as values.
    */
-  protected List <HandlerInfo> loadHandlers (final SMap handlersProps, final Config config, final HttpProxy proxy)
+  protected List <HandlerInfo> loadHandlers (final StringMap handlersProps, final Config config, final HttpProxy proxy)
   {
-    final List <HandlerInfo> hhandlers = new ArrayList<> ();
+    final List <HandlerInfo> hhandlers = new ArrayList <> ();
     if (handlersProps == null)
       return hhandlers;
     for (final String handler : handlersProps.keySet ())
@@ -84,9 +86,9 @@ class HandlerFactoryHandler
   }
 
   private IHandlerFactory setupHandler (final String id,
-                                       final Config config,
-                                       final String handler,
-                                       final HttpProxy proxy)
+                                        final Config config,
+                                        final String handler,
+                                        final HttpProxy proxy)
   {
     String className = id;
     IHandlerFactory hf = null;
@@ -101,19 +103,15 @@ class HandlerFactoryHandler
     }
     catch (final ClassNotFoundException ex)
     {
-      logger.log (Level.WARNING, "Could not load class: '" + className + "' for handlerfactory '" + handler + "'", ex);
+      LOGGER.warn ("Could not load class: '" + className + "' for handlerfactory '" + handler + "'", ex);
     }
     catch (final InstantiationException ie)
     {
-      logger.log (Level.WARNING,
-                  "Could not instanciate factory class: '" + className + "' for handler '" + handler + "'",
-                  ie);
+      LOGGER.warn ("Could not instanciate factory class: '" + className + "' for handler '" + handler + "'", ie);
     }
     catch (final IllegalAccessException iae)
     {
-      logger.log (Level.WARNING,
-                  "Could not instanciate factory class: '" + className + "' for handler '" + handler + "'",
-                  iae);
+      LOGGER.warn ("Could not instanciate factory class: '" + className + "' for handler '" + handler + "'", iae);
     }
     return hf;
   }

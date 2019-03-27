@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.filter.IIPAccessFilter;
 import com.helger.rabbit.util.Config;
@@ -18,14 +19,15 @@ import com.helger.rabbit.util.Config;
  */
 public class SocketAccessController
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SocketAccessController.class);
+
   /** the filters, a List of classes (in given order) */
   private List <IIPAccessFilter> accessfilters = new ArrayList <> ();
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   /**
    * Create a new SocketAccessController that will use a list of internal
    * filters.
-   * 
+   *
    * @param filters
    *        a comma separated list of filters to use
    * @param config
@@ -58,15 +60,15 @@ public class SocketAccessController
       }
       catch (final ClassNotFoundException ex)
       {
-        logger.log (Level.WARNING, "Could not load class: '" + classname + "'", ex);
+        LOGGER.warn ("Could not load class: '" + classname + "'", ex);
       }
       catch (final InstantiationException ex)
       {
-        logger.log (Level.WARNING, "Could not instansiate: '" + classname + "'", ex);
+        LOGGER.warn ("Could not instansiate: '" + classname + "'", ex);
       }
       catch (final IllegalAccessException ex)
       {
-        logger.log (Level.WARNING, "Could not instansiate: '" + classname + "'", ex);
+        LOGGER.warn ("Could not instansiate: '" + classname + "'", ex);
       }
     }
   }
@@ -78,7 +80,7 @@ public class SocketAccessController
 
   /**
    * Check if the given channel is allowed access.
-   * 
+   *
    * @param sc
    *        the channel to check
    * @return true if the channel is allowed access, false otherwise

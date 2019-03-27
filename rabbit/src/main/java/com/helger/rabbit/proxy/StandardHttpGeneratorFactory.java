@@ -1,6 +1,6 @@
 package com.helger.rabbit.proxy;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * A HttpGeneratorFactory that creates StandardResponseHeaders instances.
@@ -14,7 +14,7 @@ public class StandardHttpGeneratorFactory implements HttpGeneratorFactory
     return new StandardResponseHeaders (identity, con);
   }
 
-  public void setup (final SMap props)
+  public void setup (final StringMap props)
   {
     // nothing to do
   }

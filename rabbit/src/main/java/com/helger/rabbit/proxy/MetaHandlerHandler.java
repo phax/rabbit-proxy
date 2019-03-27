@@ -5,17 +5,20 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.meta.MetaHandler;
 import com.helger.rabbit.util.ITrafficLogger;
 
 class MetaHandlerHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (MetaHandlerHandler.class);
 
   /**
    * Handle a meta page.
@@ -59,7 +62,7 @@ class MetaHandlerHandler
       args = file.substring (index + 1);
       file = file.substring (0, index);
     }
-    final SMap htab = splitArgs (args);
+    final StringMap htab = splitArgs (args);
     if ((index = file.indexOf ("/")) >= 0)
     {
       final String fc = file.substring (index + 1);
@@ -110,7 +113,7 @@ class MetaHandlerHandler
     }
     if (error != null)
     {
-      Logger.getLogger (getClass ().getName ()).warning (error);
+      LOGGER.warn (error);
       con.doError (400, error);
     }
   }
@@ -123,9 +126,9 @@ class MetaHandlerHandler
    *        the CGI-querystring.
    * @return a map with type->value maps for the CGI-querystring
    */
-  public SMap splitArgs (final String params)
+  public StringMap splitArgs (final String params)
   {
-    final SMap htab = new SMap ();
+    final StringMap htab = new StringMap ();
     final StringTokenizer st = new StringTokenizer (params, "=&", true);
     String key = null;
     while (st.hasMoreTokens ())
@@ -153,12 +156,11 @@ class MetaHandlerHandler
           {
             try
             {
-              next = URLDecoder.decode (next, "UTF-8");
+              next = URLDecoder.decode (next, StandardCharsets.UTF_8.name ());
             }
             catch (final UnsupportedEncodingException e)
             {
-              final Logger log = Logger.getLogger (getClass ().getName ());
-              log.log (Level.WARNING, "Failed to get utf-8", e);
+              LOGGER.warn ("Failed to get utf-8", e);
             }
             htab.add (key, next);
             key = null;

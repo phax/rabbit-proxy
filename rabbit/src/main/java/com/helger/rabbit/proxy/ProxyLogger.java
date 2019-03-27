@@ -8,14 +8,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * A class to handle proxy logging.
@@ -61,69 +58,17 @@ public class ProxyLogger implements ConnectionLogger
     return offset;
   }
 
-  private Logger getLogger (final SMap config,
-                            final String prefix,
-                            final Formatter format,
-                            final String... logDomains) throws IOException
-  {
-    final String log = config.get (prefix + "_log");
-    String sl = config.get (prefix + "_size_limit");
-    sl = sl == null ? "1" : sl.trim ();
-    final int limit = Integer.parseInt (sl) * 1024 * 1024;
-    final int numFiles = Integer.parseInt (config.get (prefix + "_num_files"), 10);
-    sl = config.get (prefix + "_log_level");
-    sl = sl != null ? sl : "INFO";
-    final Level level = Level.parse (sl);
-
-    final FileHandler fh = new FileHandler (log, limit, numFiles, true);
-    fh.setFormatter (new SimpleFormatter ());
-    Logger ret = null;
-    for (final String logDomain : logDomains)
-    {
-      final Logger logger = Logger.getLogger (logDomain);
-      logger.setLevel (level);
-      logger.addHandler (fh);
-      logger.setUseParentHandlers (false);
-      if (ret == null)
-        ret = logger;
-    }
-
-    if (format != null)
-      fh.setFormatter (format);
-
-    return ret;
-  }
-
   /**
-   * Configure this logger from the given properties
+   * Configure this LOGGER from the given properties
    *
    * @param config
    *        the properties to use for configuration.
    * @throws IOException
    *         if logging setup fails
    */
-  public void setup (final SMap config) throws IOException
+  public void setup (final StringMap config) throws IOException
   {
-    final String sysLogging = System.getProperty ("java.util.logging.config.file");
-    if (sysLogging != null)
-    {
-      System.out.println ("Logging configure by system property");
-    }
-    else
-    {
-      final Logger eh = getLogger (config, "error", null, "rabbit", "org.khelekore.rnio");
-      eh.info ("Log level set to: " + eh.getLevel ());
-    }
-    accessLog = getLogger (config, "access", new AccessFormatter (), "rabbit_access");
-  }
-
-  private static class AccessFormatter extends Formatter
-  {
-    @Override
-    public String format (final LogRecord record)
-    {
-      return record.getMessage () + "\n";
-    }
+    accessLog = LoggerFactory.getLogger ("access");
   }
 
   public void logConnection (final Connection con)
@@ -161,6 +106,6 @@ public class ProxyLogger implements ConnectionLogger
     sb.append (" ");
     sb.append ((con.getExtraInfo () != null ? con.getExtraInfo () : ""));
 
-    accessLog.log (Level.INFO, sb.toString ());
+    accessLog.info (sb.toString ());
   }
 }

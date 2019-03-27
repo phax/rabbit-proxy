@@ -3,7 +3,9 @@ package com.helger.rabbit.httpio;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.ConnectionHandler;
@@ -19,6 +21,8 @@ import com.helger.rnio.IReadHandler;
  */
 public class WebConnectionResourceSource implements IResourceSource, IReadHandler, ChunkDataFeeder
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (WebConnectionResourceSource.class);
+
   private final ConnectionHandler con;
   private final INioHandler nioHandler;
   private final WebConnection wc;
@@ -35,7 +39,7 @@ public class WebConnectionResourceSource implements IResourceSource, IReadHandle
 
   /**
    * Create a new ConnectionResourceSource that gets the data from the network.
-   * 
+   *
    * @param con
    *        the Connection handling the request
    * @param nioHandler
@@ -88,7 +92,7 @@ public class WebConnectionResourceSource implements IResourceSource, IReadHandle
 
   /**
    * FileChannels can not be used, will always return false.
-   * 
+   *
    * @return false
    */
   public boolean supportsTransfer ()
@@ -233,8 +237,7 @@ public class WebConnectionResourceSource implements IResourceSource, IReadHandle
     }
     else
     {
-      final Logger logger = Logger.getLogger (getClass ().getName ());
-      logger.severe ("Got close but no listener to tell!");
+      LOGGER.error ("Got close but no listener to tell!");
     }
   }
 
@@ -247,8 +250,7 @@ public class WebConnectionResourceSource implements IResourceSource, IReadHandle
     }
     else
     {
-      final Logger logger = Logger.getLogger (getClass ().getName ());
-      logger.severe ("Got timeout but no listener to tell!");
+      LOGGER.error ("Got timeout but no listener to tell!");
     }
   }
 

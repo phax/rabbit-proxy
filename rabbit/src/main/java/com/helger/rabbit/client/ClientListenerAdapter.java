@@ -2,8 +2,9 @@ package com.helger.rabbit.client;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.WebConnectionResourceSource;
@@ -15,7 +16,7 @@ import com.helger.rabbit.httpio.WebConnectionResourceSource;
  */
 public class ClientListenerAdapter implements ClientListener
 {
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (ClientListenerAdapter.class);
 
   /**
    * Create the redirected url and calls redirectedTo() and requestDone().
@@ -37,7 +38,7 @@ public class ClientListenerAdapter implements ClientListener
 
   /**
    * This method does nothing, override to perform actual request.
-   * 
+   *
    * @param url
    *        the new URL that the redirect header contained
    * @throws IOException
@@ -67,22 +68,22 @@ public class ClientListenerAdapter implements ClientListener
   }
 
   /**
-   * Logs an error to the logger and calls requestDone().
+   * Logs an error to the LOGGER and calls requestDone().
    */
   @Override
   public void handleTimeout (final HttpHeader request)
   {
-    logger.warning ("Request to " + request.getRequestURI () + " timed out");
+    LOGGER.warn ("Request to " + request.getRequestURI () + " timed out");
     requestDone (request);
   }
 
   /**
-   * Logs an error to the logger and calls requestDone().
+   * Logs an error to the LOGGER and calls requestDone().
    */
   @Override
   public void handleFailure (final HttpHeader request, final Exception e)
   {
-    logger.log (Level.WARNING, "Request to " + request.getRequestURI () + " failed: ", e);
+    LOGGER.warn ("Request to " + request.getRequestURI () + " failed: ", e);
     requestDone (request);
   }
 

@@ -1,8 +1,11 @@
 package com.helger.rabbit.http;
 
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class that parses content range headers.
@@ -11,6 +14,7 @@ import java.util.logging.Logger;
  */
 public class ContentRangeParser
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (ContentRangeParser.class);
   private long start;
   private long end;
   private long total;
@@ -18,11 +22,11 @@ public class ContentRangeParser
 
   /**
    * Try to parse the given content range.
-   * 
+   *
    * @param cr
    *        the Content-Range header.
    */
-  public ContentRangeParser (String cr)
+  public ContentRangeParser (@Nullable String cr)
   {
     if (cr != null)
     {
@@ -44,8 +48,7 @@ public class ContentRangeParser
         }
         catch (final NumberFormatException e)
         {
-          final Logger logger = Logger.getLogger (getClass ().getName ());
-          logger.log (Level.WARNING, "bad content range: " + e + " for string: '" + cr + "'", e);
+          LOGGER.warn ("bad content range: " + e + " for string: '" + cr + "'", e);
         }
       }
     }
@@ -53,7 +56,7 @@ public class ContentRangeParser
 
   /**
    * Check if the content range was valid.
-   * 
+   *
    * @return true if the parsed content range was valid
    */
   public boolean isValid ()
@@ -63,7 +66,7 @@ public class ContentRangeParser
 
   /**
    * Get the start index
-   * 
+   *
    * @return the start index of the range
    */
   public long getStart ()
@@ -73,7 +76,7 @@ public class ContentRangeParser
 
   /**
    * Get the end index.
-   * 
+   *
    * @return the end index of the range
    */
   public long getEnd ()
@@ -83,7 +86,7 @@ public class ContentRangeParser
 
   /**
    * Get the total size of the resource.
-   * 
+   *
    * @return the resource size if know or -1 if unknown ('*' was used in the
    *         content range).
    */

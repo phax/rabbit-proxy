@@ -2,10 +2,11 @@ package com.helger.rabbit.meta;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.BlockSender;
 import com.helger.rabbit.httpio.BlockSentListener;
@@ -24,13 +25,14 @@ import com.helger.rabbit.util.ITrafficLogger;
  */
 public abstract class BaseMetaHandler implements MetaHandler, BlockSentListener
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (BaseMetaHandler.Mode.class);
+
   protected HttpHeader request;
-  protected SMap htab;
+  protected StringMap htab;
   protected Connection con;
   protected ITrafficLogger tlProxy;
   protected ITrafficLogger tlClient;
   private boolean first = true;
-  protected final Logger logger = Logger.getLogger (getClass ().getName ());
 
   private static enum Mode
   {
@@ -54,7 +56,7 @@ public abstract class BaseMetaHandler implements MetaHandler, BlockSentListener
   }
 
   public void handle (final HttpHeader request,
-                      final SMap htab,
+                      final StringMap htab,
                       final Connection con,
                       final ITrafficLogger tlProxy,
                       final ITrafficLogger tlClient) throws IOException
@@ -148,13 +150,13 @@ public abstract class BaseMetaHandler implements MetaHandler, BlockSentListener
 
   public void failed (final Exception e)
   {
-    logger.log (Level.WARNING, "Exception when handling meta", e);
+    LOGGER.warn ("Exception when handling meta", e);
     con.logAndClose ();
   }
 
   public void timeout ()
   {
-    logger.warning ("Timeout when handling meta.");
+    LOGGER.warn ("Timeout when handling meta.");
     con.logAndClose ();
   }
 }

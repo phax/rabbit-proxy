@@ -16,8 +16,8 @@ import com.helger.rabbit.httpio.HttpHeaderReader;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.io.CacheBufferHandle;
 import com.helger.rabbit.io.SimpleBufferHandle;
-import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rabbit.util.ITrafficLogger;
+import com.helger.rabbit.util.SimpleTrafficLogger;
 import com.helger.rnio.IBufferHandler;
 import com.helger.rnio.INioHandler;
 import com.helger.rnio.IStatisticsHolder;
@@ -31,7 +31,7 @@ import com.helger.rnio.impl.SimpleThreadFactory;
  *
  * @author <a href="mailto:robo@khelekore.org">Robert Olofsson</a>
  */
-public class TestHttpHeaderReader
+public class MainTestHttpHeaderReader
 {
   private final INioHandler nioHandler;
   private final ITrafficLogger trafficLogger = new SimpleTrafficLogger ();
@@ -50,7 +50,7 @@ public class TestHttpHeaderReader
   {
     try
     {
-      final TestHttpHeaderReader tester = new TestHttpHeaderReader ();
+      final MainTestHttpHeaderReader tester = new MainTestHttpHeaderReader ();
       tester.start ();
       tester.runTests ();
       tester.waitForFinish ();
@@ -62,7 +62,7 @@ public class TestHttpHeaderReader
     }
   }
 
-  private TestHttpHeaderReader () throws IOException
+  private MainTestHttpHeaderReader () throws IOException
   {
     final ExecutorService es = Executors.newCachedThreadPool ();
     final IStatisticsHolder sh = new BasicStatisticsHolder ();

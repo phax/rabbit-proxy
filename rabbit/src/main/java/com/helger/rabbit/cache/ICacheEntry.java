@@ -65,8 +65,8 @@ public interface ICacheEntry <K, V>
    * Sets the data hook for this cache object. Since it is not always possible
    * to make the key hold this...
    *
-   * @param o
+   * @param aData
    *        the new data.
    */
-  void setDataHook (V o);
+  void setDataHook (V aData);
 }

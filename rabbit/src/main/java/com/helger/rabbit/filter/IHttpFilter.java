@@ -2,7 +2,7 @@ package com.helger.rabbit.filter;
 
 import java.nio.channels.SocketChannel;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.proxy.HttpProxy;
@@ -59,9 +59,9 @@ public interface IHttpFilter
    * Setup this filter.
    *
    * @param properties
-   *        the SMap to get the settings from.
+   *        the StringMap to get the settings from.
    * @param proxy
    *        the HttpProxy that is using this filter
    */
-  void setup (SMap properties, HttpProxy proxy);
+  void setup (StringMap properties, HttpProxy proxy);
 }

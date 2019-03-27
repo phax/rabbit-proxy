@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.proxy.ClientResourceHandler;
@@ -107,7 +107,7 @@ public class HttpSnoop implements IHttpFilter
    * @param properties
    *        the new configuration of this class.
    */
-  public void setup (final SMap properties, final HttpProxy proxy)
+  public void setup (final StringMap properties, final HttpProxy proxy)
   {
     String smo = properties.getOrDefault ("mode", "NORMAL");
     smo = smo.toUpperCase ();

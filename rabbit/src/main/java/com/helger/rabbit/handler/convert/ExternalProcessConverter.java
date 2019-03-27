@@ -2,22 +2,24 @@ package com.helger.rabbit.handler.convert;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * An image converter that runs an external program to do the actual conversion.
  */
 public class ExternalProcessConverter implements ImageConverter
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (ExternalProcessConverter.class);
   private static final String STD_CONVERT = "/usr/bin/gm";
   private static final String STD_CONVERT_ARGS = "convert -quality 10 -flatten $filename +profile \"*\" jpeg:$filename.c";
 
   private final boolean canConvert;
   private final String convert;
   private final String convertArgs;
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
 
   /**
    * Create a new ExternalProcessConverter configured from the given properties.
@@ -25,7 +27,7 @@ public class ExternalProcessConverter implements ImageConverter
    * @param props
    *        the configuration for this converter
    */
-  public ExternalProcessConverter (final SMap props)
+  public ExternalProcessConverter (final StringMap props)
   {
     convert = props.getOrDefault ("convert", STD_CONVERT);
     convertArgs = props.getOrDefault ("convertargs", STD_CONVERT_ARGS);
@@ -33,7 +35,7 @@ public class ExternalProcessConverter implements ImageConverter
     final File f = new File (conv);
     if (!f.exists () || !f.isFile ())
     {
-      logger.warning ("convert -" + conv + "- not found, is your path correct?");
+      LOGGER.warn ("convert -" + conv + "- not found, is your path correct?");
       canConvert = false;
     }
     else
@@ -57,7 +59,8 @@ public class ExternalProcessConverter implements ImageConverter
       convargs = convargs.substring (0, idx) + entryName + convargs.substring (idx + "$filename".length ());
     }
     final String command = convert + " " + convargs;
-    logger.fine ("ImageHandler running: '" + command + "'");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("ImageHandler running: '" + command + "'");
     final Process ps = Runtime.getRuntime ().exec (command);
     try
     {
@@ -66,13 +69,13 @@ public class ExternalProcessConverter implements ImageConverter
       final int exitValue = ps.exitValue ();
       if (exitValue != 0)
       {
-        logger.warning ("Bad conversion: " + entryName + ", got exit value: " + exitValue);
+        LOGGER.warn ("Bad conversion: " + entryName + ", got exit value: " + exitValue);
         throw new IOException ("failed to convert image, " + "exit value: " + exitValue + ", info: " + info);
       }
     }
     catch (final InterruptedException e)
     {
-      logger.warning ("Interupted during wait for: " + entryName);
+      LOGGER.warn ("Interupted during wait for: " + entryName);
     }
   }
 

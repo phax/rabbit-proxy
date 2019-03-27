@@ -6,11 +6,12 @@ import java.net.URL;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.filter.authenticate.AuthUserInfo;
 import com.helger.rabbit.filter.authenticate.IAuthenticator;
 import com.helger.rabbit.filter.authenticate.PlainFileAuthenticator;
@@ -27,14 +28,15 @@ import com.helger.rabbit.proxy.HttpProxy;
  */
 public class ProxyAuth implements IHttpFilter
 {
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (ProxyAuth.class);
+
   private IAuthenticator authenticator;
   private int cacheTime;
   private boolean oneIpOnly;
   private Pattern noAuthPattern;
 
   /** Username to user info */
-  private final Map <String, AuthUserInfo> cache = new ConcurrentHashMap<> ();
+  private final Map <String, AuthUserInfo> cache = new ConcurrentHashMap <> ();
 
   /**
    * Check that the user has been authenticated..
@@ -116,7 +118,7 @@ public class ProxyAuth implements IHttpFilter
     }
     catch (final MalformedURLException e)
     {
-      logger.log (Level.WARNING, "Bad url: " + header.getRequestURI (), e);
+      LOGGER.warn ("Bad url: " + header.getRequestURI (), e);
       return hg.get400 (e);
     }
   }
@@ -137,7 +139,7 @@ public class ProxyAuth implements IHttpFilter
    * @param properties
    *        the new configuration of this class.
    */
-  public void setup (final SMap properties, final HttpProxy proxy)
+  public void setup (final StringMap properties, final HttpProxy proxy)
   {
     final String ct = properties.getOrDefault ("cachetime", "0");
     cacheTime = Integer.parseInt (ct);
@@ -165,15 +167,15 @@ public class ProxyAuth implements IHttpFilter
         }
         catch (final ClassNotFoundException e)
         {
-          logger.warning ("Failed to find class: '" + authType + "'");
+          LOGGER.warn ("Failed to find class: '" + authType + "'");
         }
         catch (final InstantiationException e)
         {
-          logger.warning ("Failed to instantiate: '" + authType + "'");
+          LOGGER.warn ("Failed to instantiate: '" + authType + "'");
         }
         catch (final IllegalAccessException e)
         {
-          logger.warning ("Failed to instantiate: '" + authType + "': " + e);
+          LOGGER.warn ("Failed to instantiate: '" + authType + "': " + e);
         }
       }
   }

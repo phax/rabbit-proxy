@@ -1,7 +1,6 @@
 package com.helger.rabbit.cache;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 /**
  * A cache, mostly works like a map in lookup, insert and delete. A cache may be
@@ -15,7 +14,6 @@ import java.util.logging.Logger;
  */
 public interface ICache <K, V>
 {
-
   /**
    * Start this cache. This must be called to ensure that cleaner threads or
    * similar are up and running.
@@ -138,11 +136,4 @@ public interface ICache <K, V>
    * Make sure that the cache is written to the disk.
    */
   void flush ();
-
-  /**
-   * Get the logger of this cache
-   *
-   * @return the Logger used by the cache
-   */
-  Logger getLogger ();
 }

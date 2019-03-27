@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 
 /**
  * A DNS handler.
@@ -19,7 +19,7 @@ public interface IDNSHandler
    * @param config
    *        the properties for this handler
    */
-  void setup (SMap config);
+  void setup (StringMap config);
 
   /**
    * Look up an internet address.

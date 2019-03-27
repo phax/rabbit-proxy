@@ -10,8 +10,9 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.stream.StreamHelper;
 
@@ -22,9 +23,10 @@ import com.helger.commons.io.stream.StreamHelper;
  */
 public class SimpleUserHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SimpleUserHandler.class);
+
   private String userFile = null;
-  private Map <String, String> users = new HashMap<> ();
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private Map <String, String> users = new HashMap <> ();
 
   /**
    * Set the file to use for users, will read the files. Will discard any
@@ -45,11 +47,11 @@ public class SimpleUserHandler
     }
     catch (final FileNotFoundException e)
     {
-      logger.log (Level.WARNING, "could not load the users file: '" + userFile, e);
+      LOGGER.warn ("could not load the users file: '" + userFile, e);
     }
     catch (final IOException e)
     {
-      logger.log (Level.WARNING, "Error while loading the users file: '" + userFile, e);
+      LOGGER.warn ("Error while loading the users file: '" + userFile, e);
     }
     finally
     {
@@ -71,7 +73,7 @@ public class SimpleUserHandler
   {
     final BufferedReader br = new BufferedReader (r);
     String line;
-    final Map <String, String> u = new HashMap<> ();
+    final Map <String, String> u = new HashMap <> ();
     while ((line = br.readLine ()) != null)
     {
       final String [] creds = line.split ("[: \n\t]");

@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.logging.Level;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.rabbit.io.BufferHandle;
 import com.helger.rabbit.util.ITrafficLogger;
@@ -18,6 +20,8 @@ import com.helger.rnio.IWriteHandler;
  */
 public class BlockSender extends BaseSocketHandler implements IWriteHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (BlockSender.class);
+
   private ByteBuffer chunkBuffer;
   private final ByteBuffer end;
   private final ByteBuffer [] buffers;
@@ -26,7 +30,7 @@ public class BlockSender extends BaseSocketHandler implements IWriteHandler
 
   /**
    * Create a new BlockSender that will write data to the given channel
-   * 
+   *
    * @param channel
    *        the SocketChannel to write the data to
    * @param nioHandler
@@ -60,7 +64,7 @@ public class BlockSender extends BaseSocketHandler implements IWriteHandler
       }
       catch (final UnsupportedEncodingException e)
       {
-        getLogger ().log (Level.WARNING, "BlockSender: ASCII not found!", e);
+        LOGGER.warn ("BlockSender: ASCII not found!", e);
       }
       end = ByteBuffer.wrap (new byte [] { '\r', '\n' });
       buffers = new ByteBuffer [] { chunkBuffer, buffer, end };

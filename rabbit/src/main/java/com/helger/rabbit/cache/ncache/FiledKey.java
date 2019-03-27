@@ -2,7 +2,8 @@ package com.helger.rabbit.cache.ncache;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
 
 /**
  * A class that stores cache keys in compressed form.
@@ -32,7 +33,7 @@ class FiledKey <K> extends FileData <K>
   protected <V> long storeKey (final NCache <K, V> cache,
                                final long id,
                                final K key,
-                               final Logger logger) throws IOException
+                               final Logger LOGGER) throws IOException
   {
     setCache (cache);
     hashCode = key.hashCode ();

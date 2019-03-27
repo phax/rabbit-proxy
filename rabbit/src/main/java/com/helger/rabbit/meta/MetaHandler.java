@@ -2,7 +2,7 @@ package com.helger.rabbit.meta;
 
 import java.io.IOException;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.util.ITrafficLogger;
@@ -32,7 +32,7 @@ public interface MetaHandler
    *         if writing the resource fails
    */
   void handle (HttpHeader request,
-               SMap htab,
+               StringMap htab,
                Connection con,
                ITrafficLogger tlProxy,
                ITrafficLogger tlClient) throws IOException;

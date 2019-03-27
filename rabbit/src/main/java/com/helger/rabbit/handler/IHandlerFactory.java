@@ -1,6 +1,6 @@
 package com.helger.rabbit.handler;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.httpio.IResourceSource;
 import com.helger.rabbit.proxy.Connection;
@@ -21,7 +21,7 @@ public interface IHandlerFactory
    * @param connection
    *        the Connection handling the request.
    * @param tlh
-   *        the Traffic logger handler.
+   *        the Traffic LOGGER handler.
    * @param header
    *        the request.
    * @param webheader
@@ -53,5 +53,5 @@ public interface IHandlerFactory
    * @param proxy
    *        the HttpProxy using this HandlerFactory
    */
-  void setup (SMap properties, HttpProxy proxy);
+  void setup (StringMap properties, HttpProxy proxy);
 }

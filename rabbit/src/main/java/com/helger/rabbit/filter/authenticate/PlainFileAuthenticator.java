@@ -1,6 +1,6 @@
 package com.helger.rabbit.filter.authenticate;
 
-import com.helger.commons.url.SMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.proxy.Connection;
 import com.helger.rabbit.util.SimpleUserHandler;
@@ -21,7 +21,7 @@ public class PlainFileAuthenticator implements IAuthenticator
    * @param props
    *        the configuration for this authenticator
    */
-  public PlainFileAuthenticator (final SMap props)
+  public PlainFileAuthenticator (final StringMap props)
   {
     final String userFile = props.getOrDefault ("userfile", "conf/allowed");
     userHandler = new SimpleUserHandler ();

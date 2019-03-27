@@ -10,10 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.helger.commons.url.SMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.rabbit.http.HttpHeader;
 import com.helger.rabbit.util.Counter;
 import com.helger.rnio.INioHandler;
@@ -27,8 +28,7 @@ import com.helger.rnio.IReadHandler;
  */
 public class ConnectionHandler
 {
-  // The logger to use
-  private final Logger logger = Logger.getLogger (getClass ().getName ());
+  private static final Logger LOGGER = LoggerFactory.getLogger (ConnectionHandler.class);
 
   // The counter to use.
   private final Counter counter;
@@ -73,8 +73,8 @@ public class ConnectionHandler
     this.proxyChain = proxyChain;
     this.nioHandler = nioHandler;
 
-    activeConnections = new HashMap<> ();
-    wc2closer = new ConcurrentHashMap<> ();
+    activeConnections = new HashMap <> ();
+    wc2closer = new ConcurrentHashMap <> ();
   }
 
   /**
@@ -105,7 +105,7 @@ public class ConnectionHandler
    */
   public Map <Address, List <WebConnection>> getActiveConnections ()
   {
-    final Map <Address, List <WebConnection>> ret = new HashMap<> ();
+    final Map <Address, List <WebConnection>> ret = new HashMap <> ();
     synchronized (activeConnections)
     {
       for (final Map.Entry <Address, List <WebConnection>> me : activeConnections.entrySet ())
@@ -271,7 +271,7 @@ public class ConnectionHandler
       List <WebConnection> pool = activeConnections.get (a);
       if (pool == null)
       {
-        pool = new ArrayList<> ();
+        pool = new ArrayList <> ();
         activeConnections.put (a, pool);
       }
       else
@@ -301,7 +301,7 @@ public class ConnectionHandler
     }
     catch (final IOException e)
     {
-      logger.warning ("Failed to close WebConnection: " + wc);
+      LOGGER.warn ("Failed to close WebConnection: " + wc, e);
     }
   }
 
@@ -351,8 +351,7 @@ public class ConnectionHandler
       }
       catch (final IOException e)
       {
-        final String err = "CloseListener: Failed to close web connection: " + e;
-        logger.warning (err);
+        LOGGER.warn ("CloseListener: Failed to close web connection", e);
       }
     }
 
@@ -396,7 +395,7 @@ public class ConnectionHandler
    * @param config
    *        the properties to read the configuration from
    */
-  public void setup (final SMap config)
+  public void setup (final StringMap config)
   {
     if (config == null)
       return;
@@ -407,8 +406,7 @@ public class ConnectionHandler
     }
     catch (final NumberFormatException e)
     {
-      final String err = "Bad number for ConnectionHandler keepalivetime: '" + kat + "'";
-      logger.warning (err);
+      LOGGER.warn ("Bad number for ConnectionHandler keepalivetime: '" + kat + "'");
     }
     final String tcpNoDelay = config.getOrDefault ("use_tcp_no_delay", "false");
     setTcpNoDelay = "true".equalsIgnoreCase (tcpNoDelay);
@@ -425,13 +423,13 @@ public class ConnectionHandler
         final InetAddress ia = InetAddress.getByName (bindIP);
         if (ia != null)
         {
-          logger.info ("Will bind to: " + ia + " for outgoing traffic");
+          LOGGER.info ("Will bind to: " + ia + " for outgoing traffic");
           socketBinder = new BoundBinder (ia);
         }
       }
       catch (final IOException e)
       {
-        logger.log (Level.SEVERE, "Failed to find inet address for: " + bindIP, e);
+        LOGGER.error ("Failed to find inet address for: " + bindIP, e);
       }
     }
   }
