@@ -26,8 +26,9 @@ public class ContentRangeParser
    * @param cr
    *        the Content-Range header.
    */
-  public ContentRangeParser (@Nullable String cr)
+  public ContentRangeParser (@Nullable final String scr)
   {
+    String cr = scr;
     if (cr != null)
     {
       if (cr.startsWith ("bytes "))

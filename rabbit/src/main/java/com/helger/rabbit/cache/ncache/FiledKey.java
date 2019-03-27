@@ -3,7 +3,7 @@ package com.helger.rabbit.cache.ncache;
 import java.io.File;
 import java.io.IOException;
 
-import org.slf4j.Logger;
+import com.helger.commons.equals.EqualsHelper;
 
 /**
  * A class that stores cache keys in compressed form.
@@ -31,10 +31,7 @@ class FiledKey <K> extends FileData <K>
     this.cache = cache;
   }
 
-  protected <V> long storeKey (final NCache <K, V> cache,
-                               final long id,
-                               final K key,
-                               final Logger LOGGER) throws IOException
+  protected <V> long storeKey (final NCache <K, V> cache, final long id, final K key) throws IOException
   {
     setCache (cache);
     hashCode = key.hashCode ();
@@ -71,24 +68,23 @@ class FiledKey <K> extends FileData <K>
 
   /** Check if the given object is equal to the contained key. */
   @Override
-  public boolean equals (Object data)
+  public boolean equals (final Object o)
   {
-    if (data == this)
+    if (o == this)
       return true;
-    if (data == null || !getClass ().equals (data.getClass ()))
+    if (o == null || !getClass ().equals (o.getClass ()))
       return false;
+
     try
     {
       final K myData = getData ();
-      if (data instanceof FiledKey)
-      {
-        data = ((FiledKey) data).getData ();
-      }
-      if (myData != null)
-      {
-        return myData.equals (data);
-      }
-      return data == null;
+      Object rhs;
+      if (o instanceof FiledKey <?>)
+        rhs = ((FiledKey <?>) o).getData ();
+      else
+        rhs = o;
+
+      return EqualsHelper.equals (myData, rhs);
     }
     catch (final IOException e)
     {

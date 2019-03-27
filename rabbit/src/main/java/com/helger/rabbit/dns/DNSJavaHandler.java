@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Address;
@@ -22,12 +24,11 @@ public class DNSJavaHandler implements IDNSHandler
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (DNSJavaHandler.class);
 
-  /** Do any neccessary setup. */
-  public void setup (StringMap config)
+  /** Do any necessary setup. */
+  public void setup (@Nullable final StringMap config)
   {
-    if (config == null)
-      config = new StringMap ();
-    final String ct = config.getOrDefault ("dnscachetime", "8").trim ();
+    final StringMap aRealConfig = config == null ? new StringMap () : config;
+    final String ct = aRealConfig.getOrDefault ("dnscachetime", "8").trim ();
     int time = 8 * 3600;
     try
     {

@@ -19,6 +19,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -837,14 +839,13 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
    * @throws IOException
    *         if the new cache can not be configured correctly
    */
-  public void setup (StringMap config) throws IOException
+  public void setup (@Nullable final StringMap config) throws IOException
   {
-    if (config == null)
-      config = new StringMap ();
-    final String cachedir = config.getOrDefault ("directory", DIR);
+    final StringMap aRealConfig = config == null ? new StringMap () : config;
+    final String cachedir = aRealConfig.getOrDefault ("directory", DIR);
     configuration.setCacheDir (cachedir);
-    configuration.setup (LOGGER, config);
-    final String ct = config.getOrDefault ("cleanloop", DEFAULT_CLEAN_LOOP);
+    configuration.setup (aRealConfig, LOGGER);
+    final String ct = aRealConfig.getOrDefault ("cleanloop", DEFAULT_CLEAN_LOOP);
     try
     {
       setCleanLoopTime (Integer.parseInt (ct) * 1000); // in seconds.
@@ -905,7 +906,7 @@ public class NCache <K, V> implements ICache <K, V>, Runnable
   private FiledWithSize <FiledKey <K>> storeKey (final K realKey, final long id) throws IOException
   {
     final FiledKey <K> fk = new FiledKey <> ();
-    final long size = fk.storeKey (this, id, realKey, LOGGER);
+    final long size = fk.storeKey (this, id, realKey);
     return new FiledWithSize <> (fk, size);
   }
 

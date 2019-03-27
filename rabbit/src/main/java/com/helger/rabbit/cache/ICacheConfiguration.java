@@ -56,11 +56,10 @@ public interface ICacheConfiguration
 
   /**
    * Set the internal state from the given properties
-   *
-   * @param LOGGER
-   *        the Logger to use for warnings or errors
    * @param config
    *        the properties to use
+   * @param LOGGER
+   *        the Logger to use for warnings or errors
    */
-  void setup (Logger LOGGER, StringMap config);
+  void setup (StringMap config, Logger LOGGER);
 }

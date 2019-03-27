@@ -39,7 +39,7 @@ public abstract class AbstractCacheConfigurationBase implements ICacheConfigurat
     cacheTimeMS = newCacheTime;
   }
 
-  public void setup (final Logger aLogger, final StringMap config)
+  public void setup (final StringMap config, final Logger aLogger)
   {
     final String cmsize = config.getOrDefault ("maxsize", DEFAULT_SIZE);
     try

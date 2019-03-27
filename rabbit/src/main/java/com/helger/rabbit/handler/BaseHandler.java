@@ -492,6 +492,7 @@ public class BaseHandler implements IHandler, IHandlerFactory, HttpHeaderSentLis
         entry.setDataHook (response);
         try
         {
+          @SuppressWarnings ("resource")
           final FileOutputStream cacheStream = new FileOutputStream (entryName);
           /*
            * TODO: implement this: if (mayRestrictCacheSize ()) cacheStream =

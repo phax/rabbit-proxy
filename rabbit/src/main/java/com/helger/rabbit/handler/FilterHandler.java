@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +39,17 @@ public class FilterHandler extends GZipHandler
 
   private List <IHtmlFilterFactory> filterClasses = new ArrayList <> ();
   private boolean repack = false;
-  private String defaultCharSet = null;
-  private String overrideCharSet = null;
+  private String defaultCharSet;
+  private String overrideCharSet;
 
   private List <AbstractHtmlFilter> filters;
   private HtmlParser parser;
-  private byte [] restBlock = null;
+  private byte [] restBlock;
   private boolean sendingRest = false;
-  private Iterator <ByteBuffer> sendBlocks = null;
+  private Iterator <ByteBuffer> sendBlocks;
 
-  private GZipUnpacker gzu = null;
-  private GZListener gzListener = null;
+  private GZipUnpacker gzu;
+  private GZListener gzListener;
 
   /**
    * Create a new FilterHandler that is uninitialized. Normally this should only
@@ -107,7 +108,7 @@ public class FilterHandler extends GZipHandler
   {
     final String ce = response.getHeader ("Content-Encoding");
     if (repack && ce != null)
-      setupRepacking (ce);
+      _setupRepacking (ce);
 
     super.setupHandler ();
     if (mayFilter)
@@ -121,7 +122,7 @@ public class FilterHandler extends GZipHandler
       }
       else
       {
-        cs = tryToGetCharset ();
+        cs = _tryToGetCharset ();
       }
       // There are lots of other charsets, and it could be specified by a
       // HTML Meta tag.
@@ -146,13 +147,13 @@ public class FilterHandler extends GZipHandler
         charSet = Charset.forName ("ISO-8859-1");
       }
       parser = new HtmlParser (charSet);
-      filters = initFilters ();
+      filters = _initFilters ();
     }
   }
 
-  private void setupRepacking (String ce)
+  private void _setupRepacking (final String sce)
   {
-    ce = ce.toLowerCase ();
+    final String ce = sce.toLowerCase (Locale.ROOT);
     if (ce.equals ("gzip"))
     {
       gzListener = new GZListener ();
@@ -174,7 +175,7 @@ public class FilterHandler extends GZipHandler
     }
   }
 
-  private String tryToGetCharset ()
+  private String _tryToGetCharset ()
   {
     String cs = defaultCharSet;
     // Content-Type: text/html; charset=iso-8859-1
@@ -215,7 +216,7 @@ public class FilterHandler extends GZipHandler
     public void unpacked (final byte [] buf, final int off, final int len)
     {
       gotData = true;
-      handleArray (buf, off, len);
+      _handleArray (buf, off, len);
     }
 
     public void clearDataFlag ()
@@ -276,7 +277,7 @@ public class FilterHandler extends GZipHandler
   @Override
   protected void writeDataToGZipper (final byte [] arr)
   {
-    forwardArrayToHandler (arr, 0, arr.length);
+    _forwardArrayToHandler (arr, 0, arr.length);
   }
 
   @Override
@@ -302,10 +303,10 @@ public class FilterHandler extends GZipHandler
       buf.get (arr);
     }
     bufHandle.possiblyFlush ();
-    forwardArrayToHandler (arr, off, len);
+    _forwardArrayToHandler (arr, off, len);
   }
 
-  private void forwardArrayToHandler (final byte [] arr, final int off, final int len)
+  private void _forwardArrayToHandler (final byte [] arr, final int off, final int len)
   {
     if (gzu != null)
     {
@@ -317,12 +318,15 @@ public class FilterHandler extends GZipHandler
     }
     else
     {
-      handleArray (arr, off, len);
+      _handleArray (arr, off, len);
     }
   }
 
-  private void handleArray (byte [] arr, int off, int len)
+  private void _handleArray (final byte [] aArr, final int nOff, final int nLen)
   {
+    byte [] arr = aArr;
+    int off = nOff;
+    int len = nLen;
     if (restBlock != null)
     {
       final int rs = restBlock.length;
@@ -368,7 +372,7 @@ public class FilterHandler extends GZipHandler
     }
     if (sendBlocks.hasNext ())
     {
-      sendBlockBuffers ();
+      _sendBlockBuffers ();
     }
     else
     {
@@ -388,7 +392,7 @@ public class FilterHandler extends GZipHandler
     else
       if (sendBlocks != null && sendBlocks.hasNext ())
       {
-        sendBlockBuffers ();
+        _sendBlockBuffers ();
       }
       else
         if (gzu != null && !gzu.needsInput ())
@@ -401,7 +405,7 @@ public class FilterHandler extends GZipHandler
         }
   }
 
-  private void sendBlockBuffers ()
+  private void _sendBlockBuffers ()
   {
     final ByteBuffer buf = sendBlocks.next ();
     final SimpleBufferHandle bh = new SimpleBufferHandle (buf);
@@ -430,7 +434,7 @@ public class FilterHandler extends GZipHandler
    *
    * @return a List of HtmlFilters.
    */
-  private List <AbstractHtmlFilter> initFilters ()
+  private List <AbstractHtmlFilter> _initFilters ()
   {
     final int fsize = filterClasses.size ();
     final List <AbstractHtmlFilter> fl = new ArrayList <> (fsize);

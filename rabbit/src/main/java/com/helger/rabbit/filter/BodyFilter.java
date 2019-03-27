@@ -34,7 +34,7 @@ public class BodyFilter extends AbstractSimpleTagFilter
 
   /**
    * Create a new BodyFilter for the given request, response pair.
-   * 
+   *
    * @param con
    *        the Connection handling the request.
    * @param request
@@ -54,7 +54,7 @@ public class BodyFilter extends AbstractSimpleTagFilter
 
   /**
    * Insert some text at the top of the html page.
-   * 
+   *
    * @param block
    *        the part of the html page we are filtering.
    */
@@ -79,16 +79,17 @@ public class BodyFilter extends AbstractSimpleTagFilter
 
   /**
    * Insert the links in an ordered fashion.
-   * 
+   *
    * @param block
    *        the html block were filtering.
-   * @param pos
+   * @param nPos
    *        the position in the block were inserting stuff at.
    * @return the new position in the block.
    */
-  protected int insertTokens (final HtmlBlock block, int pos)
+  protected int insertTokens (final HtmlBlock block, final int nPos)
   {
     final Config config = con.getProxy ().getConfig ();
+    int pos = nPos;
     block.insertToken (new Token (config.getProperty (getClass ().getName (), "prefix", PREFIX)), pos++);
     if (config.getProperty (getClass ().getName (), "unfilteredlink", "true").toLowerCase ().equals ("true"))
     {
@@ -96,7 +97,7 @@ public class BodyFilter extends AbstractSimpleTagFilter
       try
       {
         final URL url = new URL (request.getRequestURI ());
-        a.addArg ("HREF", getHref (url));
+        a.addArg ("HREF", _getHref (url));
         block.insertToken (new Token (a), pos++);
         block.insertToken (new Token (config.getProperty (getClass ().getName (), "link", LINK)), pos++);
         final Tag slasha = new Tag ("/A");
@@ -111,7 +112,7 @@ public class BodyFilter extends AbstractSimpleTagFilter
     return pos;
   }
 
-  private String getHref (final URL url)
+  private static String _getHref (final URL url)
   {
     final StringBuilder sb = new StringBuilder ();
     sb.append ("\"");

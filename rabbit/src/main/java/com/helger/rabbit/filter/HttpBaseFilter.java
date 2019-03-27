@@ -133,14 +133,14 @@ public class HttpBaseFilter implements IHttpFilter
    *        the Connection.
    * @return the new request URI
    */
-  private String handleNoProxyRequest (String requri, final HttpHeader header, final Connection con)
+  private String handleNoProxyRequest (final String requri, final HttpHeader header, final Connection con)
   {
-    requri = "http://" + requri.substring (NOPROXY.length ());
-    header.setRequestURI (requri);
+    final String sRealRequri = "http://" + requri.substring (NOPROXY.length ());
+    header.setRequestURI (sRealRequri);
     con.setMayUseCache (false);
     con.setMayCache (false);
     con.setFilteringNotAllowed ();
-    return requri;
+    return sRealRequri;
   }
 
   /**
@@ -154,21 +154,22 @@ public class HttpBaseFilter implements IHttpFilter
    *        the Connection.
    * @return null if the request is allowed or an error response header
    */
-  private HttpHeader handleURLSetup (String requri, final HttpHeader header, final Connection con)
+  private HttpHeader handleURLSetup (final String requri, final HttpHeader header, final Connection con)
   {
     try
     {
       // is this request to our self?
       final HttpProxy proxy = con.getProxy ();
       boolean proxyRequest = true;
-      if (requri != null && requri.length () > 0 && requri.charAt (0) == '/')
+      String sRealRequri = requri;
+      if (StringHelper.startsWith (sRealRequri, '/'))
       {
         proxyRequest = false;
         handleAuthentications (header, con, "Authorization");
-        requri = "http://" + proxy.getHost ().getHostName () + ":" + proxy.getPort () + requri;
-        header.setRequestURI (requri);
+        sRealRequri = "http://" + proxy.getHost ().getHostName () + ":" + proxy.getPort () + sRealRequri;
+        header.setRequestURI (sRealRequri);
       }
-      final URL url = new URL (requri);
+      final URL url = new URL (sRealRequri);
       header.setHeader ("Host", url.getPort () > -1 ? url.getHost () + ":" + url.getPort () : url.getHost ());
       final int urlport = url.getPort ();
       // This could give a DNS-error if no DNS is available.

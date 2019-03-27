@@ -9,15 +9,18 @@ import java.io.Reader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.attr.StringMap;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.rabbit.util.IPAccess;
 
 /**
@@ -72,25 +75,18 @@ public class AccessFilter implements IIPAccessFilter
    * @param filename
    *        the name of the file to read from.
    */
-  private void loadAccess (String filename)
+  private void loadAccess (final String filename)
   {
-    filename = filename.replace ('/', File.separatorChar);
+    final String sRealFilename = filename.replace ('/', File.separatorChar);
 
-    try (final FileInputStream is = new FileInputStream (filename);
-        final Reader r = new InputStreamReader (is, "UTF-8"))
+    try (final FileInputStream is = new FileInputStream (sRealFilename);
+        final Reader r = new InputStreamReader (is, StandardCharsets.UTF_8))
     {
-      try
-      {
-        loadAccess (r);
-      }
-      finally
-      {
-        StreamHelper.close (r);
-      }
+      loadAccess (r);
     }
     catch (final IOException e)
     {
-      LOGGER.warn ("Accessfile '" + filename + "' not found: no one allowed", e);
+      LOGGER.warn ("Accessfile '" + sRealFilename + "' not found: no one allowed", e);
     }
   }
 
@@ -129,9 +125,9 @@ public class AccessFilter implements IIPAccessFilter
           continue;
         }
         final String low = st.nextToken ();
-        final InetAddress lowip = getInetAddress (low, LOGGER, br);
+        final InetAddress lowip = _getInetAddress (low, LOGGER, br);
         final String high = st.nextToken ();
-        final InetAddress highip = getInetAddress (high, LOGGER, br);
+        final InetAddress highip = _getInetAddress (high, LOGGER, br);
 
         if (lowip != null && highip != null)
         {
@@ -146,7 +142,7 @@ public class AccessFilter implements IIPAccessFilter
     this.denied = denied;
   }
 
-  private InetAddress getInetAddress (final String text, final Logger LOGGER, final LineNumberReader br)
+  private static InetAddress _getInetAddress (final String text, final Logger LOGGER, final LineNumberReader br)
   {
     InetAddress ip = null;
     try
@@ -163,6 +159,8 @@ public class AccessFilter implements IIPAccessFilter
   /**
    * Get the list of allowed ips
    */
+  @Nonnull
+  @ReturnsMutableObject
   public List <IPAccess> getAllowList ()
   {
     return allowed;
@@ -171,6 +169,8 @@ public class AccessFilter implements IIPAccessFilter
   /**
    * Get the list of denied ips
    */
+  @Nonnull
+  @ReturnsMutableObject
   public List <IPAccess> getDenyList ()
   {
     return denied;
